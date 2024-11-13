@@ -1,0 +1,25 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  words     Word[]
+  createdAt DateTime @default(now())
+}
+
+model Word {
+  id          Int      @id @default(autoincrement())
+  content     String
+  definition  String
+  isDeleted   Boolean  @default(false)
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+  createdAt   DateTime @default(now())
+}
