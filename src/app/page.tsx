@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import VocabularyList from './VocabularyList';
 
@@ -10,6 +10,16 @@ export default function Page() {
   const [definition, setDefinition] = useState('');
   const [error, setError] = useState('');
   const [refreshCount, setRefreshCount] = useState(0);
+  const [isUserKeyFixed, setIsUserKeyFixed] = useState(false);
+
+  useEffect(() => {
+    // Check if userKey exists in localStorage on component mount
+    const storedUserKey = localStorage.getItem('userKey');
+    if (storedUserKey) {
+      setUserKey(storedUserKey);
+      setIsUserKeyFixed(true);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +35,14 @@ export default function Page() {
       const response = await axios.post('/api/words', { word, userKey });
       setDefinition(response.data.definition);
       setWord('');
-      // refresh vocabulary list
+      
+      // Store userKey in localStorage and fix the input field
+      if (!isUserKeyFixed) {
+        localStorage.setItem('userKey', userKey);
+        setIsUserKeyFixed(true);
+      }
+
+      // Refresh vocabulary list
       setRefreshCount(prev => prev + 1);
     } catch (err: any) {
       setError(err.response?.data?.error || 'An error occurred.');
@@ -46,6 +63,7 @@ export default function Page() {
             className="border p-2 w-full"
             placeholder="Enter your unique key"
             required
+            disabled={isUserKeyFixed}
           />
         </div>
         <div className="mt-2">
