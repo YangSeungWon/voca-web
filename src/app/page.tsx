@@ -10,14 +10,17 @@ export default function Page() {
   const [definition, setDefinition] = useState('');
   const [error, setError] = useState('');
   const [refreshCount, setRefreshCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setDefinition('');
+    setIsLoading(true);
 
     if (!userKey) {
       setError('User Key is required.');
+      setIsLoading(false);
       return;
     }
 
@@ -29,13 +32,15 @@ export default function Page() {
       setRefreshCount(prev => prev + 1);
     } catch (err: any) {
       setError(err.response?.data?.error || 'An error occurred.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold">Vocabulary Builder</h1>
-      
+
       <form onSubmit={handleSubmit} className="mt-4">
         <div>
           <label className="block">User Key:</label>
@@ -59,8 +64,12 @@ export default function Page() {
             required
           />
         </div>
-        <button type="submit" className="mt-4 bg-blue-500 text-white p-2 rounded">
-          Add Word
+        <button
+          type="submit"
+          className={`mt-4 bg-blue-500 text-white p-2 rounded ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Adding...' : 'Add Word'}
         </button>
       </form>
 
