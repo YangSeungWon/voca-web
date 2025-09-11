@@ -1,109 +1,57 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import VocabularyList from './VocabularyList';
+import { useState } from 'react';
+import SearchBar from '@/components/SearchBar';
+import WordDisplay from '@/components/WordDisplay';
+import VocabularyList from '@/components/VocabularyList';
+import Navigation from '@/components/Navigation';
+import { DictionaryEntry } from '@/lib/dictionary';
 
-export default function Page() {
-  const [word, setWord] = useState('');
-  const [userKey, setUserKey] = useState('');
-  const [definition, setDefinition] = useState('');
-  const [error, setError] = useState('');
-  const [refreshCount, setRefreshCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isUserKeyFixed, setIsUserKeyFixed] = useState(false);
+export default function Home() {
+  const [currentWord, setCurrentWord] = useState<DictionaryEntry | null>(null);
+  const [activeView, setActiveView] = useState<'search' | 'vocabulary' | 'study'>('search');
+  const [refreshVocab, setRefreshVocab] = useState(0);
 
-  useEffect(() => {
-    // Check if userKey exists in localStorage on component mount
-    const storedUserKey = localStorage.getItem('userKey');
-    if (storedUserKey) {
-      setUserKey(storedUserKey);
-      setIsUserKeyFixed(true);
-    }
-  }, []);
+  const handleWordFound = (word: DictionaryEntry) => {
+    setCurrentWord(word);
+  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setDefinition('');
-    setIsLoading(true);
-
-    if (!userKey) {
-      setError('User Key is required.');
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const response = await axios.post('/api/words', { word, userKey });
-      setDefinition(response.data.definition);
-      setWord('');
-      
-      // Store userKey in localStorage and fix the input field
-      if (!isUserKeyFixed) {
-        localStorage.setItem('userKey', userKey);
-        setIsUserKeyFixed(true);
-      }
-
-      // Refresh vocabulary list
-      setRefreshCount(prev => prev + 1);
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'An error occurred.');
-    } finally {
-      setIsLoading(false);
-    }
+  const handleWordSaved = () => {
+    setRefreshVocab(prev => prev + 1);
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold">Vocabulary Builder</h1>
+    <div className="min-h-screen bg-white text-gray-900">
+      <div className="max-w-4xl mx-auto p-4">
+        <header className="mb-8 pt-8">
+          <h1 className="text-2xl font-light mb-6">Vocabulary</h1>
+          <Navigation activeView={activeView} onViewChange={setActiveView} />
+        </header>
 
-      <form onSubmit={handleSubmit} className="mt-4">
-        <div>
-          <label className="block">User Key:</label>
-          <input
-            type="text"
-            value={userKey}
-            onChange={(e) => setUserKey(e.target.value)}
-            className="border p-2 w-full"
-            placeholder="Enter your unique key"
-            required
-            disabled={isUserKeyFixed}
-          />
-        </div>
-        <div className="mt-2">
-          <label className="block">English Word:</label>
-          <input
-            type="text"
-            value={word}
-            onChange={(e) => setWord(e.target.value)}
-            className="border p-2 w-full"
-            placeholder="Enter an English word"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          className={`mt-4 bg-blue-500 text-white p-2 rounded ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
-          disabled={isLoading}
-        >
-          {isLoading ? 'Adding...' : 'Add Word'}
-        </button>
-      </form>
+        <main className="pb-8">
+          {activeView === 'search' && (
+            <div className="space-y-8">
+              <SearchBar onWordFound={handleWordFound} />
+              {currentWord && (
+                <WordDisplay 
+                  word={currentWord} 
+                  onSave={handleWordSaved}
+                />
+              )}
+            </div>
+          )}
 
-      {definition && (
-        <div className="mt-4 p-2 bg-green-100 border border-green-400 rounded">
-          <strong>Definition:</strong> {definition}
-        </div>
-      )}
+          {activeView === 'vocabulary' && (
+            <VocabularyList key={refreshVocab} />
+          )}
 
-      {error && (
-        <div className="mt-4 p-2 bg-red-100 border border-red-400 rounded">
-          <strong>Error:</strong> {error}
-        </div>
-      )}
-
-      <VocabularyList userKey={userKey} refresh={refreshCount} />
+          {activeView === 'study' && (
+            <div className="text-center py-16 text-gray-400">
+              Study mode coming soon
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   );
 }
