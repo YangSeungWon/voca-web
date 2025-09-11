@@ -5,23 +5,26 @@ interface NavigationProps {
 
 export default function Navigation({ activeView, onViewChange }: NavigationProps) {
   const tabs = [
-    { id: 'search' as const, label: 'Search' },
-    { id: 'vocabulary' as const, label: 'My Words' },
-    { id: 'study' as const, label: 'Study' },
+    { id: 'vocabulary' as const, label: 'Word List' },
+    { id: 'search' as const, label: 'Add New' },
+    { id: 'study' as const, label: 'Review' },
   ];
 
   return (
-    <nav className="flex space-x-1 border-b border-gray-200">
+    <nav className="flex">
       {tabs.map((tab) => (
         <button
           key={tab.id}
           onClick={() => onViewChange(tab.id)}
           className={`
-            px-4 py-2 text-sm font-medium transition-colors
+            px-4 py-2 text-xs font-medium border border-gray-300
             ${activeView === tab.id
-              ? 'border-b-2 border-gray-900 text-gray-900'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'bg-white text-gray-800 border-b-white -mb-px z-10'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-50'
             }
+            ${tab.id === 'vocabulary' ? 'rounded-tl-sm' : ''}
+            ${tab.id === 'study' ? 'rounded-tr-sm' : ''}
+            ${tab.id !== 'study' ? 'border-r-0' : ''}
           `}
         >
           {tab.label}

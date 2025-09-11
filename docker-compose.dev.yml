@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: voca-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: voca_web_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - voca-network-dev
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: voca-app-dev
+    restart: unless-stopped
+    ports:
+      - "7024:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/voca_web_db?schema=public
+      NODE_ENV: development
+    depends_on:
+      - postgres
+    networks:
+      - voca-network-dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    command: sh -c "npx prisma migrate dev && npm run dev"
+
+volumes:
+  postgres_dev_data:
+
+networks:
+  voca-network-dev:
+    driver: bridge

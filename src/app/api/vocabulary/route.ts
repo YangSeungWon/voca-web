@@ -81,14 +81,18 @@ export async function POST(req: NextRequest) {
     });
 
     if (!word) {
-      const dictEntry = await searchWord(wordText);
+      // Fetch from dictionary API
+      const { fetchFromDictionaryAPI } = await import('@/lib/dictionary-api');
+      const dictEntry = await fetchFromDictionaryAPI(wordText);
+      
       if (!dictEntry) {
         return NextResponse.json(
-          { error: 'Word not found' },
+          { error: 'Word not found in dictionary' },
           { status: 404 }
         );
       }
 
+      // Cache in database
       word = await prisma.word.create({
         data: {
           word: dictEntry.word,

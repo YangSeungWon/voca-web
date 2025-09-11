@@ -30,21 +30,22 @@ export default function SearchBar({ onWordFound }: SearchBarProps) {
   };
 
   return (
-    <form onSubmit={handleSearch} className="relative">
+    <form onSubmit={handleSearch} className="flex gap-2">
       <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search for a word..."
-        className="w-full px-4 py-3 pr-12 text-lg border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 transition-colors"
+        placeholder="Enter word to look up..."
+        className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-sm focus:outline-none focus:border-blue-500"
         disabled={isSearching}
       />
       <button
         type="submit"
         disabled={isSearching || !query.trim()}
-        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600 disabled:opacity-50 transition-colors"
+        className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
       >
-        <Search size={20} />
+        <Search size={14} />
+        Search
       </button>
     </form>
   );

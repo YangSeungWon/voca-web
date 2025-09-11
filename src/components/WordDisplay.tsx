@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Check } from 'lucide-react';
+import { Plus, Check, Save } from 'lucide-react';
 import { DictionaryEntry } from '@/lib/dictionary';
 import { getUserId } from '@/lib/auth';
 
@@ -39,50 +39,68 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
   };
 
   return (
-    <div className="bg-gray-50 rounded-lg p-6 space-y-4">
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-2xl font-medium">{word.word}</h2>
-          {word.pronunciation && (
-            <p className="text-sm text-gray-500 mt-1">{word.pronunciation}</p>
-          )}
-        </div>
+    <div className="border border-gray-200 rounded-sm">
+      <div className="bg-gray-50 border-b border-gray-200 px-4 py-2 flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-gray-700">Dictionary Result</h3>
         <button
           onClick={handleSave}
           disabled={isSaving || isSaved}
           className={`
-            p-2 rounded-lg transition-all
+            px-3 py-1 text-xs rounded-sm flex items-center gap-1 transition-colors
             ${isSaved 
-              ? 'bg-green-100 text-green-600' 
-              : 'bg-white hover:bg-gray-100 text-gray-600'
+              ? 'bg-green-600 text-white' 
+              : 'bg-blue-600 text-white hover:bg-blue-700'
             }
-            disabled:opacity-50
+            disabled:opacity-50 disabled:cursor-not-allowed
           `}
         >
-          {isSaved ? <Check size={20} /> : <Plus size={20} />}
+          {isSaved ? (
+            <>
+              <Check size={12} />
+              Saved
+            </>
+          ) : (
+            <>
+              <Save size={12} />
+              Add to List
+            </>
+          )}
         </button>
       </div>
 
-      <div className="space-y-3">
-        {word.definitions.map((def, index) => (
-          <div key={index} className="space-y-2">
-            {def.partOfSpeech && (
-              <span className="inline-block px-2 py-1 text-xs font-medium bg-gray-200 rounded">
-                {def.partOfSpeech}
-              </span>
-            )}
-            <p className="text-gray-700">{def.meaning}</p>
-            {def.examples && def.examples.length > 0 && (
-              <div className="pl-4 border-l-2 border-gray-200">
-                {def.examples.map((example, i) => (
-                  <p key={i} className="text-sm text-gray-600 italic">
-                    "{example}"
-                  </p>
-                ))}
-              </div>
+      <div className="p-4 space-y-3">
+        <div>
+          <div className="flex items-baseline gap-3">
+            <span className="text-lg font-semibold text-gray-800">{word.word}</span>
+            {word.pronunciation && (
+              <span className="text-sm text-gray-500">{word.pronunciation}</span>
             )}
           </div>
-        ))}
+        </div>
+
+        <div className="space-y-2">
+          {word.definitions.map((def, index) => (
+            <div key={index} className="border-l-2 border-gray-200 pl-3">
+              <div className="flex items-start gap-2">
+                {def.partOfSpeech && (
+                  <span className="inline-block px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-sm">
+                    {def.partOfSpeech}
+                  </span>
+                )}
+                <p className="text-sm text-gray-700 flex-1">{def.meaning}</p>
+              </div>
+              {def.examples && def.examples.length > 0 && (
+                <div className="mt-1 ml-12">
+                  {def.examples.map((example, i) => (
+                    <p key={i} className="text-xs text-gray-500 italic">
+                      Example: {example}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
