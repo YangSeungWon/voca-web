@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Check, Save } from 'lucide-react';
+import { Check, Save } from 'lucide-react';
 import { DictionaryEntry } from '@/lib/dictionary';
 import { getUserId } from '@/lib/auth';
 

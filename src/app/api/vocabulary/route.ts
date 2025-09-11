@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { searchWord } from '@/lib/dictionary';
 
 export async function GET(req: NextRequest) {
   try {
@@ -29,12 +28,12 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' }
     });
 
-    const formatted = vocabulary.map(v => ({
+    const formatted = vocabulary.map((v: any) => ({
       id: v.id,
       word: {
         word: v.word.word,
         pronunciation: v.word.pronunciation,
-        definitions: v.word.definitions.map(d => ({
+        definitions: v.word.definitions.map((d: any) => ({
           partOfSpeech: d.partOfSpeech,
           meaning: d.meaning
         }))

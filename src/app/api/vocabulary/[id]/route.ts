@@ -3,8 +3,9 @@ import { prisma } from '@/lib/prisma';
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const userId = req.headers.get('x-user-id') || 'default-user';
     
@@ -21,7 +22,7 @@ export async function DELETE(
 
     const vocabulary = await prisma.vocabulary.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id
       }
     });
@@ -34,7 +35,7 @@ export async function DELETE(
     }
 
     await prisma.vocabulary.delete({
-      where: { id: params.id }
+      where: { id: id }
     });
 
     return NextResponse.json({ message: 'Word removed from vocabulary' });
