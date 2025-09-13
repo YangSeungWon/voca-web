@@ -22,6 +22,9 @@ RUN npx prisma generate
 # Build the application
 RUN npm run build
 
+# Generate migration SQL files
+RUN npx prisma migrate deploy --skip-generate || true
+
 # Production stage
 FROM node:20-alpine AS runner
 

@@ -29,7 +29,7 @@ services:
       - postgres
     networks:
       - voca-network
-    command: sh -c "npx prisma migrate deploy && node server.js"
+    command: node server.js
 
 volumes:
   postgres_data:
