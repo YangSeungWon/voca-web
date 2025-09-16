@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Save } from 'lucide-react';
+import { Check, Save, Volume2 } from 'lucide-react';
 import { DictionaryEntry } from '@/lib/dictionary';
 import { getUserId } from '@/lib/auth';
+import { speak } from '@/lib/speech';
 
 interface WordDisplayProps {
   word: DictionaryEntry;
@@ -70,11 +71,18 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
 
       <div className="p-4 space-y-3">
         <div>
-          <div className="flex items-baseline gap-3">
+          <div className="flex items-center gap-3">
             <span className="text-lg font-semibold text-gray-800">{word.word}</span>
             {word.pronunciation && (
               <span className="text-sm text-gray-500">{word.pronunciation}</span>
             )}
+            <button
+              onClick={() => speak(word.word)}
+              className="p-1.5 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-sm transition-colors"
+              title="Pronounce"
+            >
+              <Volume2 size={16} />
+            </button>
           </div>
         </div>
 

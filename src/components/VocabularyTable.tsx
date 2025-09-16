@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Trash2, Download, Filter, ChevronUp, ChevronDown } from 'lucide-react';
+import { Trash2, Download, Filter, ChevronUp, ChevronDown, Volume2 } from 'lucide-react';
 import { getUserId } from '@/lib/auth';
+import { speak } from '@/lib/speech';
 
 interface VocabularyWord {
   id: string;
@@ -266,7 +267,18 @@ export default function VocabularyTable() {
                       className="cursor-pointer"
                     />
                   </td>
-                  <td className="p-2 font-medium">{item.word.word}</td>
+                  <td className="p-2 font-medium">
+                    <div className="flex items-center gap-2">
+                      {item.word.word}
+                      <button
+                        onClick={() => speak(item.word.word)}
+                        className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-sm transition-colors"
+                        title="Pronounce"
+                      >
+                        <Volume2 size={12} />
+                      </button>
+                    </div>
+                  </td>
                   <td className="p-2 text-gray-500">{item.word.pronunciation || '-'}</td>
                   <td className="p-2">{item.word.definitions[0]?.meaning || '-'}</td>
                   <td className="p-2 text-gray-500">

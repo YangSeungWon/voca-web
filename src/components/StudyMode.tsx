@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { getUserId } from '@/lib/auth';
+import { speak } from '@/lib/speech';
+import { Volume2 } from 'lucide-react';
 
 interface StudyWord {
   id: string;
@@ -224,11 +226,20 @@ export default function StudyMode() {
 
           {/* Question Side */}
           <div className="text-center mb-6">
-            <h3 className="text-3xl font-bold text-gray-800 mb-2">
-              {currentWord.word.word}
-            </h3>
+            <div className="flex items-center justify-center gap-3">
+              <h3 className="text-3xl font-bold text-gray-800">
+                {currentWord.word.word}
+              </h3>
+              <button
+                onClick={() => speak(currentWord.word.word, 0.7)}
+                className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors"
+                title="Pronounce"
+              >
+                <Volume2 size={20} />
+              </button>
+            </div>
             {currentWord.word.pronunciation && (
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-500 mt-2">
                 {currentWord.word.pronunciation}
               </div>
             )}
