@@ -1,0 +1,283 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { getUserId } from '@/lib/auth';
+
+interface StudyWord {
+  id: string;
+  word: {
+    word: string;
+    pronunciation?: string;
+    definitions: {
+      partOfSpeech?: string;
+      meaning: string;
+    }[];
+  };
+  level: number;
+  reviewCount: number;
+  correctCount: number;
+}
+
+type StudyState = 'ready' | 'question' | 'answer' | 'complete';
+
+export default function StudyMode() {
+  const [words, setWords] = useState<StudyWord[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [studyState, setStudyState] = useState<StudyState>('ready');
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [sessionStats, setSessionStats] = useState({
+    total: 0,
+    correct: 0,
+    incorrect: 0
+  });
+
+  useEffect(() => {
+    loadStudyWords();
+  }, []);
+
+  const loadStudyWords = async () => {
+    try {
+      const response = await fetch('/api/vocabulary', {
+        headers: {
+          'x-user-id': getUserId()
+        }
+      });
+      const data = await response.json();
+      
+      // Prioritize words with lower levels and less recent reviews
+      const sortedWords = data.sort((a: StudyWord, b: StudyWord) => {
+        if (a.level !== b.level) return a.level - b.level;
+        return a.reviewCount - b.reviewCount;
+      });
+      
+      setWords(sortedWords.slice(0, 10)); // Study 10 words per session
+      setSessionStats({ ...sessionStats, total: Math.min(sortedWords.length, 10) });
+    } catch (error) {
+      console.error('Failed to load study words:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStart = () => {
+    if (words.length > 0) {
+      setStudyState('question');
+      setCurrentIndex(0);
+    }
+  };
+
+  const handleShowAnswer = () => {
+    setShowAnswer(true);
+    setStudyState('answer');
+  };
+
+  const handleAnswer = async (correct: boolean) => {
+    const currentWord = words[currentIndex];
+    
+    // Update statistics
+    setSessionStats(prev => ({
+      ...prev,
+      correct: correct ? prev.correct + 1 : prev.correct,
+      incorrect: !correct ? prev.incorrect + 1 : prev.incorrect
+    }));
+
+    // Update word level in database
+    try {
+      await fetch(`/api/vocabulary/${currentWord.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': getUserId()
+        },
+        body: JSON.stringify({
+          level: correct ? Math.min(currentWord.level + 1, 5) : Math.max(currentWord.level - 1, 0),
+          reviewCount: currentWord.reviewCount + 1,
+          correctCount: correct ? currentWord.correctCount + 1 : currentWord.correctCount
+        })
+      });
+    } catch (error) {
+      console.error('Failed to update word progress:', error);
+    }
+
+    // Move to next word or complete
+    if (currentIndex < words.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+      setShowAnswer(false);
+      setStudyState('question');
+    } else {
+      setStudyState('complete');
+    }
+  };
+
+  const getLevelColor = (level: number) => {
+    const colors = ['bg-red-100', 'bg-orange-100', 'bg-yellow-100', 'bg-green-100', 'bg-blue-100', 'bg-purple-100'];
+    return colors[level] || 'bg-gray-100';
+  };
+
+  const getLevelText = (level: number) => {
+    const levels = ['New', 'Learning', 'Familiar', 'Known', 'Mastered', 'Expert'];
+    return levels[level] || 'Unknown';
+  };
+
+  if (loading) {
+    return (
+      <div className="p-8 text-center">
+        <div className="text-gray-500">Loading study materials...</div>
+      </div>
+    );
+  }
+
+  if (words.length === 0) {
+    return (
+      <div className="p-8 text-center">
+        <div className="text-gray-500 mb-4">No words to study</div>
+        <div className="text-sm text-gray-400">Add some words to your vocabulary first!</div>
+      </div>
+    );
+  }
+
+  if (studyState === 'ready') {
+    return (
+      <div className="p-8 text-center">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Ready to Study?</h2>
+        <div className="text-sm text-gray-600 mb-6">
+          You have {words.length} words to review today
+        </div>
+        <button
+          onClick={handleStart}
+          className="px-6 py-2 bg-gray-800 text-white rounded-sm hover:bg-gray-700"
+        >
+          Start Study Session
+        </button>
+      </div>
+    );
+  }
+
+  if (studyState === 'complete') {
+    const accuracy = sessionStats.total > 0 
+      ? Math.round((sessionStats.correct / sessionStats.total) * 100) 
+      : 0;
+
+    return (
+      <div className="p-8 text-center">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Session Complete!</h2>
+        
+        <div className="mb-6 space-y-2">
+          <div className="text-3xl font-bold text-gray-800">{accuracy}%</div>
+          <div className="text-sm text-gray-600">Accuracy</div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-4 mb-6 max-w-md mx-auto">
+          <div className="bg-green-50 p-3 rounded-sm">
+            <div className="text-2xl font-semibold text-green-600">{sessionStats.correct}</div>
+            <div className="text-xs text-green-600">Correct</div>
+          </div>
+          <div className="bg-red-50 p-3 rounded-sm">
+            <div className="text-2xl font-semibold text-red-600">{sessionStats.incorrect}</div>
+            <div className="text-xs text-red-600">Incorrect</div>
+          </div>
+          <div className="bg-gray-50 p-3 rounded-sm">
+            <div className="text-2xl font-semibold text-gray-600">{sessionStats.total}</div>
+            <div className="text-xs text-gray-600">Total</div>
+          </div>
+        </div>
+
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-2 bg-gray-800 text-white rounded-sm hover:bg-gray-700"
+        >
+          Study Again
+        </button>
+      </div>
+    );
+  }
+
+  const currentWord = words[currentIndex];
+  const progress = ((currentIndex + 1) / words.length) * 100;
+
+  return (
+    <div className="p-6">
+      {/* Progress Bar */}
+      <div className="mb-6">
+        <div className="flex justify-between text-xs text-gray-600 mb-2">
+          <span>Word {currentIndex + 1} of {words.length}</span>
+          <span>{Math.round(progress)}%</span>
+        </div>
+        <div className="h-2 bg-gray-200 rounded-sm overflow-hidden">
+          <div 
+            className="h-full bg-gray-600 transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Flashcard */}
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white border-2 border-gray-200 rounded-sm p-8 min-h-[300px] flex flex-col justify-center">
+          {/* Word Level Badge */}
+          <div className="mb-4 flex justify-center">
+            <span className={`px-3 py-1 text-xs font-medium rounded-full ${getLevelColor(currentWord.level)}`}>
+              {getLevelText(currentWord.level)}
+            </span>
+          </div>
+
+          {/* Question Side */}
+          <div className="text-center mb-6">
+            <h3 className="text-3xl font-bold text-gray-800 mb-2">
+              {currentWord.word.word}
+            </h3>
+            {currentWord.word.pronunciation && (
+              <div className="text-sm text-gray-500">
+                {currentWord.word.pronunciation}
+              </div>
+            )}
+          </div>
+
+          {/* Answer Side */}
+          {showAnswer && (
+            <div className="border-t pt-6 space-y-3 animate-fadeIn">
+              {currentWord.word.definitions.map((def, index) => (
+                <div key={index} className="text-left">
+                  {def.partOfSpeech && (
+                    <span className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-sm mr-2">
+                      {def.partOfSpeech}
+                    </span>
+                  )}
+                  <span className="text-gray-700">{def.meaning}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mt-6 flex justify-center gap-4">
+          {!showAnswer ? (
+            <button
+              onClick={handleShowAnswer}
+              className="px-8 py-3 bg-gray-800 text-white rounded-sm hover:bg-gray-700"
+            >
+              Show Answer
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => handleAnswer(false)}
+                className="px-6 py-3 bg-red-500 text-white rounded-sm hover:bg-red-600"
+              >
+                Incorrect
+              </button>
+              <button
+                onClick={() => handleAnswer(true)}
+                className="px-6 py-3 bg-green-500 text-white rounded-sm hover:bg-green-600"
+              >
+                Correct
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

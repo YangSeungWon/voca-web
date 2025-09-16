@@ -47,3 +47,69 @@ export async function DELETE(
     );
   }
 }
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  try {
+    const userId = req.headers.get('x-user-id') || 'default-user';
+    const body = await req.json();
+    
+    const user = await prisma.user.findUnique({
+      where: { username: userId }
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    const vocabulary = await prisma.vocabulary.findFirst({
+      where: {
+        id: id,
+        userId: user.id
+      }
+    });
+
+    if (!vocabulary) {
+      return NextResponse.json(
+        { error: 'Word not found in vocabulary' },
+        { status: 404 }
+      );
+    }
+
+    // Update the vocabulary item with study progress
+    const updated = await prisma.vocabulary.update({
+      where: { id },
+      data: {
+        level: body.level !== undefined ? body.level : vocabulary.level,
+        reviewCount: body.reviewCount !== undefined ? body.reviewCount : vocabulary.reviewCount,
+        correctCount: body.correctCount !== undefined ? body.correctCount : vocabulary.correctCount,
+        lastReviewed: new Date(),
+        nextReview: calculateNextReview(body.level || vocabulary.level),
+        notes: body.notes !== undefined ? body.notes : vocabulary.notes
+      }
+    });
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error('Failed to update vocabulary item:', error);
+    return NextResponse.json(
+      { error: 'Failed to update vocabulary item' },
+      { status: 500 }
+    );
+  }
+}
+
+// Simple spaced repetition algorithm
+function calculateNextReview(level: number): Date {
+  const intervals = [1, 3, 7, 14, 30, 90]; // Days
+  const daysToAdd = intervals[Math.min(level, intervals.length - 1)];
+  const nextDate = new Date();
+  nextDate.setDate(nextDate.getDate() + daysToAdd);
+  return nextDate;
+}

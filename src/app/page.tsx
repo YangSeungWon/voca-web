@@ -6,6 +6,7 @@ import WordDisplay from '@/components/WordDisplay';
 import VocabularyTable from '@/components/VocabularyTable';
 import Navigation from '@/components/Navigation';
 import AuthStatus from '@/components/AuthStatus';
+import StudyMode from '@/components/StudyMode';
 import { DictionaryEntry } from '@/lib/dictionary';
 
 export default function Home() {
@@ -57,9 +58,7 @@ export default function Home() {
           )}
 
           {activeView === 'study' && (
-            <div className="p-8 text-center text-gray-400">
-              <div className="text-sm">Study mode - Coming soon</div>
-            </div>
+            <StudyMode />
           )}
         </main>
       </div>
