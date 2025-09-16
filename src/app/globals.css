@@ -6,6 +6,11 @@
   body {
     @apply antialiased;
   }
+  
+  /* Smooth transition for theme changes */
+  * {
+    @apply transition-colors duration-200;
+  }
 }
 
 @layer components {

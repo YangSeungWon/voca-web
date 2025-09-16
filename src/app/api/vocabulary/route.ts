@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma';
 export async function GET(req: NextRequest) {
   try {
     const userId = req.headers.get('x-user-id') || 'default-user';
+    const searchParams = req.nextUrl.searchParams;
+    const groupId = searchParams.get('groupId');
     
     let user = await prisma.user.findUnique({
       where: { username: userId }
@@ -15,15 +17,21 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    const whereClause: any = { userId: user.id };
+    if (groupId) {
+      whereClause.groupId = groupId;
+    }
+
     const vocabulary = await prisma.vocabulary.findMany({
-      where: { userId: user.id },
+      where: whereClause,
       include: {
         word: {
           include: {
             definitions: true,
             examples: true
           }
-        }
+        },
+        group: true
       },
       orderBy: { createdAt: 'desc' }
     });
@@ -40,7 +48,13 @@ export async function GET(req: NextRequest) {
       },
       level: v.level,
       createdAt: v.createdAt,
-      notes: v.notes
+      notes: v.notes,
+      groupId: v.groupId,
+      group: v.group ? {
+        id: v.group.id,
+        name: v.group.name,
+        color: v.group.color
+      } : null
     }));
 
     return NextResponse.json(formatted);
@@ -56,7 +70,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const userId = req.headers.get('x-user-id') || 'default-user';
-    const { word: wordText } = await req.json();
+    const { word: wordText, groupId } = await req.json();
 
     if (!wordText) {
       return NextResponse.json(
@@ -133,7 +147,8 @@ export async function POST(req: NextRequest) {
     const vocabulary = await prisma.vocabulary.create({
       data: {
         userId: user.id,
-        wordId: word.id
+        wordId: word.id,
+        groupId: groupId || null
       }
     });
 

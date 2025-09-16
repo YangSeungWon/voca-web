@@ -1,6 +1,6 @@
 interface NavigationProps {
-  activeView: 'search' | 'vocabulary' | 'study';
-  onViewChange: (view: 'search' | 'vocabulary' | 'study') => void;
+  activeView: 'search' | 'vocabulary' | 'study' | 'statistics';
+  onViewChange: (view: 'search' | 'vocabulary' | 'study' | 'statistics') => void;
 }
 
 export default function Navigation({ activeView, onViewChange }: NavigationProps) {
@@ -8,6 +8,7 @@ export default function Navigation({ activeView, onViewChange }: NavigationProps
     { id: 'vocabulary' as const, label: 'Word List' },
     { id: 'search' as const, label: 'Add New' },
     { id: 'study' as const, label: 'Review' },
+    { id: 'statistics' as const, label: 'Statistics' },
   ];
 
   return (
@@ -17,14 +18,14 @@ export default function Navigation({ activeView, onViewChange }: NavigationProps
           key={tab.id}
           onClick={() => onViewChange(tab.id)}
           className={`
-            px-4 py-2 text-xs font-medium border border-gray-300
+            px-4 py-2 text-xs font-medium border border-gray-300 dark:border-gray-600
             ${activeView === tab.id
-              ? 'bg-white text-gray-800 border-b-white -mb-px z-10'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-50'
+              ? 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border-b-white dark:border-b-gray-800 -mb-px z-10'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600'
             }
             ${tab.id === 'vocabulary' ? 'rounded-tl-sm' : ''}
-            ${tab.id === 'study' ? 'rounded-tr-sm' : ''}
-            ${tab.id !== 'study' ? 'border-r-0' : ''}
+            ${tab.id === 'statistics' ? 'rounded-tr-sm' : ''}
+            ${tab.id !== 'statistics' ? 'border-r-0' : ''}
           `}
         >
           {tab.label}

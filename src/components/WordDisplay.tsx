@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Check, Save, Volume2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Check, Save, Volume2, Folder } from 'lucide-react';
 import { DictionaryEntry } from '@/lib/dictionary';
 import { getUserId } from '@/lib/auth';
 import { speak } from '@/lib/speech';
@@ -11,9 +11,38 @@ interface WordDisplayProps {
   onSave?: () => void;
 }
 
+interface Group {
+  id: string;
+  name: string;
+  color: string;
+}
+
 export default function WordDisplay({ word, onSave }: WordDisplayProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const [showGroupSelector, setShowGroupSelector] = useState(false);
+
+  useEffect(() => {
+    fetchGroups();
+  }, []);
+
+  const fetchGroups = async () => {
+    try {
+      const response = await fetch('/api/groups', {
+        headers: {
+          'x-user-id': getUserId()
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setGroups(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch groups:', error);
+    }
+  };
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -24,7 +53,10 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
           'Content-Type': 'application/json',
           'x-user-id': getUserId()
         },
-        body: JSON.stringify({ word: word.word }),
+        body: JSON.stringify({ 
+          word: word.word,
+          groupId: selectedGroup 
+        }),
       });
 
       if (response.ok) {
@@ -43,30 +75,82 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
     <div className="border border-gray-200 rounded-sm">
       <div className="bg-gray-50 border-b border-gray-200 px-4 py-2 flex items-center justify-between">
         <h3 className="text-sm font-semibold text-gray-700">Dictionary Result</h3>
-        <button
-          onClick={handleSave}
-          disabled={isSaving || isSaved}
-          className={`
-            px-3 py-1 text-xs rounded-sm flex items-center gap-1 transition-colors
-            ${isSaved 
-              ? 'bg-green-600 text-white' 
-              : 'bg-blue-600 text-white hover:bg-blue-700'
-            }
-            disabled:opacity-50 disabled:cursor-not-allowed
-          `}
-        >
-          {isSaved ? (
-            <>
-              <Check size={12} />
-              Saved
-            </>
-          ) : (
-            <>
-              <Save size={12} />
-              Add to List
-            </>
+        <div className="flex items-center gap-2">
+          {groups.length > 0 && (
+            <div className="relative">
+              <button
+                onClick={() => setShowGroupSelector(!showGroupSelector)}
+                className="px-2 py-1 text-xs border border-gray-300 rounded-sm flex items-center gap-1 hover:bg-gray-100"
+              >
+                <Folder size={12} />
+                {selectedGroup ? (
+                  <div className="flex items-center gap-1">
+                    <div 
+                      className="w-2 h-2 rounded-sm" 
+                      style={{ backgroundColor: groups.find(g => g.id === selectedGroup)?.color }}
+                    />
+                    {groups.find(g => g.id === selectedGroup)?.name}
+                  </div>
+                ) : (
+                  'No Group'
+                )}
+              </button>
+              {showGroupSelector && (
+                <div className="absolute top-full left-0 mt-1 w-40 bg-white border border-gray-200 rounded-sm shadow-lg z-10">
+                  <button
+                    onClick={() => {
+                      setSelectedGroup(null);
+                      setShowGroupSelector(false);
+                    }}
+                    className="w-full text-left px-3 py-1.5 text-xs hover:bg-gray-100"
+                  >
+                    No Group
+                  </button>
+                  {groups.map(group => (
+                    <button
+                      key={group.id}
+                      onClick={() => {
+                        setSelectedGroup(group.id);
+                        setShowGroupSelector(false);
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-xs hover:bg-gray-100 flex items-center gap-2"
+                    >
+                      <div
+                        className="w-2 h-2 rounded-sm"
+                        style={{ backgroundColor: group.color }}
+                      />
+                      {group.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
-        </button>
+          <button
+            onClick={handleSave}
+            disabled={isSaving || isSaved}
+            className={`
+              px-3 py-1 text-xs rounded-sm flex items-center gap-1 transition-colors
+              ${isSaved 
+                ? 'bg-green-600 text-white' 
+                : 'bg-blue-600 text-white hover:bg-blue-700'
+              }
+              disabled:opacity-50 disabled:cursor-not-allowed
+            `}
+          >
+            {isSaved ? (
+              <>
+                <Check size={12} />
+                Saved
+              </>
+            ) : (
+              <>
+                <Save size={12} />
+                Add to List
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       <div className="p-4 space-y-3">

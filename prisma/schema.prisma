@@ -18,6 +18,7 @@ model User {
   
   vocabularies  Vocabulary[]
   studySessions StudySession[]
+  groups        Group[]
 }
 
 model Word {
@@ -69,12 +70,16 @@ model Vocabulary {
   notes         String?
   tags          String[]      @default([])
   
+  groupId       String?
+  group         Group?        @relation(fields: [groupId], references: [id])
+  
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   
   @@unique([userId, wordId])
   @@index([userId])
   @@index([nextReview])
+  @@index([groupId])
 }
 
 model StudySession {
@@ -88,5 +93,24 @@ model StudySession {
   correctAnswers Int          @default(0)
   sessionType   String        // "review", "learn", "quiz"
   
+  @@index([userId])
+}
+
+model Group {
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name          String
+  description   String?
+  color         String        @default("#6B7280")
+  icon          String?
+  
+  vocabulary    Vocabulary[]
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  @@unique([userId, name])
   @@index([userId])
 }

@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Trash2, Download, Upload, Filter, ChevronUp, ChevronDown, Volume2 } from 'lucide-react';
+import { Trash2, Download, Upload, Filter, ChevronUp, ChevronDown, Volume2, ChevronRight } from 'lucide-react';
 import { getUserId } from '@/lib/auth';
 import { speak } from '@/lib/speech';
 import { parseCSV, generateCSV, downloadCSV, getCSVTemplate } from '@/lib/csv';
+import ExampleSentences from './ExampleSentences';
 
 interface VocabularyWord {
   id: string;
@@ -19,12 +20,22 @@ interface VocabularyWord {
   level: number;
   createdAt: string;
   notes?: string;
+  groupId?: string;
+  group?: {
+    id: string;
+    name: string;
+    color: string;
+  };
 }
 
 type SortField = 'word' | 'level' | 'createdAt';
 type SortOrder = 'asc' | 'desc';
 
-export default function VocabularyTable() {
+interface VocabularyTableProps {
+  selectedGroup: string | null;
+}
+
+export default function VocabularyTable({ selectedGroup }: VocabularyTableProps) {
   const [words, setWords] = useState<VocabularyWord[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
@@ -32,15 +43,19 @@ export default function VocabularyTable() {
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [filter, setFilter] = useState('');
   const [isImporting, setIsImporting] = useState(false);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchVocabulary();
-  }, []);
+  }, [selectedGroup]);
 
   const fetchVocabulary = async () => {
     try {
-      const response = await fetch('/api/vocabulary', {
+      const url = selectedGroup 
+        ? `/api/vocabulary?groupId=${selectedGroup}`
+        : '/api/vocabulary';
+      const response = await fetch(url, {
         headers: {
           'x-user-id': getUserId()
         }
@@ -99,6 +114,16 @@ export default function VocabularyTable() {
       newSelected.add(id);
     }
     setSelectedRows(newSelected);
+  };
+
+  const toggleExpandRow = (id: string) => {
+    const newExpanded = new Set(expandedRows);
+    if (newExpanded.has(id)) {
+      newExpanded.delete(id);
+    } else {
+      newExpanded.add(id);
+    }
+    setExpandedRows(newExpanded);
   };
 
   const exportToCSV = () => {
@@ -268,6 +293,7 @@ export default function VocabularyTable() {
               <th className="p-2 text-left font-medium text-gray-700">Pronunciation</th>
               <th className="p-2 text-left font-medium text-gray-700">Definition</th>
               <th className="p-2 text-left font-medium text-gray-700">Type</th>
+              <th className="p-2 text-left font-medium text-gray-700">Group</th>
               <th className="p-2 text-center font-medium text-gray-700">
                 <button
                   onClick={() => handleSort('level')}
@@ -296,58 +322,94 @@ export default function VocabularyTable() {
           <tbody>
             {filteredWords.length === 0 ? (
               <tr>
-                <td colSpan={8} className="p-8 text-center text-gray-400">
+                <td colSpan={9} className="p-8 text-center text-gray-400">
                   No words in your vocabulary yet.
                 </td>
               </tr>
             ) : (
               filteredWords.map((item, index) => (
-                <tr
-                  key={item.id}
-                  className={`
-                    border-b border-gray-100 hover:bg-blue-50
-                    ${selectedRows.has(item.id) ? 'bg-blue-100' : ''}
-                    ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
-                  `}
-                >
-                  <td className="p-2">
-                    <input
-                      type="checkbox"
-                      checked={selectedRows.has(item.id)}
-                      onChange={() => handleSelectRow(item.id)}
-                      className="cursor-pointer"
-                    />
-                  </td>
-                  <td className="p-2 font-medium">
-                    <div className="flex items-center gap-2">
-                      {item.word.word}
+                <>
+                  <tr
+                    key={item.id}
+                    className={`
+                      border-b border-gray-100 hover:bg-blue-50
+                      ${selectedRows.has(item.id) ? 'bg-blue-100' : ''}
+                      ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                    `}
+                  >
+                    <td className="p-2">
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => toggleExpandRow(item.id)}
+                          className="p-0.5 hover:bg-gray-200 rounded-sm"
+                        >
+                          <ChevronRight 
+                            size={12} 
+                            className={`transition-transform ${expandedRows.has(item.id) ? 'rotate-90' : ''}`}
+                          />
+                        </button>
+                        <input
+                          type="checkbox"
+                          checked={selectedRows.has(item.id)}
+                          onChange={() => handleSelectRow(item.id)}
+                          className="cursor-pointer"
+                        />
+                      </div>
+                    </td>
+                    <td className="p-2 font-medium">
+                      <div className="flex items-center gap-2">
+                        {item.word.word}
+                        <button
+                          onClick={() => speak(item.word.word)}
+                          className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-sm transition-colors"
+                          title="Pronounce"
+                        >
+                          <Volume2 size={12} />
+                        </button>
+                      </div>
+                    </td>
+                    <td className="p-2 text-gray-500">{item.word.pronunciation || '-'}</td>
+                    <td className="p-2">{item.word.definitions[0]?.meaning || '-'}</td>
+                    <td className="p-2 text-gray-500">
+                      {item.word.definitions[0]?.partOfSpeech || '-'}
+                    </td>
+                    <td className="p-2">
+                      {item.group ? (
+                        <div className="flex items-center gap-1">
+                          <div
+                            className="w-2 h-2 rounded-sm"
+                            style={{ backgroundColor: item.group.color }}
+                          />
+                          <span className="text-xs">{item.group.name}</span>
+                        </div>
+                      ) : (
+                        <span className="text-gray-400 text-xs">-</span>
+                      )}
+                    </td>
+                    <td className="p-2 text-center">{item.level}</td>
+                    <td className="p-2 text-gray-500">
+                      {new Date(item.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="p-2 text-center">
                       <button
-                        onClick={() => speak(item.word.word)}
-                        className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-sm transition-colors"
-                        title="Pronounce"
+                        onClick={() => handleDelete(item.id)}
+                        className="text-red-500 hover:text-red-700"
                       >
-                        <Volume2 size={12} />
+                        <Trash2 size={12} />
                       </button>
-                    </div>
-                  </td>
-                  <td className="p-2 text-gray-500">{item.word.pronunciation || '-'}</td>
-                  <td className="p-2">{item.word.definitions[0]?.meaning || '-'}</td>
-                  <td className="p-2 text-gray-500">
-                    {item.word.definitions[0]?.partOfSpeech || '-'}
-                  </td>
-                  <td className="p-2 text-center">{item.level}</td>
-                  <td className="p-2 text-gray-500">
-                    {new Date(item.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="p-2 text-center">
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <Trash2 size={12} />
-                    </button>
-                  </td>
-                </tr>
+                    </td>
+                  </tr>
+                  {expandedRows.has(item.id) && (
+                    <tr key={`${item.id}-examples`}>
+                      <td colSpan={9} className="p-3 bg-gray-50 border-b border-gray-200">
+                        <ExampleSentences 
+                          wordId={item.id} 
+                          wordText={item.word.word}
+                        />
+                      </td>
+                    </tr>
+                  )}
+                </>
               ))
             )}
           </tbody>
