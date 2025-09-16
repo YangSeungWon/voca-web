@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Folder, Plus, X, Check, Trash2 } from 'lucide-react';
+import { Folder, Plus, X, Trash2 } from 'lucide-react';
 import { getUserId } from '@/lib/auth';
 
 interface Group {
@@ -26,8 +26,6 @@ export default function GroupManager({ selectedGroup, onGroupChange }: GroupMana
   const [newGroupName, setNewGroupName] = useState('');
   const [newGroupColor, setNewGroupColor] = useState('#6B7280');
   const [loading, setLoading] = useState(false);
-  const [editingGroup, setEditingGroup] = useState<string | null>(null);
-  const [editingName, setEditingName] = useState('');
 
   const colors = [
     '#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899', '#6B7280'

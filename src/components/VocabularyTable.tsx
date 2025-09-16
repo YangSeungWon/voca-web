@@ -50,6 +50,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
 
   useEffect(() => {
     fetchVocabulary();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedGroup]);
 
   const fetchVocabulary = async () => {

@@ -11,7 +11,6 @@ interface PullToRefreshProps {
 export default function PullToRefresh({ onRefresh, children }: PullToRefreshProps) {
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [touchStart, setTouchStart] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const threshold = 60;
@@ -27,7 +26,7 @@ export default function PullToRefresh({ onRefresh, children }: PullToRefreshProp
     const handleTouchStart = (e: TouchEvent) => {
       if (container.scrollTop === 0) {
         startY = e.touches[0].pageY;
-        setTouchStart(startY);
+        // Track touch start
       }
     };
 
@@ -53,7 +52,6 @@ export default function PullToRefresh({ onRefresh, children }: PullToRefreshProp
       }
       
       setPullDistance(0);
-      setTouchStart(0);
       startY = 0;
     };
 

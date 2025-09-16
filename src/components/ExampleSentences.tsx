@@ -27,6 +27,7 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
 
   useEffect(() => {
     fetchExamples();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wordId]);
 
   const fetchExamples = async () => {

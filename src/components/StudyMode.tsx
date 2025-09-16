@@ -119,6 +119,7 @@ export default function StudyMode() {
 
   useEffect(() => {
     loadStudyWords();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadStudyWords = async () => {

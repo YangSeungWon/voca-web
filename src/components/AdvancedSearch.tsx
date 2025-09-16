@@ -33,7 +33,7 @@ export default function AdvancedSearch({ onFilterChange, groups }: AdvancedSearc
     'pronoun', 'preposition', 'conjunction', 'interjection'
   ];
 
-  const handleFilterChange = (key: keyof FilterOptions, value: any) => {
+  const handleFilterChange = (key: keyof FilterOptions, value: string | number | null) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
     onFilterChange(newFilters);
