@@ -7,6 +7,7 @@ import { speak } from '@/lib/speech';
 import { parseCSV, generateCSV, downloadCSV, getCSVTemplate } from '@/lib/csv';
 import ExampleSentences from './ExampleSentences';
 import VocabularyCard from './VocabularyCard';
+import PullToRefresh from './PullToRefresh';
 
 interface VocabularyWord {
   id: string;
@@ -451,22 +452,26 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
       </div>
       
       {/* Mobile Card View */}
-      <div className="md:hidden p-4">
-        {filteredWords.length === 0 ? (
-          <div className="text-center text-gray-400 dark:text-gray-500 py-8">
-            No words in your vocabulary yet.
+      <div className="md:hidden h-full">
+        <PullToRefresh onRefresh={fetchVocabulary}>
+          <div className="p-4">
+            {filteredWords.length === 0 ? (
+              <div className="text-center text-gray-400 dark:text-gray-500 py-8">
+                No words in your vocabulary yet.
+              </div>
+            ) : (
+              <div>
+                {filteredWords.map((item) => (
+                  <VocabularyCard
+                    key={item.id}
+                    item={item}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        ) : (
-          <div>
-            {filteredWords.map((item) => (
-              <VocabularyCard
-                key={item.id}
-                item={item}
-                onDelete={handleDelete}
-              />
-            ))}
-          </div>
-        )}
+        </PullToRefresh>
       </div>
     </div>
   );
