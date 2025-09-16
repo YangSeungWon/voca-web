@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { fetchFromDictionaryAPI } from '@/lib/dictionary-api';
+import { Prisma } from '@prisma/client';
 
 export async function POST(req: NextRequest) {
   try {
@@ -73,7 +74,7 @@ export async function POST(req: NextRequest) {
             data: {
               word: wordEntry.word,
               pronunciation: wordEntry.pronunciation,
-              definitions: wordEntry.definitions as any
+              definitions: wordEntry.definitions as Prisma.JsonValue
             }
           });
         }

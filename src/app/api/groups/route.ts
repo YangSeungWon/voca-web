@@ -52,8 +52,8 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(group);
-  } catch (error: any) {
-    if (error.code === 'P2002') {
+  } catch (error) {
+    if (error instanceof Error && 'code' in error && error.code === 'P2002') {
       return NextResponse.json({ error: 'Group name already exists' }, { status: 400 });
     }
     

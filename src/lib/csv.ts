@@ -78,7 +78,17 @@ function parseCSVLine(line: string): string[] {
   return result.map(val => val.replace(/^"|"$/g, '').trim());
 }
 
-export function generateCSV(words: any[]): string {
+interface WordData {
+  word?: {
+    word?: string;
+    pronunciation?: string;
+    definitions?: Array<{ meaning?: string; partOfSpeech?: string }>;
+  };
+  level?: number;
+  createdAt?: string;
+}
+
+export function generateCSV(words: WordData[]): string {
   const headers = ['Word', 'Pronunciation', 'Definition', 'Part of Speech', 'Level', 'Date Added'];
   
   const rows = words.map(item => {

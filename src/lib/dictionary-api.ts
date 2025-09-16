@@ -1,5 +1,26 @@
 import { DictionaryEntry } from './dictionary';
 
+interface APIPhonetic {
+  text?: string;
+}
+
+interface APIDefinition {
+  definition: string;
+  example?: string;
+}
+
+interface APIMeaning {
+  partOfSpeech: string;
+  definitions: APIDefinition[];
+}
+
+interface APIDictionaryEntry {
+  word: string;
+  phonetic?: string;
+  phonetics?: APIPhonetic[];
+  meanings: APIMeaning[];
+}
+
 export async function fetchFromDictionaryAPI(word: string): Promise<DictionaryEntry | null> {
   try {
     const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
@@ -16,8 +37,8 @@ export async function fetchFromDictionaryAPI(word: string): Promise<DictionaryEn
     const entry = data[0];
     
     // Transform API response to our format
-    const definitions = entry.meanings.flatMap((meaning: any) => 
-      meaning.definitions.map((def: any) => ({
+    const definitions = (entry as APIDictionaryEntry).meanings.flatMap((meaning) => 
+      meaning.definitions.map((def) => ({
         partOfSpeech: meaning.partOfSpeech,
         meaning: def.definition,
         examples: def.example ? [def.example] : []
@@ -25,8 +46,8 @@ export async function fetchFromDictionaryAPI(word: string): Promise<DictionaryEn
     );
 
     // Get pronunciation
-    const pronunciation = entry.phonetic || 
-      entry.phonetics?.find((p: any) => p.text)?.text || 
+    const pronunciation = (entry as APIDictionaryEntry).phonetic || 
+      (entry as APIDictionaryEntry).phonetics?.find((p) => p.text)?.text || 
       null;
 
     return {
