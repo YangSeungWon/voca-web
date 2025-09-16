@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Trash2, Download, Filter, ChevronUp, ChevronDown, Volume2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Trash2, Download, Upload, Filter, ChevronUp, ChevronDown, Volume2 } from 'lucide-react';
 import { getUserId } from '@/lib/auth';
 import { speak } from '@/lib/speech';
+import { parseCSV, generateCSV, downloadCSV, getCSVTemplate } from '@/lib/csv';
 
 interface VocabularyWord {
   id: string;
@@ -30,6 +31,8 @@ export default function VocabularyTable() {
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [filter, setFilter] = useState('');
+  const [isImporting, setIsImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchVocabulary();
@@ -99,28 +102,53 @@ export default function VocabularyTable() {
   };
 
   const exportToCSV = () => {
-    const headers = ['Word', 'Pronunciation', 'Definition', 'Part of Speech', 'Level', 'Date Added'];
-    const rows = filteredWords.map(item => [
-      item.word.word,
-      item.word.pronunciation || '',
-      item.word.definitions[0]?.meaning || '',
-      item.word.definitions[0]?.partOfSpeech || '',
-      item.level.toString(),
-      new Date(item.createdAt).toLocaleDateString()
-    ]);
+    const exportData = selectedRows.size > 0 
+      ? filteredWords.filter(w => selectedRows.has(w.id))
+      : filteredWords;
+    
+    const csvContent = generateCSV(exportData);
+    downloadCSV(csvContent, `vocabulary_${new Date().toISOString().split('T')[0]}.csv`);
+  };
 
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
-    ].join('\n');
+  const handleFileImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `vocabulary_${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+    setIsImporting(true);
+    try {
+      const text = await file.text();
+      const parsedWords = parseCSV(text);
+      
+      if (parsedWords.length === 0) {
+        alert('No valid words found in the CSV file');
+        return;
+      }
+
+      const response = await fetch('/api/vocabulary/import', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': getUserId()
+        },
+        body: JSON.stringify({ words: parsedWords })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Import complete!\n✅ Imported: ${result.imported}\n⚠️ Duplicates: ${result.duplicates}\n❌ Failed: ${result.failed}`);
+        fetchVocabulary(); // Refresh the list
+      } else {
+        alert('Failed to import words');
+      }
+    } catch (error) {
+      console.error('Import error:', error);
+      alert('Error reading CSV file. Please check the format.');
+    } finally {
+      setIsImporting(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
   };
 
   const filteredWords = words
@@ -178,12 +206,35 @@ export default function VocabularyTable() {
           </button>
         </div>
         <div className="flex items-center gap-2">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv"
+            onChange={handleFileImport}
+            className="hidden"
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isImporting}
+            className="px-3 py-1 text-xs bg-blue-600 text-white rounded-sm hover:bg-blue-700 flex items-center gap-1 disabled:opacity-50"
+            title="Import words from CSV file"
+          >
+            <Upload size={12} />
+            {isImporting ? 'Importing...' : 'Import'}
+          </button>
+          <button
+            onClick={() => downloadCSV(getCSVTemplate(), 'vocabulary_template.csv')}
+            className="px-3 py-1 text-xs bg-gray-600 text-white rounded-sm hover:bg-gray-700"
+            title="Download CSV template"
+          >
+            Template
+          </button>
           <button
             onClick={exportToCSV}
             className="px-3 py-1 text-xs bg-green-600 text-white rounded-sm hover:bg-green-700 flex items-center gap-1"
           >
             <Download size={12} />
-            Export
+            Export{selectedRows.size > 0 && ` (${selectedRows.size})`}
           </button>
           <span className="text-xs text-gray-500">
             {filteredWords.length} words
