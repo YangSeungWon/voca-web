@@ -51,30 +51,30 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-sm border border-gray-200 shadow-sm w-96">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-sm border border-gray-200 dark:border-gray-700 shadow-sm w-96">
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6">
           {isLogin ? 'Login' : 'Sign Up'}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
                 Username (optional)
               </label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-sm focus:outline-none focus:border-gray-400"
+                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
                 placeholder="Enter username"
               />
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
+            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
               Email
             </label>
             <input
@@ -82,13 +82,13 @@ export default function AuthPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-sm focus:outline-none focus:border-gray-400"
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
               placeholder="Enter email"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
+            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
               Password
             </label>
             <input
@@ -96,7 +96,7 @@ export default function AuthPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-sm focus:outline-none focus:border-gray-400"
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
               placeholder="Enter password"
             />
           </div>
@@ -108,18 +108,18 @@ export default function AuthPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 px-4 bg-gray-800 text-white text-sm font-medium rounded-sm hover:bg-gray-700 disabled:opacity-50"
+            className="w-full py-2 px-4 bg-gray-800 dark:bg-gray-700 text-white text-sm font-medium rounded-sm hover:bg-gray-700 dark:hover:bg-gray-600 disabled:opacity-50"
           >
             {loading ? 'Processing...' : (isLogin ? 'Login' : 'Sign Up')}
           </button>
         </form>
 
-        <div className="mt-4 text-center text-xs text-gray-600">
+        <div className="mt-4 text-center text-xs text-gray-600 dark:text-gray-400">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
           <button
             type="button"
             onClick={() => setIsLogin(!isLogin)}
-            className="text-gray-800 hover:underline font-medium"
+            className="text-gray-800 dark:text-gray-200 hover:underline font-medium"
           >
             {isLogin ? 'Sign Up' : 'Login'}
           </button>

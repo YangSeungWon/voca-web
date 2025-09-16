@@ -79,7 +79,7 @@ export default function Statistics() {
     <div className="p-6 space-y-6">
       {/* Overview Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white border border-gray-200 rounded-sm p-4">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4">
           <div className="flex items-center justify-between mb-2">
             <Brain className="text-gray-400" size={20} />
             <span className="text-xs text-gray-500">Total</span>
@@ -88,7 +88,7 @@ export default function Statistics() {
           <div className="text-xs text-gray-500 mt-1">words in library</div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-sm p-4">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4">
           <div className="flex items-center justify-between mb-2">
             <TrendingUp className="text-green-500" size={20} />
             <span className="text-xs text-gray-500">This Week</span>
@@ -97,7 +97,7 @@ export default function Statistics() {
           <div className="text-xs text-gray-500 mt-1">words added</div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-sm p-4">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4">
           <div className="flex items-center justify-between mb-2">
             <Award className="text-yellow-500" size={20} />
             <span className="text-xs text-gray-500">Mastered</span>
@@ -110,7 +110,7 @@ export default function Statistics() {
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-sm p-4">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4">
           <div className="flex items-center justify-between mb-2">
             <Calendar className="text-blue-500" size={20} />
             <span className="text-xs text-gray-500">Streak</span>
@@ -122,7 +122,7 @@ export default function Statistics() {
 
       {/* Progress Chart */}
       <div className="bg-white border border-gray-200 rounded-sm p-4">
-        <h3 className="text-sm font-semibold text-gray-700 mb-4">Daily Activity (Last 30 Days)</h3>
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Daily Activity (Last 30 Days)</h3>
         <div className="h-32 flex items-end gap-1">
           {stats.dailyProgress.map((day, index) => (
             <div key={index} className="flex-1 flex flex-col gap-1 items-center">
@@ -172,8 +172,8 @@ export default function Statistics() {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Level Distribution */}
-        <div className="bg-white border border-gray-200 rounded-sm p-4">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">Mastery Levels</h3>
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4">
+          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Mastery Levels</h3>
           <div className="space-y-2">
             {[0, 1, 2, 3, 4, 5].map(level => {
               const count = stats.levelDistribution[level] || 0;
@@ -193,10 +193,10 @@ export default function Statistics() {
               return (
                 <div key={level}>
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-gray-600">{levelNames[level]}</span>
+                    <span className="text-gray-600 dark:text-gray-400">{levelNames[level]}</span>
                     <span className="text-gray-500">{count} words</span>
                   </div>
-                  <div className="h-4 bg-gray-100 rounded-sm overflow-hidden">
+                  <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded-sm overflow-hidden">
                     <div 
                       className={`h-full ${levelColors[level]} transition-all duration-500`}
                       style={{ width: `${percentage}%` }}
@@ -209,8 +209,8 @@ export default function Statistics() {
         </div>
 
         {/* Difficult Words */}
-        <div className="bg-white border border-gray-200 rounded-sm p-4">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">Most Challenging Words</h3>
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4">
+          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Most Challenging Words</h3>
           {stats.difficultWords.length === 0 ? (
             <div className="text-xs text-gray-500 text-center py-4">
               No review data yet. Start studying to see your challenging words!
@@ -218,8 +218,8 @@ export default function Statistics() {
           ) : (
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {stats.difficultWords.map((word, index) => (
-                <div key={index} className="flex items-center justify-between py-1 border-b border-gray-100">
-                  <span className="text-sm text-gray-700 font-medium">{word.word}</span>
+                <div key={index} className="flex items-center justify-between py-1 border-b border-gray-100 dark:border-gray-700">
+                  <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">{word.word}</span>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-gray-500">{word.reviews} reviews</span>
                     <span className={`text-xs px-2 py-0.5 rounded-full ${

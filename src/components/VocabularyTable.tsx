@@ -227,9 +227,9 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
             placeholder="Filter..."
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="px-2 py-1 text-xs border border-gray-300 rounded-sm focus:outline-none focus:border-blue-500"
+            className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
           />
-          <button className="p-1 hover:bg-gray-200 rounded-sm">
+          <button className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-sm">
             <Filter size={14} />
           </button>
         </div>
@@ -304,7 +304,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
       {/* Desktop Table View */}
       <div className="hidden md:block overflow-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
         <table className="w-full text-xs">
-          <thead className="bg-gray-100 border-b border-gray-200 sticky top-0">
+          <thead className="bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 sticky top-0">
             <tr>
               <th className="w-8 p-2 text-left">
                 <input
@@ -314,7 +314,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                   className="cursor-pointer"
                 />
               </th>
-              <th className="p-2 text-left font-medium text-gray-700">
+              <th className="p-2 text-left font-medium text-gray-700 dark:text-gray-300">
                 <button
                   onClick={() => handleSort('word')}
                   className="flex items-center gap-1 hover:text-gray-900"
@@ -325,11 +325,11 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                   )}
                 </button>
               </th>
-              <th className="p-2 text-left font-medium text-gray-700">Pronunciation</th>
-              <th className="p-2 text-left font-medium text-gray-700">Definition</th>
-              <th className="p-2 text-left font-medium text-gray-700">Type</th>
-              <th className="p-2 text-left font-medium text-gray-700">Group</th>
-              <th className="p-2 text-center font-medium text-gray-700">
+              <th className="p-2 text-left font-medium text-gray-700 dark:text-gray-300">Pronunciation</th>
+              <th className="p-2 text-left font-medium text-gray-700 dark:text-gray-300">Definition</th>
+              <th className="p-2 text-left font-medium text-gray-700 dark:text-gray-300">Type</th>
+              <th className="p-2 text-left font-medium text-gray-700 dark:text-gray-300">Group</th>
+              <th className="p-2 text-center font-medium text-gray-700 dark:text-gray-300">
                 <button
                   onClick={() => handleSort('level')}
                   className="flex items-center gap-1 hover:text-gray-900"
@@ -340,7 +340,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                   )}
                 </button>
               </th>
-              <th className="p-2 text-left font-medium text-gray-700">
+              <th className="p-2 text-left font-medium text-gray-700 dark:text-gray-300">
                 <button
                   onClick={() => handleSort('createdAt')}
                   className="flex items-center gap-1 hover:text-gray-900"
@@ -351,7 +351,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                   )}
                 </button>
               </th>
-              <th className="p-2 text-center font-medium text-gray-700">Actions</th>
+              <th className="p-2 text-center font-medium text-gray-700 dark:text-gray-300">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -376,7 +376,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => toggleExpandRow(item.id)}
-                          className="p-0.5 hover:bg-gray-200 rounded-sm"
+                          className="p-0.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-sm"
                         >
                           <ChevronRight 
                             size={12} 
@@ -396,7 +396,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                         {item.word.word}
                         <button
                           onClick={() => speak(item.word.word)}
-                          className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-sm transition-colors"
+                          className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-sm transition-colors"
                           title="Pronounce"
                         >
                           <Volume2 size={12} />
@@ -436,7 +436,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                   </tr>
                   {expandedRows.has(item.id) && (
                     <tr key={`${item.id}-examples`}>
-                      <td colSpan={9} className="p-3 bg-gray-50 border-b border-gray-200">
+                      <td colSpan={9} className="p-3 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                         <ExampleSentences 
                           wordId={item.id} 
                           wordText={item.word.word}
