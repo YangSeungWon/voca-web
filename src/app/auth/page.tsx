@@ -1,0 +1,130 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function AuthPage() {
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
+      const body = isLogin 
+        ? { email, password }
+        : { email, password, username: username || undefined };
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Authentication failed');
+        return;
+      }
+
+      // Store token and user info
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userId', data.user.id);
+      localStorage.setItem('userEmail', data.user.email);
+
+      // Redirect to main page
+      router.push('/');
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-sm border border-gray-200 shadow-sm w-96">
+        <h2 className="text-xl font-semibold text-gray-800 mb-6">
+          {isLogin ? 'Login' : 'Sign Up'}
+        </h2>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {!isLogin && (
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Username (optional)
+              </label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-sm focus:outline-none focus:border-gray-400"
+                placeholder="Enter username"
+              />
+            </div>
+          )}
+
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-sm focus:outline-none focus:border-gray-400"
+              placeholder="Enter email"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-sm focus:outline-none focus:border-gray-400"
+              placeholder="Enter password"
+            />
+          </div>
+
+          {error && (
+            <div className="text-xs text-red-500">{error}</div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-2 px-4 bg-gray-800 text-white text-sm font-medium rounded-sm hover:bg-gray-700 disabled:opacity-50"
+          >
+            {loading ? 'Processing...' : (isLogin ? 'Login' : 'Sign Up')}
+          </button>
+        </form>
+
+        <div className="mt-4 text-center text-xs text-gray-600">
+          {isLogin ? "Don't have an account? " : "Already have an account? "}
+          <button
+            type="button"
+            onClick={() => setIsLogin(!isLogin)}
+            className="text-gray-800 hover:underline font-medium"
+          >
+            {isLogin ? 'Sign Up' : 'Login'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

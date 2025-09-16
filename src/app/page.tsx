@@ -5,6 +5,7 @@ import SearchBar from '@/components/SearchBar';
 import WordDisplay from '@/components/WordDisplay';
 import VocabularyTable from '@/components/VocabularyTable';
 import Navigation from '@/components/Navigation';
+import AuthStatus from '@/components/AuthStatus';
 import { DictionaryEntry } from '@/lib/dictionary';
 
 export default function Home() {
@@ -27,7 +28,7 @@ export default function Home() {
           <header className="py-3">
             <div className="flex items-center justify-between">
               <h1 className="text-lg font-semibold text-gray-800">Vocabulary Manager</h1>
-              <div className="text-xs text-gray-500">Professional Edition</div>
+              <AuthStatus />
             </div>
           </header>
         </div>
