@@ -19,6 +19,9 @@ COPY . .
 # Generate Prisma client
 RUN npx prisma generate
 
+# Set DATABASE_URL for Prisma client generation during build
+ENV DATABASE_URL="postgresql://postgres:postgres@postgres:5432/voca_web_db?schema=public"
+
 # Build the application
 RUN npm run build
 
@@ -50,6 +53,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modul
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
 
+# Copy start script
+COPY --chown=nextjs:nodejs start.sh ./start.sh
+
 # Switch to non-root user
 USER nextjs
 
@@ -59,5 +65,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Start the application
-CMD ["node", "server.js"]
+# Start the application with migration
+CMD ["sh", "start.sh"]
