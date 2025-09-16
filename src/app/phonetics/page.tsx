@@ -429,7 +429,7 @@ export default function PhoneticsPage() {
     }
   };
 
-  const highlightWord = (word: string, highlight: string) => {
+  const highlightWord = (word: string, highlight: string): string => {
     const index = word.toLowerCase().indexOf(highlight.replace('_', ''));
     if (index === -1) return word;
     
@@ -442,15 +442,8 @@ export default function PhoneticsPage() {
       );
     }
     
-    return (
-      <>
-        {word.slice(0, index)}
-        <span className="text-red-600 font-bold underline">
-          {word.slice(index, index + highlight.length)}
-        </span>
-        {word.slice(index + highlight.length)}
-      </>
-    );
+    // Return HTML string instead of JSX
+    return `${word.slice(0, index)}<span class="text-red-600 font-bold underline">${word.slice(index, index + highlight.length)}</span>${word.slice(index + highlight.length)}`;
   };
 
   return (
@@ -525,7 +518,7 @@ export default function PhoneticsPage() {
                     <span 
                       className="text-sm text-gray-700"
                       dangerouslySetInnerHTML={{ 
-                        __html: highlightWord(example.word, example.highlight) as string 
+                        __html: highlightWord(example.word, example.highlight)
                       }}
                     />
                     <span className="text-xs text-gray-400">/{example.word}/</span>
