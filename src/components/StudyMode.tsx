@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getUserId } from '@/lib/auth';
 import { speak } from '@/lib/speech';
-import { Volume2 } from 'lucide-react';
+import { Volume2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 
 interface StudyWord {
   id: string;
@@ -32,6 +33,26 @@ export default function StudyMode() {
     total: 0,
     correct: 0,
     incorrect: 0
+  });
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Swipe gestures for mobile
+  useSwipeGesture(cardRef, {
+    onSwipeLeft: () => {
+      if (showAnswer) {
+        handleAnswer(false); // Wrong answer
+      }
+    },
+    onSwipeRight: () => {
+      if (showAnswer) {
+        handleAnswer(true); // Correct answer
+      }
+    },
+    onSwipeUp: () => {
+      if (!showAnswer && studyState === 'question') {
+        handleShowAnswer();
+      }
+    }
   });
 
   useEffect(() => {
@@ -216,7 +237,22 @@ export default function StudyMode() {
 
       {/* Flashcard */}
       <div className="max-w-2xl mx-auto">
-        <div className="bg-white border-2 border-gray-200 rounded-sm p-8 min-h-[300px] flex flex-col justify-center">
+        <div 
+          ref={cardRef}
+          className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-sm p-8 min-h-[300px] flex flex-col justify-center relative"
+        >
+          {/* Swipe Hints for Mobile */}
+          <div className="md:hidden absolute top-4 left-4 right-4 flex justify-between text-xs text-gray-400">
+            <span className="flex items-center gap-1">
+              <ChevronLeft size={14} />
+              Wrong
+            </span>
+            <span>Swipe up to reveal</span>
+            <span className="flex items-center gap-1">
+              Correct
+              <ChevronRight size={14} />
+            </span>
+          </div>
           {/* Word Level Badge */}
           <div className="mb-4 flex justify-center">
             <span className={`px-3 py-1 text-xs font-medium rounded-full ${getLevelColor(currentWord.level)}`}>
