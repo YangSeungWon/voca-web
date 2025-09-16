@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voca Web</title>
+  <link rel="stylesheet" href="styles/popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Voca Web</h1>
+      <div class="status" id="status">
+        <span class="status-indicator"></span>
+        <span class="status-text">Checking...</span>
+      </div>
+    </header>
+
+    <main>
+      <div id="login-section" class="section hidden">
+        <h2>Login Required</h2>
+        <p>Please log in to your Voca Web account to add words.</p>
+        <form id="login-form">
+          <input type="text" id="username" placeholder="Username" required>
+          <input type="password" id="password" placeholder="Password" required>
+          <button type="submit">Login</button>
+        </form>
+        <div class="link">
+          <a href="#" id="open-app">Open Voca Web App</a>
+        </div>
+      </div>
+
+      <div id="logged-in-section" class="section hidden">
+        <div class="user-info">
+          <span id="username-display"></span>
+          <button id="logout" class="text-button">Logout</button>
+        </div>
+
+        <div class="quick-add">
+          <h3>Quick Add Word</h3>
+          <input type="text" id="quick-word" placeholder="Enter a word">
+          <button id="add-word">Add to Vocabulary</button>
+        </div>
+
+        <div class="stats">
+          <div class="stat-item">
+            <span class="stat-value" id="total-words">0</span>
+            <span class="stat-label">Total Words</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="today-added">0</span>
+            <span class="stat-label">Added Today</span>
+          </div>
+        </div>
+
+        <div class="recent-words hidden" id="recent-section">
+          <h3>Recently Added</h3>
+          <ul id="recent-list"></ul>
+        </div>
+
+        <div class="actions">
+          <button id="open-app-logged" class="secondary">Open App</button>
+        </div>
+      </div>
+
+      <div id="message" class="message hidden"></div>
+    </main>
+  </div>
+  <script src="scripts/popup.js"></script>
+</body>
+</html>

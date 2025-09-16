@@ -1,15 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
+import { verifyToken } from '@/lib/jwt';
 
 export async function GET(req: NextRequest) {
   try {
-    const userId = req.headers.get('x-user-id') || 'default-user';
+    // Support both header-based and JWT auth
+    const authHeader = req.headers.get('authorization');
+    let userId = req.headers.get('x-user-id') || 'default-user';
+    
+    // Check JWT token if provided
+    if (authHeader?.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      try {
+        const payload = verifyToken(token);
+        userId = payload.userId;
+      } catch (error) {
+        return NextResponse.json(
+          { error: 'Invalid token' },
+          { status: 401 }
+        );
+      }
+    }
+    
     const searchParams = req.nextUrl.searchParams;
     const groupId = searchParams.get('groupId');
+    const limit = searchParams.get('limit');
+    const sort = searchParams.get('sort');
     
     let user = await prisma.user.findUnique({
-      where: { username: userId }
+      where: { id: userId.includes('-') ? userId : undefined, username: !userId.includes('-') ? userId : undefined }
     });
 
     if (!user) {
@@ -23,6 +43,8 @@ export async function GET(req: NextRequest) {
       whereClause.groupId = groupId;
     }
 
+    const orderBy = sort === 'createdAt' ? { createdAt: 'desc' as const } : { createdAt: 'desc' as const };
+    
     const vocabulary = await prisma.vocabulary.findMany({
       where: whereClause,
       include: {
@@ -34,7 +56,8 @@ export async function GET(req: NextRequest) {
         },
         group: true
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy,
+      take: limit ? parseInt(limit) : undefined
     });
 
     const formatted = vocabulary.map((v) => ({
@@ -48,6 +71,8 @@ export async function GET(req: NextRequest) {
         }))
       },
       level: v.level,
+      reviewCount: v.reviewCount,
+      correctCount: v.correctCount,
       createdAt: v.createdAt,
       notes: v.notes,
       groupId: v.groupId,
@@ -70,8 +95,25 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const userId = req.headers.get('x-user-id') || 'default-user';
-    const { word: wordText, groupId } = await req.json();
+    // Support both header-based and JWT auth
+    const authHeader = req.headers.get('authorization');
+    let userId = req.headers.get('x-user-id') || 'default-user';
+    
+    // Check JWT token if provided
+    if (authHeader?.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      try {
+        const payload = verifyToken(token);
+        userId = payload.userId;
+      } catch (error) {
+        return NextResponse.json(
+          { error: 'Invalid token' },
+          { status: 401 }
+        );
+      }
+    }
+    
+    const { word: wordText, wordData, groupId } = await req.json();
 
     if (!wordText) {
       return NextResponse.json(
@@ -81,7 +123,7 @@ export async function POST(req: NextRequest) {
     }
 
     let user = await prisma.user.findUnique({
-      where: { username: userId }
+      where: { id: userId.includes('-') ? userId : undefined, username: !userId.includes('-') ? userId : undefined }
     });
 
     if (!user) {
@@ -95,9 +137,13 @@ export async function POST(req: NextRequest) {
     });
 
     if (!word) {
-      // Fetch from dictionary API
-      const { fetchFromDictionaryAPI } = await import('@/lib/dictionary-api');
-      const dictEntry = await fetchFromDictionaryAPI(wordText);
+      // Use provided word data or fetch from dictionary API
+      let dictEntry = wordData;
+      
+      if (!dictEntry) {
+        const { fetchFromDictionaryAPI } = await import('@/lib/dictionary-api');
+        dictEntry = await fetchFromDictionaryAPI(wordText);
+      }
       
       if (!dictEntry) {
         return NextResponse.json(

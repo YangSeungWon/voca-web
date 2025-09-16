@@ -5,18 +5,23 @@ import { generateToken } from '@/lib/jwt';
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password } = await req.json();
+    const { email, username, password } = await req.json();
 
-    if (!email || !password) {
+    if ((!email && !username) || !password) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
+        { error: 'Username/email and password are required' },
         { status: 400 }
       );
     }
 
-    // Find user by email
-    const user = await prisma.user.findUnique({
-      where: { email }
+    // Find user by email or username
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: email || undefined },
+          { username: username || email || undefined }
+        ]
+      }
     });
 
     if (!user || !user.password) {
@@ -47,6 +52,7 @@ export async function POST(req: NextRequest) {
         email: user.email,
         username: user.username
       },
+      userId: user.id,
       token
     });
   } catch (error) {
