@@ -3,8 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { getUserId } from '@/lib/auth';
 import { speak } from '@/lib/speech';
-import { Volume2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Volume2, ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
 interface StudyWord {
   id: string;
@@ -35,6 +36,7 @@ export default function StudyMode() {
     incorrect: 0
   });
   const cardRef = useRef<HTMLDivElement>(null);
+  const [showShortcuts, setShowShortcuts] = useState(false);
 
   // Swipe gestures for mobile
   useSwipeGesture(cardRef, {
@@ -54,6 +56,66 @@ export default function StudyMode() {
       }
     }
   });
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: ' ',
+      handler: () => {
+        if (studyState === 'question' && !showAnswer) {
+          setShowAnswer(true);
+        }
+      },
+      description: 'Show answer'
+    },
+    {
+      key: 'ArrowRight',
+      handler: () => {
+        if (showAnswer) {
+          handleAnswer(true);
+        }
+      },
+      description: 'Mark as correct'
+    },
+    {
+      key: 'ArrowLeft', 
+      handler: () => {
+        if (showAnswer) {
+          handleAnswer(false);
+        }
+      },
+      description: 'Mark as incorrect'
+    },
+    {
+      key: 'Enter',
+      handler: () => {
+        if (studyState === 'ready') {
+          startStudy();
+        } else if (studyState === 'complete') {
+          resetSession();
+        }
+      },
+      description: 'Start/Restart session'
+    },
+    {
+      key: 'p',
+      handler: () => {
+        const currentWord = words[currentIndex];
+        if (currentWord) {
+          speak(currentWord.word.word);
+        }
+      },
+      description: 'Pronounce word'
+    },
+    {
+      key: '?',
+      shift: true,
+      handler: () => {
+        setShowShortcuts(!showShortcuts);
+      },
+      description: 'Toggle shortcuts help'
+    }
+  ]);
 
   useEffect(() => {
     loadStudyWords();
@@ -221,6 +283,51 @@ export default function StudyMode() {
 
   return (
     <div className="p-6">
+      {/* Keyboard Shortcuts Help */}
+      <button
+        onClick={() => setShowShortcuts(!showShortcuts)}
+        className="fixed bottom-4 right-4 p-3 bg-gray-800 dark:bg-gray-700 text-white rounded-full shadow-lg hover:bg-gray-700 dark:hover:bg-gray-600 z-50 md:hidden"
+        title="Keyboard shortcuts"
+      >
+        <Info size={20} />
+      </button>
+      
+      {showShortcuts && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Keyboard Shortcuts</h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Show answer:</span>
+                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-gray-800 dark:text-gray-200">Space</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Mark correct:</span>
+                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-gray-800 dark:text-gray-200">→</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Mark incorrect:</span>
+                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-gray-800 dark:text-gray-200">←</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Pronounce:</span>
+                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-gray-800 dark:text-gray-200">P</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Start/Restart:</span>
+                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-gray-800 dark:text-gray-200">Enter</kbd>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowShortcuts(false)}
+              className="mt-4 w-full py-2 bg-gray-800 dark:bg-gray-600 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-500"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Progress Bar */}
       <div className="mb-6">
         <div className="flex justify-between text-xs text-gray-600 mb-2">
