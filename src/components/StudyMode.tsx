@@ -89,13 +89,11 @@ export default function StudyMode() {
     {
       key: 'Enter',
       handler: () => {
-        if (studyState === 'ready') {
-          startStudy();
-        } else if (studyState === 'complete') {
-          resetSession();
+        if (studyState === 'complete') {
+          window.location.reload();
         }
       },
-      description: 'Start/Restart session'
+      description: 'Restart session'
     },
     {
       key: 'p',

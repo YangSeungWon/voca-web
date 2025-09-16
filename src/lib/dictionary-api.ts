@@ -48,7 +48,7 @@ export async function fetchFromDictionaryAPI(word: string): Promise<DictionaryEn
     // Get pronunciation
     const pronunciation = (entry as APIDictionaryEntry).phonetic || 
       (entry as APIDictionaryEntry).phonetics?.find((p) => p.text)?.text || 
-      null;
+      undefined;
 
     return {
       word: entry.word,

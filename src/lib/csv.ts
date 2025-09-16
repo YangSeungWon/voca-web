@@ -92,12 +92,11 @@ export function generateCSV(words: WordData[]): string {
   const headers = ['Word', 'Pronunciation', 'Definition', 'Part of Speech', 'Level', 'Date Added'];
   
   const rows = words.map(item => {
-    const word = item.word || item;
     return [
-      word.word || '',
-      word.pronunciation || '',
-      word.definitions?.[0]?.meaning || '',
-      word.definitions?.[0]?.partOfSpeech || '',
+      item.word?.word || '',
+      item.word?.pronunciation || '',
+      item.word?.definitions?.[0]?.meaning || '',
+      item.word?.definitions?.[0]?.partOfSpeech || '',
       (item.level || 0).toString(),
       item.createdAt ? new Date(item.createdAt).toLocaleDateString() : ''
     ];
