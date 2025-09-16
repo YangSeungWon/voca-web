@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { TrendingUp, Target, Calendar, Award, Brain, Clock } from 'lucide-react';
+import { TrendingUp, Calendar, Award, Brain } from 'lucide-react';
 import { getUserId } from '@/lib/auth';
 
 interface Statistics {
@@ -243,7 +243,7 @@ export default function Statistics() {
           <div>
             <h3 className="text-sm font-semibold mb-1">Study Progress</h3>
             <div className="text-xs opacity-90">
-              Keep up the great work! You've learned {stats.overview.mastered} words so far.
+              Keep up the great work! You&apos;ve learned {stats.overview.mastered} words so far.
             </div>
           </div>
           <div className="text-right">

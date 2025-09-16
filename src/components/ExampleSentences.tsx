@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, X, Edit2, Check, BookOpen } from 'lucide-react';
+import { Plus, X, Check, BookOpen, Edit2 } from 'lucide-react';
 import { getUserId } from '@/lib/auth';
 
 interface Example {

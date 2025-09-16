@@ -80,8 +80,9 @@ export async function GET(req: NextRequest) {
     // Study streak calculation
     let streak = 0;
     let checkDate = new Date(today);
+    let maxDaysToCheck = 365; // Prevent infinite loop
     
-    while (true) {
+    while (maxDaysToCheck > 0) {
       const dayStart = new Date(checkDate.getFullYear(), checkDate.getMonth(), checkDate.getDate());
       const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
       
@@ -105,6 +106,7 @@ export async function GET(req: NextRequest) {
       
       streak++;
       checkDate = new Date(checkDate.getTime() - 24 * 60 * 60 * 1000);
+      maxDaysToCheck--;
     }
 
     return NextResponse.json({

@@ -185,7 +185,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
       item.word.definitions.some(d => d.meaning.toLowerCase().includes(filter.toLowerCase()))
     )
     .sort((a, b) => {
-      let aValue: any, bValue: any;
+      let aValue: string | number, bValue: string | number;
       
       switch (sortField) {
         case 'word':

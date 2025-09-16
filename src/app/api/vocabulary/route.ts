@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,7 +18,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    const whereClause: any = { userId: user.id };
+    const whereClause: Prisma.VocabularyWhereInput = { userId: user.id };
     if (groupId) {
       whereClause.groupId = groupId;
     }
@@ -36,12 +37,12 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' }
     });
 
-    const formatted = vocabulary.map((v: any) => ({
+    const formatted = vocabulary.map((v) => ({
       id: v.id,
       word: {
         word: v.word.word,
         pronunciation: v.word.pronunciation,
-        definitions: v.word.definitions.map((d: any) => ({
+        definitions: v.word.definitions.map((d) => ({
           partOfSpeech: d.partOfSpeech,
           meaning: d.meaning
         }))

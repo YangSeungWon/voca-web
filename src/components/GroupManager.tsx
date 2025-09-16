@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Folder, Plus, X, Edit2, Check, Trash2 } from 'lucide-react';
+import { Folder, Plus, X, Check, Trash2 } from 'lucide-react';
 import { getUserId } from '@/lib/auth';
 
 interface Group {
