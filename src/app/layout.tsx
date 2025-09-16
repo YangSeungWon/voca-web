@@ -8,6 +8,9 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Vocabulary - Simple Word Learning',
   description: 'A minimal vocabulary learning app',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
+  themeColor: '#1f2937',
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({

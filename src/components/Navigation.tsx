@@ -1,6 +1,6 @@
 interface NavigationProps {
-  activeView: 'search' | 'vocabulary' | 'study' | 'statistics';
-  onViewChange: (view: 'search' | 'vocabulary' | 'study' | 'statistics') => void;
+  activeView: 'search' | 'vocabulary' | 'study' | 'statistics' | 'phonetics';
+  onViewChange: (view: 'search' | 'vocabulary' | 'study' | 'statistics' | 'phonetics') => void;
 }
 
 export default function Navigation({ activeView, onViewChange }: NavigationProps) {
@@ -9,6 +9,7 @@ export default function Navigation({ activeView, onViewChange }: NavigationProps
     { id: 'search' as const, label: 'Add New' },
     { id: 'study' as const, label: 'Review' },
     { id: 'statistics' as const, label: 'Statistics' },
+    { id: 'phonetics' as const, label: 'IPA' },
   ];
 
   return (
@@ -24,8 +25,8 @@ export default function Navigation({ activeView, onViewChange }: NavigationProps
               : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600'
             }
             ${tab.id === 'vocabulary' ? 'rounded-tl-sm' : ''}
-            ${tab.id === 'statistics' ? 'rounded-tr-sm' : ''}
-            ${tab.id !== 'statistics' ? 'border-r-0' : ''}
+            ${tab.id === 'phonetics' ? 'rounded-tr-sm' : ''}
+            ${tab.id !== 'phonetics' ? 'border-r-0' : ''}
           `}
         >
           {tab.label}

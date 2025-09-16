@@ -8,13 +8,15 @@ import Navigation from '@/components/Navigation';
 import AuthStatus from '@/components/AuthStatus';
 import StudyMode from '@/components/StudyMode';
 import Statistics from '@/components/Statistics';
+import PhoneticsReference from '@/components/PhoneticsReference';
 import GroupManager from '@/components/GroupManager';
 import ThemeToggle from '@/components/ThemeToggle';
+import MobileNav from '@/components/MobileNav';
 import { DictionaryEntry } from '@/lib/dictionary';
 
 export default function Home() {
   const [currentWord, setCurrentWord] = useState<DictionaryEntry | null>(null);
-  const [activeView, setActiveView] = useState<'search' | 'vocabulary' | 'study' | 'statistics'>('vocabulary');
+  const [activeView, setActiveView] = useState<'search' | 'vocabulary' | 'study' | 'statistics' | 'phonetics'>('vocabulary');
   const [refreshVocab, setRefreshVocab] = useState(0);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
 
@@ -43,7 +45,9 @@ export default function Home() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-2">
-        <Navigation activeView={activeView} onViewChange={setActiveView} />
+        <div className="hidden md:block">
+          <Navigation activeView={activeView} onViewChange={setActiveView} />
+        </div>
         
         <main className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm mt-2 transition-colors">
           {activeView === 'search' && (
@@ -62,7 +66,7 @@ export default function Home() {
 
           {activeView === 'vocabulary' && (
             <div className="flex h-full">
-              <div className="w-64 border-r border-gray-200">
+              <div className="hidden md:block w-64 border-r border-gray-200 dark:border-gray-700">
                 <GroupManager 
                   selectedGroup={selectedGroup}
                   onGroupChange={setSelectedGroup}
@@ -84,8 +88,17 @@ export default function Home() {
           {activeView === 'statistics' && (
             <Statistics />
           )}
+
+          {activeView === 'phonetics' && (
+            <PhoneticsReference />
+          )}
         </main>
       </div>
+      
+      <MobileNav activeView={activeView} onViewChange={setActiveView} />
+      
+      {/* Add padding at bottom for mobile nav */}
+      <div className="h-16 md:hidden" />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { getUserId } from '@/lib/auth';
 import { speak } from '@/lib/speech';
 import { parseCSV, generateCSV, downloadCSV, getCSVTemplate } from '@/lib/csv';
 import ExampleSentences from './ExampleSentences';
+import VocabularyCard from './VocabularyCard';
 
 interface VocabularyWord {
   id: string;
@@ -217,7 +218,8 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
 
   return (
     <div className="h-full">
-      <div className="border-b border-gray-200 bg-gray-50 px-4 py-2 flex items-center justify-between">
+      {/* Desktop Header */}
+      <div className="hidden md:flex border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 items-center justify-between">
         <div className="flex items-center gap-2">
           <input
             type="text"
@@ -266,8 +268,40 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
           </span>
         </div>
       </div>
+      
+      {/* Mobile Header */}
+      <div className="md:hidden border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
+        <div className="flex items-center justify-between mb-3">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:border-blue-500"
+          />
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isImporting}
+            className="flex-1 px-3 py-2 text-xs bg-blue-600 text-white rounded-lg"
+          >
+            Import CSV
+          </button>
+          <button
+            onClick={exportToCSV}
+            className="flex-1 px-3 py-2 text-xs bg-green-600 text-white rounded-lg"
+          >
+            Export {selectedRows.size > 0 && `(${selectedRows.size})`}
+          </button>
+        </div>
+        <div className="text-center text-xs text-gray-500 dark:text-gray-400 mt-2">
+          {filteredWords.length} words
+        </div>
+      </div>
 
-      <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
         <table className="w-full text-xs">
           <thead className="bg-gray-100 border-b border-gray-200 sticky top-0">
             <tr>
@@ -414,6 +448,25 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
             )}
           </tbody>
         </table>
+      </div>
+      
+      {/* Mobile Card View */}
+      <div className="md:hidden p-4">
+        {filteredWords.length === 0 ? (
+          <div className="text-center text-gray-400 dark:text-gray-500 py-8">
+            No words in your vocabulary yet.
+          </div>
+        ) : (
+          <div>
+            {filteredWords.map((item) => (
+              <VocabularyCard
+                key={item.id}
+                item={item}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
