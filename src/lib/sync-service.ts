@@ -190,7 +190,7 @@ class SyncService {
   }
 
   // Public methods for components to use
-  async addWord(word: Partial<VocabularyItem>): Promise<void> {
+  async addWord(word: Omit<VocabularyItem, 'synced' | 'updatedAt'>): Promise<void> {
     // Add to IndexedDB immediately
     await offlineDB.addVocabularyWord(word);
 
@@ -225,7 +225,7 @@ class SyncService {
     return offlineDB.getVocabulary(userId);
   }
 
-  async addStudySession(session: Partial<StudySessionItem>): Promise<void> {
+  async addStudySession(session: Omit<StudySessionItem, 'synced'>): Promise<void> {
     // Add to IndexedDB immediately
     await offlineDB.addStudySession(session);
 

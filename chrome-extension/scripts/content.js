@@ -143,8 +143,8 @@ document.addEventListener('keydown', (e) => {
       chrome.runtime.sendMessage({
         action: 'addWord',
         word: selectedWord
-      }).then(response => {
-        if (response.success) {
+      }, response => {
+        if (response && response.success) {
           // Show brief success indicator
           const indicator = document.createElement('div');
           indicator.className = 'voca-success-indicator';

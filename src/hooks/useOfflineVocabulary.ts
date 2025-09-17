@@ -107,7 +107,10 @@ export function useOfflineVocabulary(groupId?: string | null) {
       // Add via sync service (handles offline)
       await syncService.addWord({
         id: `temp-${Date.now()}`,
-        word: { word },
+        word: { 
+          word,
+          definitions: [] 
+        },
         level: 0,
         reviewCount: 0,
         correctCount: 0,

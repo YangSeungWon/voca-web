@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 import { verifyToken } from '@/lib/jwt';
+import type { DictionaryEntry } from '@/lib/dictionary';
 
 export async function GET(req: NextRequest) {
   try {
@@ -138,7 +139,7 @@ export async function POST(req: NextRequest) {
 
     if (!word) {
       // Use provided word data or fetch from dictionary API
-      let dictEntry = wordData;
+      let dictEntry: DictionaryEntry | null = wordData;
       
       if (!dictEntry) {
         const { fetchFromDictionaryAPI } = await import('@/lib/dictionary-api');

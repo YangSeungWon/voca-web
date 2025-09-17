@@ -1,4 +1,4 @@
-import { openDB, DBSchema, IDBPDatabase } from 'idb';
+import { openDB, IDBPDatabase } from 'idb';
 
 export interface VocabularyItem {
   id: string;
@@ -39,7 +39,7 @@ export interface StudySessionItem {
   synced: boolean;
 }
 
-interface VocaDBSchema extends DBSchema {
+interface VocaDBSchema {
   vocabulary: {
     key: string;
     value: VocabularyItem;
@@ -111,7 +111,7 @@ class OfflineDB {
     );
   }
 
-  async addVocabularyWord(word: Partial<VocabularyItem>): Promise<void> {
+  async addVocabularyWord(word: Omit<VocabularyItem, 'synced' | 'updatedAt'> & Partial<Pick<VocabularyItem, 'synced' | 'updatedAt'>>): Promise<void> {
     const db = await this.ensureDB();
     const wordWithMeta = {
       ...word,
@@ -181,7 +181,7 @@ class OfflineDB {
   }
 
   // Study session methods
-  async addStudySession(session: Partial<StudySessionItem>): Promise<void> {
+  async addStudySession(session: Omit<StudySessionItem, 'synced'> & Partial<Pick<StudySessionItem, 'synced'>>): Promise<void> {
     const db = await this.ensureDB();
     const sessionWithMeta = {
       ...session,
@@ -200,8 +200,8 @@ class OfflineDB {
 
   async getUnsyncedStudySessions(): Promise<StudySessionItem[]> {
     const db = await this.ensureDB();
-    const index = db.transaction('studySessions').store.index('by-synced');
-    return index.getAll(false);
+    const all = await db.getAll('studySessions');
+    return all.filter(session => !session.synced);
   }
 
   async markSessionsSynced(ids: string[]): Promise<void> {

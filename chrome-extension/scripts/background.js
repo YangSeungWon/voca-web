@@ -68,7 +68,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 // Handle messages from popup and content scripts
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'login') {
-    handleLogin(request.username, request.password)
+    handleLogin(request.email, request.password)
       .then(sendResponse)
       .catch(error => sendResponse({ success: false, error: error.message }));
     return true; // Keep channel open for async response
@@ -121,14 +121,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 // Login handler
-async function handleLogin(username, password) {
+async function handleLogin(email, password) {
   try {
     const response = await fetch(`${API_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ email, password })
     });
 
     const data = await response.json();
@@ -140,7 +140,7 @@ async function handleLogin(username, password) {
       await chrome.storage.local.set({ 
         authToken: authToken,
         userId: data.userId,
-        username: username 
+        email: email 
       });
       
       // Update badge
@@ -149,7 +149,7 @@ async function handleLogin(username, password) {
       return { 
         success: true, 
         userId: data.userId,
-        username: username 
+        email: email 
       };
     } else {
       throw new Error(data.error || 'Login failed');
@@ -163,7 +163,7 @@ async function handleLogin(username, password) {
 // Logout handler
 function handleLogout() {
   authToken = null;
-  chrome.storage.local.remove(['authToken', 'userId', 'username']);
+  chrome.storage.local.remove(['authToken', 'userId', 'email']);
   chrome.action.setBadgeText({ text: '' });
 }
 
@@ -212,7 +212,7 @@ async function addWordToVocabulary(word) {
 // Get vocabulary statistics
 async function getVocabularyStats() {
   try {
-    const response = await fetch(`${API_URL}/api/vocabulary/stats`, {
+    const response = await fetch(`${API_URL}/api/vocabulary`, {
       headers: {
         'Authorization': `Bearer ${authToken}`
       }
@@ -223,7 +223,20 @@ async function getVocabularyStats() {
     }
 
     const data = await response.json();
-    return { success: true, stats: data };
+    
+    // Calculate stats from vocabulary data
+    const today = new Date().toDateString();
+    const todayAdded = data.filter(item => 
+      new Date(item.createdAt).toDateString() === today
+    ).length;
+    
+    return { 
+      success: true, 
+      stats: {
+        total: data.length,
+        todayAdded: todayAdded
+      }
+    };
   } catch (error) {
     console.error('Error getting stats:', error);
     throw error;

@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   if (auth.isAuthenticated) {
     // Load user data from storage
-    const stored = await chrome.storage.local.get(['username']);
-    currentUser = stored.username;
+    const stored = await chrome.storage.local.get(['email']);
+    currentUser = stored.email;
     showLoggedInView();
     loadStats();
     loadRecentWords();
@@ -63,17 +63,17 @@ function showLoginView() {
 function showLoggedInView() {
   document.getElementById('login-section').classList.add('hidden');
   document.getElementById('logged-in-section').classList.remove('hidden');
-  document.getElementById('username-display').textContent = currentUser;
+  document.getElementById('email-display').textContent = currentUser;
   updateStatus('Connected', 'connected');
 }
 
 // Handle login
 async function handleLogin() {
-  const username = document.getElementById('username').value;
+  const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
   
-  if (!username || !password) {
-    showMessage('Please enter username and password', 'error');
+  if (!email || !password) {
+    showMessage('Please enter email and password', 'error');
     return;
   }
   
@@ -82,12 +82,12 @@ async function handleLogin() {
   try {
     const response = await chrome.runtime.sendMessage({
       action: 'login',
-      username: username,
+      email: email,
       password: password
     });
     
     if (response.success) {
-      currentUser = username;
+      currentUser = email;
       showLoggedInView();
       loadStats();
       loadRecentWords();
