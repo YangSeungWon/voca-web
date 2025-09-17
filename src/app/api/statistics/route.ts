@@ -8,9 +8,30 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'User not authenticated' }, { status: 401 });
     }
 
+    // Find or create user
+    let user: any;
+    if (userId.includes('-')) {
+      // It's a user ID
+      user = await prisma.user.findUnique({
+        where: { id: userId }
+      });
+    } else {
+      // It's an email or legacy username
+      const email = userId.includes('@') ? userId : `${userId}@temp.email`;
+      user = await prisma.user.findUnique({
+        where: { email }
+      });
+      
+      if (!user) {
+        user = await prisma.user.create({
+          data: { email }
+        });
+      }
+    }
+
     // Get all vocabulary for the user
     const vocabulary = await prisma.vocabulary.findMany({
-      where: { userId },
+      where: { userId: user.id },
       include: { word: true },
       orderBy: { createdAt: 'desc' }
     });

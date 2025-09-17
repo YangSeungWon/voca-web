@@ -29,14 +29,24 @@ export async function GET(req: NextRequest) {
     const limit = searchParams.get('limit');
     const sort = searchParams.get('sort');
     
-    let user = await prisma.user.findUnique({
-      where: { id: userId.includes('-') ? userId : undefined, username: !userId.includes('-') ? userId : undefined }
-    });
-
-    if (!user) {
-      user = await prisma.user.create({
-        data: { username: userId }
+    let user: any;
+    if (userId.includes('-')) {
+      // It's a user ID
+      user = await prisma.user.findUnique({
+        where: { id: userId }
       });
+    } else {
+      // It's an email or legacy username
+      const email = userId.includes('@') ? userId : `${userId}@temp.email`;
+      user = await prisma.user.findUnique({
+        where: { email }
+      });
+      
+      if (!user) {
+        user = await prisma.user.create({
+          data: { email }
+        });
+      }
     }
 
     const whereClause: Prisma.VocabularyWhereInput = { userId: user.id };
@@ -123,14 +133,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    let user = await prisma.user.findUnique({
-      where: { id: userId.includes('-') ? userId : undefined, username: !userId.includes('-') ? userId : undefined }
-    });
-
-    if (!user) {
-      user = await prisma.user.create({
-        data: { username: userId }
+    let user: any;
+    if (userId.includes('-')) {
+      // It's a user ID
+      user = await prisma.user.findUnique({
+        where: { id: userId }
       });
+    } else {
+      // It's an email or legacy username
+      const email = userId.includes('@') ? userId : `${userId}@temp.email`;
+      user = await prisma.user.findUnique({
+        where: { email }
+      });
+      
+      if (!user) {
+        user = await prisma.user.create({
+          data: { email }
+        });
+      }
     }
 
     let word = await prisma.word.findUnique({

@@ -5,7 +5,7 @@ import { generateToken } from '@/lib/jwt';
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, username } = await req.json();
+    const { email, password } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json(
@@ -15,13 +15,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email },
-          { username: username || email }
-        ]
-      }
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
     });
 
     if (existingUser) {
@@ -38,8 +33,7 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.create({
       data: {
         email,
-        password: hashedPassword,
-        username: username || email.split('@')[0]
+        password: hashedPassword
       }
     });
 
@@ -52,8 +46,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       user: {
         id: user.id,
-        email: user.email,
-        username: user.username
+        email: user.email
       },
       token
     });

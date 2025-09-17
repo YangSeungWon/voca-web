@@ -9,9 +9,17 @@ export async function DELETE(
   try {
     const userId = req.headers.get('x-user-id') || 'default-user';
     
-    const user = await prisma.user.findUnique({
-      where: { username: userId }
-    });
+    let user: any;
+    if (userId.includes('-')) {
+      user = await prisma.user.findUnique({
+        where: { id: userId }
+      });
+    } else {
+      const email = userId.includes('@') ? userId : `${userId}@temp.email`;
+      user = await prisma.user.findUnique({
+        where: { email }
+      });
+    }
 
     if (!user) {
       return NextResponse.json(
@@ -57,9 +65,17 @@ export async function PATCH(
     const userId = req.headers.get('x-user-id') || 'default-user';
     const body = await req.json();
     
-    const user = await prisma.user.findUnique({
-      where: { username: userId }
-    });
+    let user: any;
+    if (userId.includes('-')) {
+      user = await prisma.user.findUnique({
+        where: { id: userId }
+      });
+    } else {
+      const email = userId.includes('@') ? userId : `${userId}@temp.email`;
+      user = await prisma.user.findUnique({
+        where: { email }
+      });
+    }
 
     if (!user) {
       return NextResponse.json(
