@@ -1,4 +1,4 @@
-import offlineDB, { type SyncQueueItem, type VocabularyItem, type StudySessionItem } from './offline-db';
+import offlineDB, { type SyncQueueItem, type VocabularyItem } from './offline-db';
 import { getUserId } from './auth';
 
 interface SyncStatus {
@@ -159,15 +159,6 @@ class SyncService {
         }
         break;
 
-      case 'studySession':
-        if (item.action === 'add') {
-          await fetch('/api/study-sessions', {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(item.data)
-          });
-        }
-        break;
     }
   }
 
@@ -225,15 +216,6 @@ class SyncService {
     return offlineDB.getVocabulary(userId);
   }
 
-  async addStudySession(session: Omit<StudySessionItem, 'synced'>): Promise<void> {
-    // Add to IndexedDB immediately
-    await offlineDB.addStudySession(session);
-
-    // Try to sync if online
-    if (this.isOnline) {
-      this.sync();
-    }
-  }
 
   // Subscribe to sync status changes
   subscribe(listener: (status: SyncStatus) => void): () => void {

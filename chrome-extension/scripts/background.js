@@ -170,20 +170,7 @@ function handleLogout() {
 // Add word to vocabulary
 async function addWordToVocabulary(word) {
   try {
-    // First, check if word exists in dictionary
-    const dictResponse = await fetch(`${API_URL}/api/dictionary/${encodeURIComponent(word)}`, {
-      headers: {
-        'Authorization': `Bearer ${authToken}`
-      }
-    });
-
-    if (!dictResponse.ok) {
-      throw new Error('Word not found in dictionary');
-    }
-
-    const wordData = await dictResponse.json();
-
-    // Add to user's vocabulary
+    // Add to user's vocabulary (API will fetch dictionary data if needed)
     const response = await fetch(`${API_URL}/api/vocabulary`, {
       method: 'POST',
       headers: {
@@ -191,8 +178,7 @@ async function addWordToVocabulary(word) {
         'Authorization': `Bearer ${authToken}`
       },
       body: JSON.stringify({
-        word: word,
-        wordData: wordData
+        word: word
       })
     });
 

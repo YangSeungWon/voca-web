@@ -23,21 +23,12 @@ export interface VocabularyItem {
 export interface SyncQueueItem {
   id: string;
   action: 'add' | 'update' | 'delete';
-  entity: 'vocabulary' | 'studySession';
+  entity: 'vocabulary';
   data: Record<string, unknown>;
   timestamp: number;
   retries: number;
 }
 
-export interface StudySessionItem {
-  id: string;
-  startedAt: string;
-  endedAt?: string;
-  wordsStudied: number;
-  correctAnswers: number;
-  sessionType: string;
-  synced: boolean;
-}
 
 interface VocaDBSchema {
   vocabulary: {
@@ -53,13 +44,6 @@ interface VocaDBSchema {
     value: SyncQueueItem;
     indexes: {
       'by-timestamp': number;
-    };
-  };
-  studySessions: {
-    key: string;
-    value: StudySessionItem;
-    indexes: {
-      'by-synced': boolean;
     };
   };
 }
@@ -85,11 +69,6 @@ class OfflineDB {
           syncStore.createIndex('by-timestamp', 'timestamp');
         }
 
-        // Study sessions store
-        if (!db.objectStoreNames.contains('studySessions')) {
-          const sessionStore = db.createObjectStore('studySessions', { keyPath: 'id' });
-          sessionStore.createIndex('by-synced', 'synced');
-        }
       }
     });
   }
@@ -180,49 +159,11 @@ class OfflineDB {
     await tx.done;
   }
 
-  // Study session methods
-  async addStudySession(session: Omit<StudySessionItem, 'synced'> & Partial<Pick<StudySessionItem, 'synced'>>): Promise<void> {
-    const db = await this.ensureDB();
-    const sessionWithMeta = {
-      ...session,
-      synced: false
-    };
-    
-    await db.put('studySessions', sessionWithMeta);
-    
-    // Add to sync queue
-    await this.addToSyncQueue({
-      action: 'add',
-      entity: 'studySession',
-      data: session
-    });
-  }
-
-  async getUnsyncedStudySessions(): Promise<StudySessionItem[]> {
-    const db = await this.ensureDB();
-    const all = await db.getAll('studySessions');
-    return all.filter(session => !session.synced);
-  }
-
-  async markSessionsSynced(ids: string[]): Promise<void> {
-    const db = await this.ensureDB();
-    const tx = db.transaction('studySessions', 'readwrite');
-    
-    for (const id of ids) {
-      const session = await tx.store.get(id);
-      if (session) {
-        session.synced = true;
-        await tx.store.put(session);
-      }
-    }
-    
-    await tx.done;
-  }
 
   // Sync queue methods
   async addToSyncQueue(item: {
     action: 'add' | 'update' | 'delete';
-    entity: 'vocabulary' | 'studySession';
+    entity: 'vocabulary';
     data: Record<string, unknown>;
   }): Promise<void> {
     const db = await this.ensureDB();
@@ -262,7 +203,6 @@ class OfflineDB {
     const db = await this.ensureDB();
     await db.clear('vocabulary');
     await db.clear('syncQueue');
-    await db.clear('studySessions');
   }
 
   // Merge server data with local data
