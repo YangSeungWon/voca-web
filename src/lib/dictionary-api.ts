@@ -29,7 +29,7 @@ export async function fetchFromDictionaryAPI(word: string): Promise<DictionaryEn
       return null;
     }
 
-    const data = await response.json();
+    const data: APIDictionaryEntry[] = await response.json();
     if (!data || data.length === 0) {
       return null;
     }
@@ -37,7 +37,7 @@ export async function fetchFromDictionaryAPI(word: string): Promise<DictionaryEn
     const entry = data[0];
     
     // Transform API response to our format
-    const definitions = (entry as APIDictionaryEntry).meanings.flatMap((meaning) => 
+    const definitions = entry.meanings.flatMap((meaning) => 
       meaning.definitions.map((def) => ({
         partOfSpeech: meaning.partOfSpeech,
         meaning: def.definition,
@@ -46,8 +46,8 @@ export async function fetchFromDictionaryAPI(word: string): Promise<DictionaryEn
     );
 
     // Get pronunciation
-    const pronunciation = (entry as APIDictionaryEntry).phonetic || 
-      (entry as APIDictionaryEntry).phonetics?.find((p) => p.text)?.text || 
+    const pronunciation = entry.phonetic || 
+      entry.phonetics?.find((p) => p.text)?.text || 
       undefined;
 
     return {
