@@ -121,7 +121,7 @@ export default function Statistics() {
       </div>
 
       {/* Progress Chart */}
-      <div className="bg-white border border-gray-200 rounded-sm p-4">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4">
         <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Daily Activity (Last 30 Days)</h3>
         <div className="h-32 flex items-end gap-1">
           {stats.dailyProgress.map((day, index) => (
@@ -160,12 +160,12 @@ export default function Statistics() {
         </div>
         <div className="flex items-center gap-4 mt-3 text-xs">
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-blue-400 rounded-sm"></div>
-            <span className="text-gray-600">Added</span>
+            <div className="w-3 h-3 bg-blue-400 dark:bg-blue-500 rounded-sm"></div>
+            <span className="text-gray-600 dark:text-gray-400">Added</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-green-400 rounded-sm"></div>
-            <span className="text-gray-600">Reviewed</span>
+            <div className="w-3 h-3 bg-green-400 dark:bg-green-500 rounded-sm"></div>
+            <span className="text-gray-600 dark:text-gray-400">Reviewed</span>
           </div>
         </div>
       </div>
