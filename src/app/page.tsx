@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SearchBar from '@/components/SearchBar';
 import WordDisplay from '@/components/WordDisplay';
 import VocabularyTable from '@/components/VocabularyTable';
@@ -15,11 +15,57 @@ import MobileNav from '@/components/MobileNav';
 import SyncStatus from '@/components/SyncStatus';
 import { DictionaryEntry } from '@/lib/dictionary';
 
+type ViewType = 'search' | 'vocabulary' | 'study' | 'statistics' | 'phonetics';
+
+const hashToView: Record<string, ViewType> = {
+  '#search': 'search',
+  '#vocabulary': 'vocabulary',
+  '#study': 'study',
+  '#statistics': 'statistics',
+  '#phonetics': 'phonetics',
+  '#ipa': 'phonetics', // Alias for phonetics
+};
+
+const viewToHash: Record<ViewType, string> = {
+  'search': '#search',
+  'vocabulary': '#vocabulary',
+  'study': '#study',
+  'statistics': '#statistics',
+  'phonetics': '#ipa',
+};
+
 export default function Home() {
   const [currentWord, setCurrentWord] = useState<DictionaryEntry | null>(null);
-  const [activeView, setActiveView] = useState<'search' | 'vocabulary' | 'study' | 'statistics' | 'phonetics'>('vocabulary');
+  const [activeView, setActiveView] = useState<ViewType>('vocabulary');
   const [refreshVocab, setRefreshVocab] = useState(0);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+
+  // Handle initial hash and hash changes
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      const view = hashToView[hash];
+      if (view) {
+        setActiveView(view);
+      } else if (!hash) {
+        // Default to vocabulary if no hash
+        window.location.hash = viewToHash['vocabulary'];
+      }
+    };
+
+    // Set initial view from hash
+    handleHashChange();
+
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Update hash when view changes
+  const handleViewChange = (view: ViewType) => {
+    setActiveView(view);
+    window.location.hash = viewToHash[view];
+  };
 
   const handleWordFound = (word: DictionaryEntry) => {
     setCurrentWord(word);
@@ -48,7 +94,7 @@ export default function Home() {
 
       <div className="max-w-7xl mx-auto px-4 py-2">
         <div className="hidden md:block">
-          <Navigation activeView={activeView} onViewChange={setActiveView} />
+          <Navigation activeView={activeView} onViewChange={handleViewChange} />
         </div>
         
         <main className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm mt-2 transition-colors">
@@ -97,7 +143,7 @@ export default function Home() {
         </main>
       </div>
       
-      <MobileNav activeView={activeView} onViewChange={setActiveView} />
+      <MobileNav activeView={activeView} onViewChange={handleViewChange} />
       
       {/* Add padding at bottom for mobile nav */}
       <div className="h-16 md:hidden" />
