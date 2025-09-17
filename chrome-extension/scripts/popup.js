@@ -228,5 +228,5 @@ function showMessage(text, type) {
 
 // Open main app
 function openApp() {
-  chrome.tabs.create({ url: 'http://localhost:3000' });
+  chrome.tabs.create({ url: 'https://voca.ysw.kr' });
 }

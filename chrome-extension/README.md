@@ -13,10 +13,8 @@ Chrome extension for adding words to your Voca Web vocabulary directly from any 
 
 ## Installation
 
-1. Make sure Voca Web is running locally:
-   ```bash
-   npm run dev
-   ```
+1. The extension connects to the production server at `https://voca.ysw.kr`
+   - For local development, update `API_URL` in `scripts/background.js` to `http://localhost:3000`
 
 2. Open Chrome and navigate to `chrome://extensions/`
 
@@ -78,7 +76,8 @@ To modify the extension:
 
 ## Troubleshooting
 
-- **Not Connected**: Make sure Voca Web is running on localhost:3000
+- **Not Connected**: Check your internet connection and ensure https://voca.ysw.kr is accessible
 - **Login Failed**: Verify your username and password
 - **Words Not Adding**: Check that you're logged in
 - **No Tooltip**: Refresh the page after installing the extension
+- **CORS Issues**: Make sure you're using the latest version of the extension

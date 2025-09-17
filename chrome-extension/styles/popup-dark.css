@@ -1,0 +1,137 @@
+/* Dark mode styles for popup */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #1f2937;
+    color: #f3f4f6;
+  }
+
+  .container {
+    background: #1f2937;
+  }
+
+  header {
+    background: #111827;
+    color: #f3f4f6;
+    border-bottom: 1px solid #374151;
+  }
+
+  h1, h2, h3 {
+    color: #f3f4f6;
+  }
+
+  p {
+    color: #9ca3af;
+  }
+
+  input[type="text"],
+  input[type="password"] {
+    background: #374151;
+    color: #f3f4f6;
+    border-color: #4b5563;
+  }
+
+  input[type="text"]:focus,
+  input[type="password"]:focus {
+    border-color: #6b7280;
+    background: #374151;
+  }
+
+  input[type="text"]::placeholder,
+  input[type="password"]::placeholder {
+    color: #6b7280;
+  }
+
+  button {
+    background: #3b82f6;
+    color: white;
+  }
+
+  button:hover {
+    background: #2563eb;
+  }
+
+  button.secondary {
+    background: #4b5563;
+  }
+
+  button.secondary:hover {
+    background: #374151;
+  }
+
+  button.text-button {
+    color: #9ca3af;
+  }
+
+  button.text-button:hover {
+    color: #d1d5db;
+  }
+
+  .user-info {
+    background: #374151;
+    border-color: #4b5563;
+  }
+
+  #username-display {
+    color: #f3f4f6;
+  }
+
+  .stat-item {
+    background: #374151;
+    border-color: #4b5563;
+  }
+
+  .stat-value {
+    color: #f3f4f6;
+  }
+
+  .stat-label {
+    color: #9ca3af;
+  }
+
+  .recent-words li {
+    background: #374151;
+    border-color: #4b5563;
+  }
+
+  .recent-words .word {
+    color: #f3f4f6;
+  }
+
+  .recent-words .time {
+    color: #6b7280;
+  }
+
+  .message {
+    background: #374151;
+    color: #f3f4f6;
+  }
+
+  .message.success {
+    background: #064e3b;
+    color: #a7f3d0;
+    border-color: #047857;
+  }
+
+  .message.error {
+    background: #7f1d1d;
+    color: #fecaca;
+    border-color: #991b1b;
+  }
+
+  .link a {
+    color: #60a5fa;
+  }
+
+  .status-text {
+    color: #9ca3af;
+  }
+
+  /* Status indicators */
+  .status.connected .status-text {
+    color: #10b981;
+  }
+
+  .status.error .status-text {
+    color: #ef4444;
+  }
+}

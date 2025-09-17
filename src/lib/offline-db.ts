@@ -1,27 +1,48 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 
+export interface VocabularyItem {
+  id: string;
+  word: {
+    word: string;
+    pronunciation?: string;
+    definitions: Array<{
+      partOfSpeech?: string;
+      meaning: string;
+    }>;
+  };
+  level: number;
+  reviewCount: number;
+  correctCount: number;
+  createdAt: string;
+  updatedAt: string;
+  synced: boolean;
+  groupId?: string;
+  notes?: string;
+}
+
+export interface SyncQueueItem {
+  id: string;
+  action: 'add' | 'update' | 'delete';
+  entity: 'vocabulary' | 'studySession';
+  data: Record<string, unknown>;
+  timestamp: number;
+  retries: number;
+}
+
+export interface StudySessionItem {
+  id: string;
+  startedAt: string;
+  endedAt?: string;
+  wordsStudied: number;
+  correctAnswers: number;
+  sessionType: string;
+  synced: boolean;
+}
+
 interface VocaDBSchema extends DBSchema {
   vocabulary: {
     key: string;
-    value: {
-      id: string;
-      word: {
-        word: string;
-        pronunciation?: string;
-        definitions: Array<{
-          partOfSpeech?: string;
-          meaning: string;
-        }>;
-      };
-      level: number;
-      reviewCount: number;
-      correctCount: number;
-      createdAt: string;
-      updatedAt: string;
-      synced: boolean;
-      groupId?: string;
-      notes?: string;
-    };
+    value: VocabularyItem;
     indexes: {
       'by-synced': boolean;
       'by-created': string;
@@ -29,29 +50,14 @@ interface VocaDBSchema extends DBSchema {
   };
   syncQueue: {
     key: string;
-    value: {
-      id: string;
-      action: 'add' | 'update' | 'delete';
-      entity: 'vocabulary' | 'studySession';
-      data: any;
-      timestamp: number;
-      retries: number;
-    };
+    value: SyncQueueItem;
     indexes: {
       'by-timestamp': number;
     };
   };
   studySessions: {
     key: string;
-    value: {
-      id: string;
-      startedAt: string;
-      endedAt?: string;
-      wordsStudied: number;
-      correctAnswers: number;
-      sessionType: string;
-      synced: boolean;
-    };
+    value: StudySessionItem;
     indexes: {
       'by-synced': boolean;
     };
@@ -96,7 +102,7 @@ class OfflineDB {
   }
 
   // Vocabulary methods
-  async getVocabulary(userId: string): Promise<any[]> {
+  async getVocabulary(_userId: string): Promise<VocabularyItem[]> {
     const db = await this.ensureDB();
     const all = await db.getAll('vocabulary');
     // Filter by userId if we store it in the word data
@@ -105,7 +111,7 @@ class OfflineDB {
     );
   }
 
-  async addVocabularyWord(word: any): Promise<void> {
+  async addVocabularyWord(word: Partial<VocabularyItem>): Promise<void> {
     const db = await this.ensureDB();
     const wordWithMeta = {
       ...word,
@@ -124,7 +130,7 @@ class OfflineDB {
     });
   }
 
-  async updateVocabularyWord(id: string, updates: any): Promise<void> {
+  async updateVocabularyWord(id: string, updates: Partial<VocabularyItem>): Promise<void> {
     const db = await this.ensureDB();
     const existing = await db.get('vocabulary', id);
     
@@ -175,7 +181,7 @@ class OfflineDB {
   }
 
   // Study session methods
-  async addStudySession(session: any): Promise<void> {
+  async addStudySession(session: Partial<StudySessionItem>): Promise<void> {
     const db = await this.ensureDB();
     const sessionWithMeta = {
       ...session,
@@ -192,7 +198,7 @@ class OfflineDB {
     });
   }
 
-  async getUnsyncedStudySessions(): Promise<any[]> {
+  async getUnsyncedStudySessions(): Promise<StudySessionItem[]> {
     const db = await this.ensureDB();
     const index = db.transaction('studySessions').store.index('by-synced');
     return index.getAll(false);
@@ -217,7 +223,7 @@ class OfflineDB {
   async addToSyncQueue(item: {
     action: 'add' | 'update' | 'delete';
     entity: 'vocabulary' | 'studySession';
-    data: any;
+    data: Record<string, unknown>;
   }): Promise<void> {
     const db = await this.ensureDB();
     const queueItem = {
@@ -230,7 +236,7 @@ class OfflineDB {
     await db.add('syncQueue', queueItem);
   }
 
-  async getSyncQueue(): Promise<any[]> {
+  async getSyncQueue(): Promise<SyncQueueItem[]> {
     const db = await this.ensureDB();
     const index = db.transaction('syncQueue').store.index('by-timestamp');
     return index.getAll();
@@ -260,7 +266,7 @@ class OfflineDB {
   }
 
   // Merge server data with local data
-  async mergeServerData(serverData: any[]): Promise<void> {
+  async mergeServerData(serverData: VocabularyItem[]): Promise<void> {
     const db = await this.ensureDB();
     const tx = db.transaction('vocabulary', 'readwrite');
     

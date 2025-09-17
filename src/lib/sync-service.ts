@@ -1,4 +1,4 @@
-import offlineDB from './offline-db';
+import offlineDB, { type SyncQueueItem, type VocabularyItem, type StudySessionItem } from './offline-db';
 import { getUserId } from './auth';
 
 interface SyncStatus {
@@ -125,7 +125,7 @@ class SyncService {
     }
   }
 
-  private async processSyncItem(item: any, userId: string): Promise<void> {
+  private async processSyncItem(item: SyncQueueItem, userId: string): Promise<void> {
     const headers = {
       'Content-Type': 'application/json',
       'x-user-id': userId
@@ -190,7 +190,7 @@ class SyncService {
   }
 
   // Public methods for components to use
-  async addWord(word: any): Promise<void> {
+  async addWord(word: Partial<VocabularyItem>): Promise<void> {
     // Add to IndexedDB immediately
     await offlineDB.addVocabularyWord(word);
 
@@ -200,7 +200,7 @@ class SyncService {
     }
   }
 
-  async updateWord(id: string, updates: any): Promise<void> {
+  async updateWord(id: string, updates: Partial<VocabularyItem>): Promise<void> {
     // Update in IndexedDB immediately
     await offlineDB.updateVocabularyWord(id, updates);
 
@@ -220,12 +220,12 @@ class SyncService {
     }
   }
 
-  async getVocabulary(): Promise<any[]> {
+  async getVocabulary(): Promise<VocabularyItem[]> {
     const userId = getUserId();
     return offlineDB.getVocabulary(userId);
   }
 
-  async addStudySession(session: any): Promise<void> {
+  async addStudySession(session: Partial<StudySessionItem>): Promise<void> {
     // Add to IndexedDB immediately
     await offlineDB.addStudySession(session);
 

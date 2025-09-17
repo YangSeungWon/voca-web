@@ -10,6 +10,7 @@ export function middleware(request: NextRequest) {
     const origin = request.headers.get('origin');
     const allowedOrigins = [
       'chrome-extension://*',
+      'https://voca.ysw.kr',
       'http://localhost:3000',
       'http://localhost:7024'
     ];

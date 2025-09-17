@@ -1,5 +1,5 @@
 // API configuration
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://voca.ysw.kr';
 let authToken = null;
 
 // Initialize extension

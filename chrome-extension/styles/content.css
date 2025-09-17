@@ -104,3 +104,42 @@
 ::-moz-selection {
   background: rgba(31, 41, 55, 0.2);
 }
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .voca-web-tooltip {
+    background: #1f2937;
+    border-color: #374151;
+    color: #f3f4f6;
+  }
+
+  .voca-add-btn {
+    background: #3b82f6;
+  }
+
+  .voca-add-btn:hover:not(:disabled) {
+    background: #2563eb;
+  }
+
+  .voca-message.success {
+    background: #064e3b;
+    color: #a7f3d0;
+  }
+
+  .voca-message.error {
+    background: #7f1d1d;
+    color: #fecaca;
+  }
+
+  .voca-success-indicator {
+    background: #059669;
+  }
+
+  ::selection {
+    background: rgba(59, 130, 246, 0.3);
+  }
+
+  ::-moz-selection {
+    background: rgba(59, 130, 246, 0.3);
+  }
+}

@@ -9,6 +9,7 @@
     "storage"
   ],
   "host_permissions": [
+    "https://voca.ysw.kr/*",
     "http://localhost:3000/*",
     "http://localhost:7024/*",
     "https://*/*"
