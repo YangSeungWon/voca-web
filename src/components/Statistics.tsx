@@ -84,7 +84,7 @@ export default function Statistics() {
             <Brain className="text-gray-400" size={20} />
             <span className="text-xs text-gray-500">Total</span>
           </div>
-          <div className="text-2xl font-bold text-gray-800">{stats.overview.total}</div>
+          <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">{stats.overview.total}</div>
           <div className="text-xs text-gray-500 mt-1">words in library</div>
         </div>
 
@@ -93,7 +93,7 @@ export default function Statistics() {
             <TrendingUp className="text-green-500" size={20} />
             <span className="text-xs text-gray-500">This Week</span>
           </div>
-          <div className="text-2xl font-bold text-gray-800">{stats.overview.week}</div>
+          <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">{stats.overview.week}</div>
           <div className="text-xs text-gray-500 mt-1">words added</div>
         </div>
 
@@ -102,7 +102,7 @@ export default function Statistics() {
             <Award className="text-yellow-500" size={20} />
             <span className="text-xs text-gray-500">Mastered</span>
           </div>
-          <div className="text-2xl font-bold text-gray-800">{stats.overview.mastered}</div>
+          <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">{stats.overview.mastered}</div>
           <div className="text-xs text-gray-500 mt-1">
             {stats.overview.total > 0 
               ? `${Math.round((stats.overview.mastered / stats.overview.total) * 100)}% complete`
@@ -115,7 +115,7 @@ export default function Statistics() {
             <Calendar className="text-blue-500" size={20} />
             <span className="text-xs text-gray-500">Streak</span>
           </div>
-          <div className="text-2xl font-bold text-gray-800">{stats.overview.streak}</div>
+          <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">{stats.overview.streak}</div>
           <div className="text-xs text-gray-500 mt-1">days in a row</div>
         </div>
       </div>
@@ -128,7 +128,7 @@ export default function Statistics() {
             <div key={index} className="flex-1 flex flex-col gap-1 items-center">
               <div className="w-full flex flex-col gap-0.5" style={{ height: '120px' }}>
                 <div 
-                  className="bg-green-400 rounded-sm transition-all hover:bg-green-500"
+                  className="bg-green-400 dark:bg-green-500 rounded-sm transition-all hover:bg-green-500 dark:hover:bg-green-400"
                   style={{ 
                     flex: day.reviewed / maxDailyValue || 0.01,
                     minHeight: day.reviewed > 0 ? '2px' : '0'
@@ -136,7 +136,7 @@ export default function Statistics() {
                   title={`${day.date}: ${day.reviewed} reviewed`}
                 />
                 <div 
-                  className="bg-blue-400 rounded-sm transition-all hover:bg-blue-500"
+                  className="bg-blue-400 dark:bg-blue-500 rounded-sm transition-all hover:bg-blue-500 dark:hover:bg-blue-400"
                   style={{ 
                     flex: day.added / maxDailyValue || 0.01,
                     minHeight: day.added > 0 ? '2px' : '0'
@@ -182,12 +182,12 @@ export default function Statistics() {
                 : 0;
               const levelNames = ['New', 'Learning', 'Familiar', 'Known', 'Mastered', 'Expert'];
               const levelColors = [
-                'bg-red-200',
-                'bg-orange-200',
-                'bg-yellow-200',
-                'bg-green-200',
-                'bg-blue-200',
-                'bg-purple-200'
+                'bg-red-200 dark:bg-red-600',
+                'bg-orange-200 dark:bg-orange-600',
+                'bg-yellow-200 dark:bg-yellow-600',
+                'bg-green-200 dark:bg-green-600',
+                'bg-blue-200 dark:bg-blue-600',
+                'bg-purple-200 dark:bg-purple-600'
               ];
               
               return (

@@ -24,6 +24,7 @@
   }
 
   input[type="text"],
+  input[type="email"],
   input[type="password"] {
     background: #374151;
     color: #f3f4f6;
@@ -31,12 +32,14 @@
   }
 
   input[type="text"]:focus,
+  input[type="email"]:focus,
   input[type="password"]:focus {
     border-color: #6b7280;
     background: #374151;
   }
 
   input[type="text"]::placeholder,
+  input[type="email"]::placeholder,
   input[type="password"]::placeholder {
     color: #6b7280;
   }

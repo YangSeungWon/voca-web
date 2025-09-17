@@ -224,8 +224,8 @@ export default function StudyMode() {
   if (studyState === 'ready') {
     return (
       <div className="p-8 text-center">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Ready to Study?</h2>
-        <div className="text-sm text-gray-600 mb-6">
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Ready to Study?</h2>
+        <div className="text-sm text-gray-600 dark:text-gray-400 mb-6">
           You have {words.length} words to review today
         </div>
         <button
@@ -245,11 +245,11 @@ export default function StudyMode() {
 
     return (
       <div className="p-8 text-center">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Session Complete!</h2>
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Session Complete!</h2>
         
         <div className="mb-6 space-y-2">
-          <div className="text-3xl font-bold text-gray-800">{accuracy}%</div>
-          <div className="text-sm text-gray-600">Accuracy</div>
+          <div className="text-3xl font-bold text-gray-800 dark:text-gray-200">{accuracy}%</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Accuracy</div>
         </div>
 
         <div className="grid grid-cols-3 gap-4 mb-6 max-w-md mx-auto">
@@ -262,8 +262,8 @@ export default function StudyMode() {
             <div className="text-xs text-red-600">Incorrect</div>
           </div>
           <div className="bg-gray-50 p-3 rounded-sm">
-            <div className="text-2xl font-semibold text-gray-600">{sessionStats.total}</div>
-            <div className="text-xs text-gray-600">Total</div>
+            <div className="text-2xl font-semibold text-gray-600 dark:text-gray-400">{sessionStats.total}</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400">Total</div>
           </div>
         </div>
 
@@ -329,7 +329,7 @@ export default function StudyMode() {
 
       {/* Progress Bar */}
       <div className="mb-6">
-        <div className="flex justify-between text-xs text-gray-600 mb-2">
+        <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 mb-2">
           <span>Word {currentIndex + 1} of {words.length}</span>
           <span>{Math.round(progress)}%</span>
         </div>
@@ -369,12 +369,12 @@ export default function StudyMode() {
           {/* Question Side */}
           <div className="text-center mb-6">
             <div className="flex items-center justify-center gap-3">
-              <h3 className="text-3xl font-bold text-gray-800">
+              <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
                 {currentWord.word.word}
               </h3>
               <button
                 onClick={() => speak(currentWord.word.word, 0.7)}
-                className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
                 title="Pronounce"
               >
                 <Volume2 size={20} />
@@ -393,11 +393,11 @@ export default function StudyMode() {
               {currentWord.word.definitions.map((def, index) => (
                 <div key={index} className="text-left">
                   {def.partOfSpeech && (
-                    <span className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-sm mr-2">
+                    <span className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-sm mr-2">
                       {def.partOfSpeech}
                     </span>
                   )}
-                  <span className="text-gray-700">{def.meaning}</span>
+                  <span className="text-gray-700 dark:text-gray-300">{def.meaning}</span>
                 </div>
               ))}
             </div>

@@ -74,7 +74,7 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
   return (
     <div className="border border-gray-200 rounded-sm">
       <div className="bg-gray-50 border-b border-gray-200 px-4 py-2 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-700">Dictionary Result</h3>
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Dictionary Result</h3>
         <div className="flex items-center gap-2">
           {groups.length > 0 && (
             <div className="relative">
@@ -156,13 +156,13 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
       <div className="p-4 space-y-3">
         <div>
           <div className="flex items-center gap-3">
-            <span className="text-lg font-semibold text-gray-800">{word.word}</span>
+            <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">{word.word}</span>
             {word.pronunciation && (
               <span className="text-sm text-gray-500">{word.pronunciation}</span>
             )}
             <button
               onClick={() => speak(word.word)}
-              className="p-1.5 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-sm transition-colors"
+              className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-sm transition-colors"
               title="Pronounce"
             >
               <Volume2 size={16} />
@@ -175,11 +175,11 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
             <div key={index} className="border-l-2 border-gray-200 pl-3">
               <div className="flex items-start gap-2">
                 {def.partOfSpeech && (
-                  <span className="inline-block px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-sm">
+                  <span className="inline-block px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-sm">
                     {def.partOfSpeech}
                   </span>
                 )}
-                <p className="text-sm text-gray-700 flex-1">{def.meaning}</p>
+                <p className="text-sm text-gray-700 dark:text-gray-300 flex-1">{def.meaning}</p>
               </div>
               {def.examples && def.examples.length > 0 && (
                 <div className="mt-1 ml-12">
