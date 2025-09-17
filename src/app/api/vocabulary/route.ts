@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       try {
         const payload = verifyToken(token);
         userId = payload.userId;
-      } catch (error) {
+      } catch {
         return NextResponse.json(
           { error: 'Invalid token' },
           { status: 401 }
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
       try {
         const payload = verifyToken(token);
         userId = payload.userId;
-      } catch (error) {
+      } catch {
         return NextResponse.json(
           { error: 'Invalid token' },
           { status: 401 }
