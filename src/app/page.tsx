@@ -13,6 +13,7 @@ import GroupManager from '@/components/GroupManager';
 import ThemeToggle from '@/components/ThemeToggle';
 import MobileNav from '@/components/MobileNav';
 import SyncStatus from '@/components/SyncStatus';
+import ExtensionBanner from '@/components/ExtensionBanner';
 import { DictionaryEntry } from '@/lib/dictionary';
 
 type ViewType = 'search' | 'vocabulary' | 'study' | 'statistics' | 'phonetics';
@@ -147,6 +148,9 @@ export default function Home() {
       
       {/* Add padding at bottom for mobile nav */}
       <div className="h-16 md:hidden" />
+      
+      {/* Chrome Extension Banner */}
+      <ExtensionBanner />
     </div>
   );
 }
