@@ -156,12 +156,12 @@ export default function GroupManager({ selectedGroup, onGroupChange }: GroupMana
           onClick={() => onGroupChange(null)}
           className={`w-full text-left px-3 py-2 text-sm rounded-sm transition-colors flex items-center justify-between ${
             selectedGroup === null
-              ? 'bg-gray-100 text-gray-800 font-medium'
-              : 'text-gray-600 hover:bg-gray-50'
+              ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-medium'
+              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
           }`}
         >
           <div className="flex items-center gap-2">
-            <Folder size={14} className="text-gray-400" />
+            <Folder size={14} className="text-gray-400 dark:text-gray-500" />
             <span>All Words</span>
           </div>
         </button>
@@ -172,8 +172,8 @@ export default function GroupManager({ selectedGroup, onGroupChange }: GroupMana
             onClick={() => onGroupChange(group.id)}
             className={`w-full text-left px-3 py-2 text-sm rounded-sm transition-colors flex items-center justify-between ${
               selectedGroup === group.id
-                ? 'bg-gray-100 text-gray-800 font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
+                ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-medium'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
             }`}
           >
             <div className="flex items-center gap-2">

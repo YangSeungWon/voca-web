@@ -318,7 +318,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
               <th className="p-2 text-left font-medium text-gray-700 dark:text-gray-300">
                 <button
                   onClick={() => handleSort('word')}
-                  className="flex items-center gap-1 hover:text-gray-900"
+                  className="flex items-center gap-1 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   Word
                   {sortField === 'word' && (
@@ -333,7 +333,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
               <th className="p-2 text-center font-medium text-gray-700 dark:text-gray-300">
                 <button
                   onClick={() => handleSort('level')}
-                  className="flex items-center gap-1 hover:text-gray-900"
+                  className="flex items-center gap-1 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   Level
                   {sortField === 'level' && (
@@ -344,7 +344,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
               <th className="p-2 text-left font-medium text-gray-700 dark:text-gray-300">
                 <button
                   onClick={() => handleSort('createdAt')}
-                  className="flex items-center gap-1 hover:text-gray-900"
+                  className="flex items-center gap-1 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   Date Added
                   {sortField === 'createdAt' && (
@@ -368,9 +368,9 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                   <tr
                     key={item.id}
                     className={`
-                      border-b border-gray-100 hover:bg-blue-50
-                      ${selectedRows.has(item.id) ? 'bg-blue-100' : ''}
-                      ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                      border-b border-gray-100 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-700
+                      ${selectedRows.has(item.id) ? 'bg-blue-100 dark:bg-blue-900' : ''}
+                      ${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-800/50'}
                     `}
                   >
                     <td className="p-2">
@@ -392,7 +392,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                         />
                       </div>
                     </td>
-                    <td className="p-2 font-medium">
+                    <td className="p-2 font-medium text-gray-900 dark:text-gray-100">
                       <div className="flex items-center gap-2">
                         {item.word.word}
                         <button
@@ -404,12 +404,12 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                         </button>
                       </div>
                     </td>
-                    <td className="p-2 text-gray-500">{item.word.pronunciation || '-'}</td>
-                    <td className="p-2">{item.word.definitions[0]?.meaning || '-'}</td>
-                    <td className="p-2 text-gray-500">
+                    <td className="p-2 text-gray-500 dark:text-gray-400">{item.word.pronunciation || '-'}</td>
+                    <td className="p-2 text-gray-900 dark:text-gray-100">{item.word.definitions[0]?.meaning || '-'}</td>
+                    <td className="p-2 text-gray-500 dark:text-gray-400">
                       {item.word.definitions[0]?.partOfSpeech || '-'}
                     </td>
-                    <td className="p-2">
+                    <td className="p-2 text-gray-900 dark:text-gray-100">
                       {item.group ? (
                         <div className="flex items-center gap-1">
                           <div
@@ -422,8 +422,8 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                         <span className="text-gray-400 text-xs">-</span>
                       )}
                     </td>
-                    <td className="p-2 text-center">{item.level}</td>
-                    <td className="p-2 text-gray-500">
+                    <td className="p-2 text-center text-gray-900 dark:text-gray-100">{item.level}</td>
+                    <td className="p-2 text-gray-500 dark:text-gray-400">
                       {new Date(item.createdAt).toLocaleDateString()}
                     </td>
                     <td className="p-2 text-center">
