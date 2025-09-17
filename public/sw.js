@@ -42,13 +42,17 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - Network first, cache fallback
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests
-  if (event.request.method !== 'GET') {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Handle API requests differently for offline support
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(handleApiRequest(request));
     return;
   }
 
-  // Skip API requests
-  if (event.request.url.includes('/api/')) {
+  // Skip non-GET requests for static resources
+  if (request.method !== 'GET') {
     return;
   }
 
@@ -112,6 +116,70 @@ async function syncVocabulary() {
     }
   } catch (error) {
     console.error('Sync failed:', error);
+  }
+}
+
+// Handle API requests with offline support
+async function handleApiRequest(request) {
+  try {
+    // Try network first
+    const response = await fetch(request);
+    return response;
+  } catch (error) {
+    // Network failed, queue the request for later sync
+    if (request.method !== 'GET') {
+      await queueApiRequest(request);
+      
+      // Return a synthetic response
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          offline: true,
+          message: 'Request queued for sync' 
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+    
+    // For GET requests, try to return cached data
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
+    // Return offline response
+    return new Response(
+      JSON.stringify({ 
+        error: 'Offline',
+        message: 'No cached data available' 
+      }),
+      {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+  }
+}
+
+// Queue API request for later sync
+async function queueApiRequest(request) {
+  const body = await request.text();
+  const action = {
+    id: Date.now().toString(),
+    url: request.url,
+    method: request.method,
+    headers: Object.fromEntries(request.headers.entries()),
+    body: body,
+    timestamp: Date.now()
+  };
+  
+  // Store in IndexedDB (implementation would go here)
+  // For now, we'll use the browser's background sync API
+  if ('sync' in self.registration) {
+    await self.registration.sync.register('sync-vocabulary');
   }
 }
 

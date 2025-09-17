@@ -12,6 +12,7 @@ import PhoneticsReference from '@/components/PhoneticsReference';
 import GroupManager from '@/components/GroupManager';
 import ThemeToggle from '@/components/ThemeToggle';
 import MobileNav from '@/components/MobileNav';
+import SyncStatus from '@/components/SyncStatus';
 import { DictionaryEntry } from '@/lib/dictionary';
 
 export default function Home() {
@@ -36,6 +37,7 @@ export default function Home() {
             <div className="flex items-center justify-between">
               <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Vocabulary Manager</h1>
               <div className="flex items-center gap-2">
+                <SyncStatus />
                 <ThemeToggle />
                 <AuthStatus />
               </div>
