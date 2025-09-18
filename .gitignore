@@ -40,3 +40,17 @@ yarn-error.log*
 next-env.d.ts
 
 # End of https://www.toptal.com/developers/gitignore/api/nextjs
+
+# Mobile build artifacts
+*.apk
+*.aab
+*.ipa
+*.keystore
+*.jks
+voca-web-*.apk
+ios/App/build/
+
+# Python virtualenv
+venv/
+*.pyc
+__pycache__/
