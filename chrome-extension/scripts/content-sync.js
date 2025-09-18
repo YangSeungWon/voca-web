@@ -3,7 +3,7 @@
 
 (function() {
   // Only run on voca.ysw.kr
-  if (!window.location.hostname.includes('voca.ysw.kr') && !window.location.hostname.includes('localhost')) {
+  if (!window.location.hostname.includes('voca.ysw.kr')) {
     return;
   }
 

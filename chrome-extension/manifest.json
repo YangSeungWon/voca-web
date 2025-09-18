@@ -14,7 +14,7 @@
   ],
   "content_scripts": [
     {
-      "matches": ["https://voca.ysw.kr/*", "http://localhost:*/*"],
+      "matches": ["https://voca.ysw.kr/*"],
       "js": ["scripts/content-sync.js"],
       "run_at": "document_idle"
     }
