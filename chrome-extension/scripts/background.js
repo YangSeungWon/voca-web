@@ -40,12 +40,22 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       const response = await addWordToVocabulary(word);
       
       if (response.success) {
-        // Show success notification
+        // Get the first definition if available
+        let message = `"${word}" has been added to your vocabulary!`;
+        if (response.word && response.word.definitions && response.word.definitions.length > 0) {
+          const firstDef = response.word.definitions[0];
+          message = `${word}: ${firstDef.meaning}`;
+          if (firstDef.partOfSpeech) {
+            message = `${word} (${firstDef.partOfSpeech}): ${firstDef.meaning}`;
+          }
+        }
+        
+        // Show success notification with definition
         chrome.notifications.create({
           type: 'basic',
           iconUrl: '/icons/icon-48.png',
-          title: 'Word Added',
-          message: `"${word}" has been added to your vocabulary!`
+          title: '✓ Word Added',
+          message: message
         });
 
         // Update badge
@@ -190,6 +200,14 @@ function handleLogout() {
 // Add word to vocabulary
 async function addWordToVocabulary(word) {
   try {
+    // First get dictionary data
+    const dictResponse = await fetch(`${API_URL}/api/dictionary/external?word=${encodeURIComponent(word)}`);
+    let wordData = null;
+    
+    if (dictResponse.ok) {
+      wordData = await dictResponse.json();
+    }
+    
     // Add to user's vocabulary (API will fetch dictionary data if needed)
     const response = await fetch(`${API_URL}/api/vocabulary`, {
       method: 'POST',
@@ -198,14 +216,16 @@ async function addWordToVocabulary(word) {
         'Authorization': `Bearer ${authToken}`
       },
       body: JSON.stringify({
-        word: word
+        word: word,
+        wordData: wordData
       })
     });
 
     const data = await response.json();
 
     if (response.ok) {
-      return { success: true, data: data };
+      // Include word data in response
+      return { success: true, data: data, word: wordData || { word: word } };
     } else {
       throw new Error(data.error || 'Failed to add word');
     }
