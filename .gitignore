@@ -49,6 +49,11 @@ next-env.d.ts
 *.jks
 voca-web-*.apk
 ios/App/build/
+ios/App/ExportOptions*.plist
+android/app/build/
+android/.gradle/
+build-output/
+keystore.properties
 
 # Python virtualenv
 venv/
