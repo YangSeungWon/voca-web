@@ -7,6 +7,9 @@
     return;
   }
 
+  // Mark that extension is installed
+  document.documentElement.setAttribute('data-voca-web-extension', 'installed');
+
   // Function to sync auth data
   function syncAuthToExtension() {
     const token = localStorage.getItem('token');
