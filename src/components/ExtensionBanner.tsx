@@ -1,23 +1,29 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Chrome } from 'lucide-react';
+import { X, Chrome, Palette } from 'lucide-react';
 
 export default function ExtensionBanner() {
   const [showBanner, setShowBanner] = useState(false);
-  const [isChrome, setIsChrome] = useState(false);
+  const [browserType, setBrowserType] = useState<'chrome' | 'firefox' | null>(null);
 
   useEffect(() => {
-    // Check if browser is Chrome/Chromium
+    // Check browser type
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isChromeBrowser = userAgent.includes('chrome') && !userAgent.includes('edge');
-    setIsChrome(isChromeBrowser);
+    const isFirefoxBrowser = userAgent.includes('firefox');
+    
+    if (isChromeBrowser) {
+      setBrowserType('chrome');
+    } else if (isFirefoxBrowser) {
+      setBrowserType('firefox');
+    }
 
     // Check if already dismissed or extension installed
     const dismissed = localStorage.getItem('extensionBannerDismissed');
     const hasExtension = document.documentElement.getAttribute('data-voca-web-extension') === 'installed';
     
-    if (isChromeBrowser && !dismissed && !hasExtension) {
+    if ((isChromeBrowser || isFirefoxBrowser) && !dismissed && !hasExtension) {
       // Show banner after 3 seconds
       setTimeout(() => setShowBanner(true), 3000);
     }
@@ -29,11 +35,15 @@ export default function ExtensionBanner() {
   };
 
   const handleInstall = () => {
-    window.open('https://chromewebstore.google.com/detail/voca-web-vocabulary-build/ajflgkmapedegaokdcmpdepepmchfbeo', '_blank');
+    if (browserType === 'chrome') {
+      window.open('https://chromewebstore.google.com/detail/voca-web-vocabulary-build/ajflgkmapedegaokdcmpdepepmchfbeo', '_blank');
+    } else if (browserType === 'firefox') {
+      window.open('https://addons.mozilla.org/firefox/addon/voca-web/', '_blank');
+    }
     handleDismiss();
   };
 
-  if (!showBanner || !isChrome) return null;
+  if (!showBanner || !browserType) return null;
 
   return (
     <div className="fixed bottom-4 right-4 max-w-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 z-50 animate-slideIn">
@@ -47,18 +57,26 @@ export default function ExtensionBanner() {
       
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0">
-          <Chrome className="w-8 h-8 text-green-600 dark:text-green-400" />
+          {browserType === 'chrome' ? (
+            <Chrome className="w-8 h-8 text-green-600 dark:text-green-400" />
+          ) : (
+            <Palette className="w-8 h-8 text-orange-600 dark:text-orange-400" />
+          )}
         </div>
         <div className="flex-1">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">
-            Get the Chrome Extension
+            Get the {browserType === 'chrome' ? 'Chrome' : 'Firefox'} Extension
           </h3>
           <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
             Save words instantly while browsing any website
           </p>
           <button
             onClick={handleInstall}
-            className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded transition-colors"
+            className={`px-3 py-1.5 text-white text-xs font-medium rounded transition-colors ${
+              browserType === 'chrome' 
+                ? 'bg-green-600 hover:bg-green-700' 
+                : 'bg-orange-600 hover:bg-orange-700'
+            }`}
           >
             Install Extension
           </button>
