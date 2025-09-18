@@ -227,6 +227,15 @@ function showMessage(text, type) {
 }
 
 // Open main app
-function openApp() {
-  chrome.tabs.create({ url: 'https://voca.ysw.kr' });
+async function openApp() {
+  let url = 'https://voca.ysw.kr';
+  
+  // If authenticated, pass token to web app
+  const auth = await checkAuth();
+  if (auth.isAuthenticated && auth.token) {
+    // Encode token in URL fragment (not query param for security)
+    url += '#token=' + encodeURIComponent(auth.token);
+  }
+  
+  chrome.tabs.create({ url: url });
 }

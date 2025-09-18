@@ -45,6 +45,17 @@ export default function Home() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
+      
+      // Check if token is passed from extension
+      if (hash.startsWith('#token=')) {
+        const token = decodeURIComponent(hash.substring(7));
+        localStorage.setItem('token', token);
+        // Clear token from URL
+        window.location.hash = '#vocabulary';
+        window.location.reload();
+        return;
+      }
+      
       const view = hashToView[hash];
       if (view) {
         setActiveView(view);

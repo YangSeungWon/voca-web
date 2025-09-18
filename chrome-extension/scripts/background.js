@@ -118,6 +118,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .catch(error => sendResponse({ success: false, error: error.message }));
     return true;
   }
+  
+  // Sync from web app
+  if (request.action === 'syncFromWeb') {
+    if (request.token) {
+      authToken = request.token;
+      chrome.storage.local.set({ 
+        authToken: request.token,
+        userId: request.userId,
+        email: request.email 
+      });
+      updateBadge();
+      sendResponse({ success: true });
+    } else {
+      // Clear auth if no token (logout)
+      authToken = null;
+      chrome.storage.local.remove(['authToken', 'userId', 'email']);
+      chrome.action.setBadgeText({ text: '' });
+      sendResponse({ success: true });
+    }
+  }
 });
 
 // Login handler
