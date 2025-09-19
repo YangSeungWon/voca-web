@@ -21,8 +21,8 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-BUNDLE_ID="kr.ysw.vocabulary"
-TEAM_ID="4329B4KBY7"
+BUNDLE_ID="kr.ysw.voca"
+TEAM_ID="A59UDY28BA"
 ANDROID_PACKAGE="kr.ysw.voca"
 
 # Build type selection
