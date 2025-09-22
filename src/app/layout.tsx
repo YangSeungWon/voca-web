@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
+import MobileLayout from '@/components/MobileLayout';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -15,7 +16,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 5,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
   themeColor: '#1f2937',
 };
 
@@ -29,7 +32,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           <ServiceWorkerRegistration />
-          {children}
+          <MobileLayout>
+            {children}
+          </MobileLayout>
         </ThemeProvider>
       </body>
     </html>
