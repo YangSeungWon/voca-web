@@ -16,10 +16,11 @@ import SyncStatus from '@/components/SyncStatus';
 import ExtensionBanner from '@/components/ExtensionBanner';
 import { DictionaryEntry } from '@/lib/dictionary';
 
-type ViewType = 'search' | 'vocabulary' | 'study' | 'statistics' | 'phonetics';
+type ViewType = 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics';
 
 const hashToView: Record<string, ViewType> = {
-  '#search': 'search',
+  '#home': 'home',
+  '#search': 'home', // Legacy redirect
   '#vocabulary': 'vocabulary',
   '#study': 'study',
   '#statistics': 'statistics',
@@ -28,7 +29,7 @@ const hashToView: Record<string, ViewType> = {
 };
 
 const viewToHash: Record<ViewType, string> = {
-  'search': '#search',
+  'home': '#home',
   'vocabulary': '#vocabulary',
   'study': '#study',
   'statistics': '#statistics',
@@ -37,7 +38,7 @@ const viewToHash: Record<ViewType, string> = {
 
 export default function Home() {
   const [currentWord, setCurrentWord] = useState<DictionaryEntry | null>(null);
-  const [activeView, setActiveView] = useState<ViewType>('vocabulary');
+  const [activeView, setActiveView] = useState<ViewType>('home');
   const [refreshVocab, setRefreshVocab] = useState(0);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
 
@@ -51,7 +52,7 @@ export default function Home() {
         const token = decodeURIComponent(hash.substring(7));
         localStorage.setItem('token', token);
         // Clear token from URL
-        window.location.hash = '#vocabulary';
+        window.location.hash = '#home';
         window.location.reload();
         return;
       }
@@ -60,8 +61,8 @@ export default function Home() {
       if (view) {
         setActiveView(view);
       } else if (!hash) {
-        // Default to vocabulary if no hash
-        window.location.hash = viewToHash['vocabulary'];
+        // Default to home if no hash
+        window.location.hash = viewToHash['home'];
       }
     };
 
@@ -127,7 +128,7 @@ export default function Home() {
         </div>
         
         <main className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm mt-2 transition-colors">
-          {activeView === 'search' && (
+          {activeView === 'home' && (
             <div className="p-4">
               <div className="mb-4">
                 <SearchBar onWordFound={handleWordFound} />

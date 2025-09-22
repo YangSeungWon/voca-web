@@ -1,16 +1,16 @@
 'use client';
 
-import { Home, Plus, BookOpen, BarChart3, Type } from 'lucide-react';
+import { Home, FolderOpen, BookOpen, BarChart3, Type } from 'lucide-react';
 
 interface MobileNavProps {
-  activeView: 'search' | 'vocabulary' | 'study' | 'statistics' | 'phonetics';
-  onViewChange: (view: 'search' | 'vocabulary' | 'study' | 'statistics' | 'phonetics') => void;
+  activeView: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics';
+  onViewChange: (view: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics') => void;
 }
 
 export default function MobileNav({ activeView, onViewChange }: MobileNavProps) {
   const tabs = [
-    { id: 'vocabulary' as const, label: 'Words', icon: Home },
-    { id: 'search' as const, label: 'Add', icon: Plus },
+    { id: 'home' as const, label: 'Home', icon: Home },
+    { id: 'vocabulary' as const, label: 'Words', icon: FolderOpen },
     { id: 'study' as const, label: 'Study', icon: BookOpen },
     { id: 'statistics' as const, label: 'Stats', icon: BarChart3 },
     { id: 'phonetics' as const, label: 'IPA', icon: Type },

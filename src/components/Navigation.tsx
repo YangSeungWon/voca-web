@@ -1,12 +1,12 @@
 interface NavigationProps {
-  activeView: 'search' | 'vocabulary' | 'study' | 'statistics' | 'phonetics';
-  onViewChange: (view: 'search' | 'vocabulary' | 'study' | 'statistics' | 'phonetics') => void;
+  activeView: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics';
+  onViewChange: (view: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics') => void;
 }
 
 export default function Navigation({ activeView, onViewChange }: NavigationProps) {
   const tabs = [
-    { id: 'vocabulary' as const, label: 'Word List' },
-    { id: 'search' as const, label: 'Add New' },
+    { id: 'home' as const, label: 'Home' },
+    { id: 'vocabulary' as const, label: 'Words' },
     { id: 'study' as const, label: 'Review' },
     { id: 'statistics' as const, label: 'Statistics' },
     { id: 'phonetics' as const, label: 'IPA' },
@@ -24,7 +24,7 @@ export default function Navigation({ activeView, onViewChange }: NavigationProps
               ? 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border-b-white dark:border-b-gray-800 -mb-px z-10'
               : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600'
             }
-            ${tab.id === 'vocabulary' ? 'rounded-tl-sm' : ''}
+            ${tab.id === 'home' ? 'rounded-tl-sm' : ''}
             ${tab.id === 'phonetics' ? 'rounded-tr-sm' : ''}
             ${tab.id !== 'phonetics' ? 'border-r-0' : ''}
           `}
