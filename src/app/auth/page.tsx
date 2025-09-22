@@ -9,17 +9,32 @@ export default function AuthPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [debugInfo, setDebugInfo] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setDebugInfo('');
     setLoading(true);
 
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
       const body = { email, password };
+
+      const isCapacitor = typeof window !== 'undefined' && (window as any).Capacitor;
+      const apiUrl = isCapacitor ? 'https://voca.ysw.kr' : '';
+      const fullUrl = `${apiUrl}${endpoint}`;
+
+      setDebugInfo(`Environment: ${isCapacitor ? 'Mobile (Capacitor)' : 'Web'}\nAPI URL: ${fullUrl}`);
+
+      console.log('[Auth] Attempting authentication:', {
+        endpoint,
+        isLogin,
+        email,
+        apiUrl: isCapacitor ? 'Capacitor detected' : 'Web mode'
+      });
 
       const response = await apiFetch(endpoint, {
         method: 'POST',
@@ -27,10 +42,30 @@ export default function AuthPage() {
         body: JSON.stringify(body)
       });
 
-      const data = await response.json();
+      console.log('[Auth] Response received:', {
+        status: response.status,
+        ok: response.ok,
+        headers: response.headers
+      });
+
+      setDebugInfo(prev => `${prev}\nResponse Status: ${response.status}`);
+
+      let data;
+      try {
+        data = await response.json();
+        console.log('[Auth] Response data:', data);
+      } catch (jsonError) {
+        console.error('[Auth] Failed to parse JSON response:', jsonError);
+        const text = await response.text();
+        console.error('[Auth] Response text:', text);
+        setDebugInfo(prev => `${prev}\nJSON Parse Error: ${jsonError}\nResponse Text: ${text}`);
+        throw new Error('Invalid response format from server');
+      }
 
       if (!response.ok) {
+        console.error('[Auth] Authentication failed:', data);
         setError(data.error || 'Authentication failed');
+        setDebugInfo(prev => `${prev}\nServer Error: ${JSON.stringify(data)}`);
         return;
       }
 
@@ -38,11 +73,19 @@ export default function AuthPage() {
       localStorage.setItem('token', data.token);
       localStorage.setItem('userId', data.user.id);
       localStorage.setItem('userEmail', data.user.email);
+      console.log('[Auth] Authentication successful, redirecting...');
 
       // Redirect to main page
       router.push('/');
-    } catch {
+    } catch (error) {
+      console.error('[Auth] Error during authentication:', error);
+      console.error('[Auth] Error details:', {
+        message: (error as any)?.message,
+        stack: (error as any)?.stack,
+        name: (error as any)?.name
+      });
       setError('An error occurred. Please try again.');
+      setDebugInfo(prev => `${prev}\nError: ${(error as any)?.message || error}\nName: ${(error as any)?.name}`);
     } finally {
       setLoading(false);
     }
@@ -86,6 +129,12 @@ export default function AuthPage() {
 
           {error && (
             <div className="text-xs text-red-500">{error}</div>
+          )}
+
+          {debugInfo && (
+            <div className="text-xs bg-gray-100 dark:bg-gray-900 p-2 rounded border border-gray-300 dark:border-gray-600 whitespace-pre-wrap font-mono">
+              {debugInfo}
+            </div>
           )}
 
           <button

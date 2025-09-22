@@ -1,5 +1,3 @@
-import { apiFetch } from '@/lib/api-client';
-
 export interface DictionaryEntry {
   word: string;
   pronunciation?: string;
@@ -86,24 +84,48 @@ const fallbackDefinition = (word: string): DictionaryEntry => ({
 
 export async function searchWord(word: string): Promise<DictionaryEntry | null> {
   const normalizedWord = word.toLowerCase().trim();
-  
-  const found = commonWords.find(entry => 
+
+  const found = commonWords.find(entry =>
     entry.word.toLowerCase() === normalizedWord
   );
-  
+
   if (found) {
     return found;
   }
-  
+
+  // Try direct API call (works on both web and mobile)
   try {
-    const response = await apiFetch(`/api/dictionary/external?word=${encodeURIComponent(normalizedWord)}`);
+    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(normalizedWord)}`);
     if (response.ok) {
-      return await response.json();
+      const data = await response.json();
+      if (data && data.length > 0) {
+        const entry = data[0];
+
+        // Transform API response to our format
+        const definitions = entry.meanings.flatMap((meaning: any) =>
+          meaning.definitions.map((def: any) => ({
+            partOfSpeech: meaning.partOfSpeech,
+            meaning: def.definition,
+            examples: def.example ? [def.example] : []
+          }))
+        );
+
+        // Get pronunciation
+        const pronunciation = entry.phonetic ||
+          entry.phonetics?.find((p: any) => p.text)?.text ||
+          undefined;
+
+        return {
+          word: entry.word,
+          pronunciation,
+          definitions
+        };
+      }
     }
   } catch (error) {
-    console.error('Failed to fetch from external source:', error);
+    console.error('Failed to fetch from dictionary API:', error);
   }
-  
+
   return fallbackDefinition(word);
 }
 
