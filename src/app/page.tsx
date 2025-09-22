@@ -91,9 +91,11 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4">
-          <header className="py-3">
+          <header className="py-2">
             <div className="flex items-center justify-between">
-              <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Vocabulary Manager</h1>
+              <div className="flex items-center gap-2">
+                <img src="/favicon.ico" alt="Voca" className="w-6 h-6" />
+              </div>
               <div className="flex items-center gap-2">
                 <SyncStatus />
                 <ThemeToggle />

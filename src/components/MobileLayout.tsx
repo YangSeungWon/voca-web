@@ -33,7 +33,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
         
         /* Adjust main content to account for fixed header */
         .capacitor-app main {
-          padding-top: calc(env(safe-area-inset-top) + 60px);
+          padding-top: calc(env(safe-area-inset-top) + 50px);
         }
         
         /* Fix bottom navigation overlap */
