@@ -12,10 +12,12 @@ export function middleware(request: NextRequest) {
       'chrome-extension://*',
       'https://voca.ysw.kr',
       'http://localhost:3000',
-      'http://localhost:7024'
+      'http://localhost:7024',
+      'capacitor://localhost',
+      'https://localhost'
     ];
-    
-    if (origin && (origin.startsWith('chrome-extension://') || allowedOrigins.includes(origin))) {
+
+    if (origin && (origin.startsWith('chrome-extension://') || origin.startsWith('capacitor://') || allowedOrigins.includes(origin))) {
       response.headers.set('Access-Control-Allow-Origin', origin);
     } else if (!origin) {
       // Allow requests without origin (e.g., from the extension background script)
