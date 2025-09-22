@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { getUserId } from '@/lib/auth';
+import { apiFetch } from '@/lib/api-client';
 
 interface VocabularyWord {
   id: string;
@@ -30,7 +31,7 @@ export default function VocabularyList() {
 
   const fetchVocabulary = async () => {
     try {
-      const response = await fetch('/api/vocabulary', {
+      const response = await apiFetch('/api/vocabulary', {
         headers: {
           'x-user-id': getUserId()
         }
@@ -48,7 +49,7 @@ export default function VocabularyList() {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch(`/api/vocabulary/${id}`, {
+      const response = await apiFetch(`/api/vocabulary/${id}`, {
         method: 'DELETE',
         headers: {
           'x-user-id': getUserId()

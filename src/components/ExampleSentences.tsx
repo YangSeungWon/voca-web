@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, X, Check, BookOpen, Edit2 } from 'lucide-react';
 import { getUserId } from '@/lib/auth';
+import { apiFetch } from '@/lib/api-client';
 
 interface Example {
   id: string;
@@ -32,7 +33,7 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
 
   const fetchExamples = async () => {
     try {
-      const response = await fetch(`/api/vocabulary/${wordId}/examples`, {
+      const response = await apiFetch(`/api/vocabulary/${wordId}/examples`, {
         headers: {
           'x-user-id': getUserId()
         }
@@ -52,7 +53,7 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
     if (!newSentence.trim()) return;
 
     try {
-      const response = await fetch(`/api/vocabulary/${wordId}/examples`, {
+      const response = await apiFetch(`/api/vocabulary/${wordId}/examples`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +79,7 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
 
   const handleUpdate = async (id: string) => {
     try {
-      const response = await fetch(`/api/vocabulary/${wordId}/examples/${id}`, {
+      const response = await apiFetch(`/api/vocabulary/${wordId}/examples/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -104,7 +105,7 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
     if (!confirm('Delete this example sentence?')) return;
 
     try {
-      const response = await fetch(`/api/vocabulary/${wordId}/examples/${id}`, {
+      const response = await apiFetch(`/api/vocabulary/${wordId}/examples/${id}`, {
         method: 'DELETE',
         headers: {
           'x-user-id': getUserId()

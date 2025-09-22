@@ -8,6 +8,7 @@ import { parseCSV, generateCSV, downloadCSV, getCSVTemplate } from '@/lib/csv';
 import ExampleSentences from './ExampleSentences';
 import VocabularyCard from './VocabularyCard';
 import PullToRefresh from './PullToRefresh';
+import { apiFetch } from '@/lib/api-client';
 
 interface VocabularyWord {
   id: string;
@@ -76,7 +77,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch(`/api/vocabulary/${id}`, {
+      const response = await apiFetch(`/api/vocabulary/${id}`, {
         method: 'DELETE',
         headers: {
           'x-user-id': getUserId()
@@ -152,7 +153,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
         return;
       }
 
-      const response = await fetch('/api/vocabulary/import', {
+      const response = await apiFetch('/api/vocabulary/import', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

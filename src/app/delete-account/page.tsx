@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { apiFetch } from '@/lib/api-client';
 
 export default function DeleteAccountPage() {
   const [email, setEmail] = useState('');
@@ -23,7 +24,7 @@ export default function DeleteAccountPage() {
     setError('');
 
     try {
-      const response = await fetch('/api/auth/delete-account', {
+      const response = await apiFetch('/api/auth/delete-account', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

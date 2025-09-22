@@ -1,3 +1,5 @@
+import { apiFetch } from '@/lib/api-client';
+
 export interface DictionaryEntry {
   word: string;
   pronunciation?: string;
@@ -94,7 +96,7 @@ export async function searchWord(word: string): Promise<DictionaryEntry | null> 
   }
   
   try {
-    const response = await fetch(`/api/dictionary/external?word=${encodeURIComponent(normalizedWord)}`);
+    const response = await apiFetch(`/api/dictionary/external?word=${encodeURIComponent(normalizedWord)}`);
     if (response.ok) {
       return await response.json();
     }

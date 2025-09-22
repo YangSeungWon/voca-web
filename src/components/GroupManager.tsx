@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Folder, Plus, X, Trash2 } from 'lucide-react';
 import { getUserId } from '@/lib/auth';
+import { apiFetch } from '@/lib/api-client';
 
 interface Group {
   id: string;
@@ -37,7 +38,7 @@ export default function GroupManager({ selectedGroup, onGroupChange }: GroupMana
 
   const fetchGroups = async () => {
     try {
-      const response = await fetch('/api/groups', {
+      const response = await apiFetch('/api/groups', {
         headers: {
           'x-user-id': getUserId()
         }
@@ -57,7 +58,7 @@ export default function GroupManager({ selectedGroup, onGroupChange }: GroupMana
     }
 
     try {
-      const response = await fetch(`/api/groups?id=${groupId}`, {
+      const response = await apiFetch(`/api/groups?id=${groupId}`, {
         method: 'DELETE',
         headers: {
           'x-user-id': getUserId()
@@ -80,7 +81,7 @@ export default function GroupManager({ selectedGroup, onGroupChange }: GroupMana
 
     setLoading(true);
     try {
-      const response = await fetch('/api/groups', {
+      const response = await apiFetch('/api/groups', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

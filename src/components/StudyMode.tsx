@@ -6,6 +6,7 @@ import { speak } from '@/lib/speech';
 import { Volume2, ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { apiFetch } from '@/lib/api-client';
 
 interface StudyWord {
   id: string;
@@ -122,7 +123,7 @@ export default function StudyMode() {
 
   const loadStudyWords = async () => {
     try {
-      const response = await fetch('/api/vocabulary', {
+      const response = await apiFetch('/api/vocabulary', {
         headers: {
           'x-user-id': getUserId()
         }
@@ -168,7 +169,7 @@ export default function StudyMode() {
 
     // Update word level in database
     try {
-      await fetch(`/api/vocabulary/${currentWord.id}`, {
+      await apiFetch(`/api/vocabulary/${currentWord.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { TrendingUp, Calendar, Award, Brain } from 'lucide-react';
 import { getUserId } from '@/lib/auth';
+import { apiFetch } from '@/lib/api-client';
 
 interface Statistics {
   overview: {
@@ -38,7 +39,7 @@ export default function Statistics() {
 
   const fetchStatistics = async () => {
     try {
-      const response = await fetch('/api/statistics', {
+      const response = await apiFetch('/api/statistics', {
         headers: {
           'x-user-id': getUserId()
         }

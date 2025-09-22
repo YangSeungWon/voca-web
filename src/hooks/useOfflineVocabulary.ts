@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import syncService from '@/lib/sync-service';
 import offlineDB from '@/lib/offline-db';
 import { getUserId } from '@/lib/auth';
+import { apiFetch } from '@/lib/api-client';
 
 interface VocabularyItem {
   id: string;
@@ -31,7 +32,7 @@ export function useOfflineVocabulary(groupId?: string | null) {
     try {
       // Try to load from server first if online
       if (navigator.onLine) {
-        const response = await fetch('/api/vocabulary' + (groupId ? `?groupId=${groupId}` : ''), {
+        const response = await apiFetch('/api/vocabulary' + (groupId ? `?groupId=${groupId}` : ''), {
           headers: {
             'x-user-id': getUserId()
           }

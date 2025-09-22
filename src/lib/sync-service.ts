@@ -1,5 +1,6 @@
 import offlineDB, { type SyncQueueItem, type VocabularyItem } from './offline-db';
 import { getUserId } from './auth';
+import { apiFetch } from '@/lib/api-client';
 
 interface SyncStatus {
   isSyncing: boolean;
@@ -135,7 +136,7 @@ class SyncService {
       case 'vocabulary':
         switch (item.action) {
           case 'add':
-            await fetch('/api/vocabulary', {
+            await apiFetch('/api/vocabulary', {
               method: 'POST',
               headers,
               body: JSON.stringify(item.data)
@@ -143,7 +144,7 @@ class SyncService {
             break;
           
           case 'update':
-            await fetch(`/api/vocabulary/${item.data.id}`, {
+            await apiFetch(`/api/vocabulary/${item.data.id}`, {
               method: 'PATCH',
               headers,
               body: JSON.stringify(item.data)
@@ -151,7 +152,7 @@ class SyncService {
             break;
           
           case 'delete':
-            await fetch(`/api/vocabulary/${item.data.id}`, {
+            await apiFetch(`/api/vocabulary/${item.data.id}`, {
               method: 'DELETE',
               headers
             });
@@ -165,7 +166,7 @@ class SyncService {
   private async pullServerData(userId: string): Promise<void> {
     try {
       // Fetch vocabulary from server
-      const response = await fetch('/api/vocabulary', {
+      const response = await apiFetch('/api/vocabulary', {
         headers: {
           'x-user-id': userId
         }

@@ -5,6 +5,7 @@ import { Check, Save, Volume2, Folder } from 'lucide-react';
 import { DictionaryEntry } from '@/lib/dictionary';
 import { getUserId } from '@/lib/auth';
 import { speak } from '@/lib/speech';
+import { apiFetch } from '@/lib/api-client';
 
 interface WordDisplayProps {
   word: DictionaryEntry;
@@ -30,7 +31,7 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
 
   const fetchGroups = async () => {
     try {
-      const response = await fetch('/api/groups', {
+      const response = await apiFetch('/api/groups', {
         headers: {
           'x-user-id': getUserId()
         }
@@ -47,7 +48,7 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const response = await fetch('/api/vocabulary', {
+      const response = await apiFetch('/api/vocabulary', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
