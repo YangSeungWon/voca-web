@@ -17,16 +17,39 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
       style.innerHTML = `
         .mobile-safe-area {
           padding-top: env(safe-area-inset-top);
-          padding-bottom: env(safe-area-inset-bottom);
           padding-left: env(safe-area-inset-left);
           padding-right: env(safe-area-inset-right);
         }
         
-        @supports (padding: env(safe-area-inset-top)) {
-          .mobile-container {
-            padding-top: calc(env(safe-area-inset-top) + 1rem);
-            padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
-          }
+        /* Fixed header for mobile */
+        .capacitor-app header {
+          position: fixed !important;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 50;
+          padding-top: env(safe-area-inset-top);
+        }
+        
+        /* Adjust main content to account for fixed header */
+        .capacitor-app main {
+          padding-top: calc(env(safe-area-inset-top) + 60px);
+        }
+        
+        /* Fix bottom navigation overlap */
+        .capacitor-app .mobile-bottom-nav {
+          position: fixed !important;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
+          background: inherit;
+          z-index: 40;
+        }
+        
+        /* Add padding to content to account for bottom nav */
+        .capacitor-app main {
+          padding-bottom: calc(env(safe-area-inset-bottom) + 80px) !important;
         }
         
         html, body { overflow-x: hidden; width: 100%; }

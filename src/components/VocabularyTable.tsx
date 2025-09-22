@@ -59,7 +59,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
       const url = selectedGroup 
         ? `/api/vocabulary?groupId=${selectedGroup}`
         : '/api/vocabulary';
-      const response = await fetch(url, {
+      const response = await apiFetch(url, {
         headers: {
           'x-user-id': getUserId()
         }

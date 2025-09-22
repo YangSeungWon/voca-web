@@ -17,7 +17,7 @@ export default function MobileNav({ activeView, onViewChange }: MobileNavProps) 
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 md:hidden z-50">
+    <nav className="mobile-bottom-nav fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 md:hidden z-50">
       <div className="grid grid-cols-5 h-16">
         {tabs.map((tab) => {
           const Icon = tab.icon;
