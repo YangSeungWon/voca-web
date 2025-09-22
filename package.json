@@ -12,7 +12,16 @@
     "cap:init": "cap init",
     "cap:sync": "cap sync",
     "cap:open:ios": "cap open ios",
-    "cap:open:android": "cap open android"
+    "cap:open:android": "cap open android",
+    "build:ios": "bash scripts/build-ios.sh",
+    "build:ios:ipa": "bash scripts/build-ios.sh --export-ipa",
+    "build:android": "bash scripts/build-android.sh",
+    "build:android:copy": "bash scripts/build-android.sh --copy-outputs",
+    "build:all": "bash scripts/build-all.sh",
+    "build:mobile": "bash scripts/build-all.sh",
+    "icon:ios": "node scripts/generate-ios-icon.js",
+    "version:update": "node scripts/update-build-version.js",
+    "version:check": "node scripts/update-build-version.js --check"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.3",
