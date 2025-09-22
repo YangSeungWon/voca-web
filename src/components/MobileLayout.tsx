@@ -29,6 +29,20 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
           right: 0;
           z-index: 50;
           padding-top: env(safe-area-inset-top);
+          background: white;
+        }
+        
+        .capacitor-app .dark header {
+          background: rgb(31, 41, 55);
+        }
+        
+        /* Ensure header background in container */
+        .capacitor-app .bg-white.dark\\:bg-gray-800 {
+          background: white !important;
+        }
+        
+        .capacitor-app .dark .bg-white.dark\\:bg-gray-800 {
+          background: rgb(31, 41, 55) !important;
         }
         
         /* Adjust main content to account for fixed header */

@@ -104,7 +104,7 @@ export default function Home() {
               </div>
             </div>
             {/* Mobile two-line header */}
-            <div className="sm:hidden">
+            <div className="sm:hidden px-2">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
                   <img src="/favicon.ico" alt="Voca" className="w-5 h-5" />
