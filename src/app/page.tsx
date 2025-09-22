@@ -92,13 +92,28 @@ export default function Home() {
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4">
           <header className="py-2">
-            <div className="flex items-center justify-between">
+            <div className="hidden sm:flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <img src="/favicon.ico" alt="Voca" className="w-6 h-6" />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Voca Web</span>
               </div>
               <div className="flex items-center gap-2">
                 <SyncStatus />
                 <ThemeToggle />
+                <AuthStatus />
+              </div>
+            </div>
+            {/* Mobile two-line header */}
+            <div className="sm:hidden">
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-2">
+                  <img src="/favicon.ico" alt="Voca" className="w-5 h-5" />
+                  <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Voca Web</span>
+                </div>
+                <ThemeToggle />
+              </div>
+              <div className="flex items-center justify-between">
+                <SyncStatus />
                 <AuthStatus />
               </div>
             </div>
