@@ -8,24 +8,25 @@
  * Jongseong (종성): (none)(0) ㄱ(1) ㄲ(2) ㄳ(3) ㄴ(4) ㄵ(5) ㄶ(6) ㄷ(7) ㄹ(8) ㄺ(9) ㄻ(10) ㄼ(11) ㄽ(12) ㄾ(13) ㄿ(14) ㅀ(15) ㅁ(16) ㅂ(17) ㅄ(18) ㅅ(19) ㅆ(20) ㅇ(21) ㅈ(22) ㅊ(23) ㅋ(24) ㅌ(25) ㅍ(26) ㅎ(27)
  */
 
-// Consonant clusters - check these BEFORE individual consonants
-// These map to a single Korean initial consonant (the ɹ/l is absorbed)
-const CONSONANT_CLUSTERS: Record<string, number> = {
-  'pɹ': 17, // ㅍ (pr → 프)
-  'bɹ': 7,  // ㅂ (br → 브)
-  'tɹ': 16, // ㅌ (tr → 트)
-  'dɹ': 3,  // ㄷ (dr → 드)
-  'kɹ': 15, // ㅋ (kr → 크)
-  'gɹ': 0,  // ㄱ (gr → 그)
-  'fɹ': 17, // ㅍ (fr → 프)
-  'θɹ': 9,  // ㅅ (thr → 쓰)
-  'ʃɹ': 9,  // ㅅ (shr → 슈)
-  'pl': 17, // ㅍ (pl → 플)
-  'bl': 7,  // ㅂ (bl → 블)
-  'kl': 15, // ㅋ (kl → 클)
-  'gl': 0,  // ㄱ (gl → 글)
-  'fl': 17, // ㅍ (fl → 플)
-  'sl': 9,  // ㅅ (sl → 슬)
+// Consonant clusters - these need to be split into two syllables
+// Format: [first consonant cho index, second consonant cho index]
+// Example: pɹ → p(ㅍ) + ㅡ + ɹ(ㄹ) → 프 + ㄹ... → 프라/프리/etc
+const CONSONANT_CLUSTERS: Record<string, [number, number]> = {
+  'pɹ': [17, 5], // ㅍ + ㄹ (pr → 프르)
+  'bɹ': [7, 5],  // ㅂ + ㄹ (br → 브르)
+  'tɹ': [16, 5], // ㅌ + ㄹ (tr → 트르)
+  'dɹ': [3, 5],  // ㄷ + ㄹ (dr → 드르)
+  'kɹ': [15, 5], // ㅋ + ㄹ (kr → 크르)
+  'gɹ': [0, 5],  // ㄱ + ㄹ (gr → 그르)
+  'fɹ': [17, 5], // ㅍ + ㄹ (fr → 프르)
+  'θɹ': [9, 5],  // ㅅ + ㄹ (thr → 스르)
+  'ʃɹ': [9, 5],  // ㅅ + ㄹ (shr → 슈르)
+  'pl': [17, 5], // ㅍ + ㄹ (pl → 플)
+  'bl': [7, 5],  // ㅂ + ㄹ (bl → 블)
+  'kl': [15, 5], // ㅋ + ㄹ (kl → 클)
+  'gl': [0, 5],  // ㄱ + ㄹ (gl → 글)
+  'fl': [17, 5], // ㅍ + ㄹ (fl → 플)
+  'sl': [9, 5],  // ㅅ + ㄹ (sl → 슬)
 };
 
 // IPA consonant to Korean Choseong (초성) index
@@ -58,33 +59,58 @@ const CONSONANT_TO_CHOSEONG: Record<string, number> = {
 };
 
 // IPA consonant to Korean Jongseong (종성) index
+// NOTE: Prefer simple finals (m→ㅁ, n→ㄴ, l→ㄹ) for natural Korean pronunciation
 const CONSONANT_TO_JONGSEONG: Record<string, number> = {
   'p': 17, // ㅂ
   'b': 17, // ㅂ
-  't': 25, // ㅌ
+  't': 7,  // ㄷ (simplified from ㅌ)
   'd': 7,  // ㄷ
   'k': 1,  // ㄱ
   'g': 1,  // ㄱ
   'm': 16, // ㅁ
   'n': 4,  // ㄴ
   'ŋ': 21, // ㅇ
-  'f': 26, // ㅍ
+  'f': 17, // ㅂ (simplified from ㅍ)
   'v': 17, // ㅂ
   'θ': 19, // ㅅ
   'ð': 7,  // ㄷ
   's': 19, // ㅅ
-  'z': 22, // ㅈ
+  'z': 19, // ㅅ (simplified from ㅈ)
   'ʃ': 19, // ㅅ
   'ʒ': 22, // ㅈ
   'l': 8,  // ㄹ
   'r': 8,  // ㄹ
   'ɹ': 8,  // ㄹ
-  'tʃ': 23, // ㅊ
+  'tʃ': 19, // ㅅ (simplified from ㅊ)
   'dʒ': 22, // ㅈ
 };
 
 // IPA vowel to Korean Jungseong (중성) - returns array for diphthongs
 const VOWEL_TO_JUNGSEONG: Record<string, number[]> = {
+  // w + vowel combinations (semi-vowel w)
+  'wɜː': [14],     // ㅝ (wer → 워)
+  'wɜ': [14],      // ㅝ (wer → 워)
+  'wə': [14],      // ㅝ (wuh → 워)
+  'wɔː': [14],     // ㅝ (wor → 워)
+  'wɔ': [14],      // ㅝ (wor → 워)
+  'wɑː': [9],      // ㅘ (war → 와)
+  'wɑ': [9],       // ㅘ (war → 와)
+  'wɪ': [16],      // ㅟ (wi → 위)
+  'wi': [16],      // ㅟ (wi → 위)
+  'weɪ': [15],     // ㅞ (way → 웨이) - but eɪ part needs handling
+
+  // j + vowel combinations (semi-vowel j/y)
+  'juː': [17],     // ㅠ (yu → 유)
+  'ju': [17],      // ㅠ (yu → 유)
+  'jə': [6],       // ㅕ (yuh → 여)
+  'jɛ': [6],       // ㅕ (yeh → 여)
+  'jɑː': [2],      // ㅑ (ya → 야)
+  'jɑ': [2],       // ㅑ (ya → 야)
+  'jɔː': [12],     // ㅛ (yo → 요)
+  'jɔ': [12],      // ㅛ (yo → 요)
+  'ji': [20],      // ㅣ (yi → 이)
+  'jɪ': [20],      // ㅣ (yi → 이)
+
   // Simple vowels
   'iː': [20],      // ㅣ
   'i': [20],       // ㅣ
@@ -151,6 +177,23 @@ function isVowelIPA(char: string, text: string, index: number): boolean {
 }
 
 /**
+ * Check if there's a consonant cluster starting at this position
+ */
+function isConsonantCluster(text: string, index: number): boolean {
+  const twoChar = text.substring(index, index + 2);
+  return CONSONANT_CLUSTERS[twoChar] !== undefined;
+}
+
+/**
+ * Check if the next character should start a new syllable
+ * (either a vowel or part of a consonant cluster)
+ */
+function isNewSyllableStart(text: string, index: number): boolean {
+  if (index >= text.length) return false;
+  return isVowelIPA(text[index], text, index) || isConsonantCluster(text, index);
+}
+
+/**
  * Convert IPA notation to Korean pronunciation with stress marking
  */
 export function ipaToKorean(ipa: string | undefined): string {
@@ -185,18 +228,172 @@ export function ipaToKorean(ipa: string | undefined): string {
   let nextSyllableStressed = stressPositions.has(i);
 
   while (i < text.length) {
-    // Try to match consonant (including clusters and digraphs)
+    // 1. Check for consonant clusters FIRST (pɹ, tɹ, etc.)
+    const twoChar = text.substring(i, i + 2);
+    if (CONSONANT_CLUSTERS[twoChar] !== undefined) {
+      const [firstCho, secondCho] = CONSONANT_CLUSTERS[twoChar];
+      i += 2;
+
+      // Create first syllable: consonant + ㅡ (e.g., 트)
+      const firstSyllable = assembleHangul(firstCho, 18, 0); // 18 = ㅡ
+      result.push(wrapIfStressed(firstSyllable, nextSyllableStressed));
+      nextSyllableStressed = false;
+
+      // Update stress flag
+      if (stressPositions.has(i)) {
+        nextSyllableStressed = true;
+      }
+
+      // Look for following vowel for second syllable
+      let vowel: string | null = null;
+      let vowelLen = 0;
+
+      for (let len = 3; len >= 1; len--) {
+        const vowelStr = text.substring(i, i + len);
+        if (VOWEL_TO_JUNGSEONG[vowelStr] !== undefined) {
+          vowel = vowelStr;
+          vowelLen = len;
+          break;
+        }
+      }
+
+      if (vowel !== null) {
+        const jungIndices = VOWEL_TO_JUNGSEONG[vowel];
+        i += vowelLen;
+
+        // Check for trailing consonant (both simple and diphthongs)
+        let jongIdx = 0;
+        let consonantConsumed = 0;
+
+        const nextChar = text[i];
+        const nextNextChar = text[i + 1];
+
+        const nextTwoChar = text.substring(i, i + 2);
+        if (CONSONANT_TO_JONGSEONG[nextTwoChar] !== undefined) {
+          const afterIdx = i + 2;
+          const startsNewSyllable = isNewSyllableStart(text, afterIdx);
+          if (!startsNewSyllable) {
+            jongIdx = CONSONANT_TO_JONGSEONG[nextTwoChar];
+            consonantConsumed = 2;
+          }
+        } else if (nextChar && CONSONANT_TO_JONGSEONG[nextChar] !== undefined) {
+          // Check if consonant is followed by a vowel (then it's initial of next syllable)
+          const hasVowelAfter = nextNextChar && isVowelIPA(nextNextChar, text, i + 1);
+          const hasClusterAfter = isConsonantCluster(text, i);
+
+          if (!hasVowelAfter && !hasClusterAfter) {
+            jongIdx = CONSONANT_TO_JONGSEONG[nextChar];
+            consonantConsumed = 1;
+          }
+        }
+
+        // Create second syllable (e.g., 리)
+        if (jungIndices.length === 1) {
+          i += consonantConsumed;
+          const syllable = assembleHangul(secondCho, jungIndices[0], jongIdx);
+          result.push(wrapIfStressed(syllable, nextSyllableStressed));
+          nextSyllableStressed = false;
+        } else {
+          // Diphthong - attach jongseong to second syllable (타임, not 타이므)
+          i += consonantConsumed;
+          const firstSyllable = assembleHangul(secondCho, jungIndices[0], 0);
+          result.push(wrapIfStressed(firstSyllable, nextSyllableStressed));
+          nextSyllableStressed = false;
+          result.push(assembleHangul(11, jungIndices[1], jongIdx));
+        }
+
+        // Update stress flag
+        if (stressPositions.has(i)) {
+          nextSyllableStressed = true;
+        }
+      } else {
+        // No vowel after cluster, use default ㅡ for second consonant
+        const syllable = assembleHangul(secondCho, 18, 0);
+        result.push(wrapIfStressed(syllable, nextSyllableStressed));
+        nextSyllableStressed = false;
+
+        // Update stress flag
+        if (stressPositions.has(i)) {
+          nextSyllableStressed = true;
+        }
+      }
+      continue;
+    }
+
+    // 2. Check for semi-vowels (w, j) + vowel combinations
+    const currentChar = text[i];
+    if (currentChar === 'w' || currentChar === 'j') {
+      // Try longer combinations first (up to 4 chars: w + 3-char vowel)
+      let semiVowelCombo: string | null = null;
+      let comboLen = 0;
+
+      for (let len = 4; len >= 2; len--) {
+        const testCombo = text.substring(i, i + len);
+        if (VOWEL_TO_JUNGSEONG[testCombo] !== undefined) {
+          semiVowelCombo = testCombo;
+          comboLen = len;
+          break;
+        }
+      }
+
+      if (semiVowelCombo !== null) {
+        // Found w/j + vowel combination, treat as vowel-only syllable
+        const jungIndices = VOWEL_TO_JUNGSEONG[semiVowelCombo];
+        i += comboLen;
+
+        // For diphthongs, don't check for trailing consonants
+        let jongIdx = 0;
+        let consonantConsumed = 0;
+
+        if (jungIndices.length === 1) {
+          const nextChar = text[i];
+          const nextNextChar = text[i + 1];
+
+          const nextTwoChar = text.substring(i, i + 2);
+          if (CONSONANT_TO_JONGSEONG[nextTwoChar] !== undefined) {
+            const afterIdx = i + 2;
+            const startsNewSyllable = isNewSyllableStart(text, afterIdx);
+            if (!startsNewSyllable) {
+              jongIdx = CONSONANT_TO_JONGSEONG[nextTwoChar];
+              consonantConsumed = 2;
+            }
+          } else if (nextChar && CONSONANT_TO_JONGSEONG[nextChar] !== undefined) {
+            const startsNewSyllable = isNewSyllableStart(text, i);
+            if (!startsNewSyllable) {
+              jongIdx = CONSONANT_TO_JONGSEONG[nextChar];
+              consonantConsumed = 1;
+            }
+          }
+        }
+
+        // Create syllable(s) with ㅇ (null initial)
+        if (jungIndices.length === 1) {
+          i += consonantConsumed;
+          const syllable = assembleHangul(11, jungIndices[0], jongIdx); // 11 = ㅇ
+          result.push(wrapIfStressed(syllable, nextSyllableStressed));
+          nextSyllableStressed = false;
+        } else {
+          // Diphthong - attach jongseong to second syllable
+          i += consonantConsumed;
+          const firstSyllable = assembleHangul(11, jungIndices[0], 0);
+          result.push(wrapIfStressed(firstSyllable, nextSyllableStressed));
+          nextSyllableStressed = false;
+          result.push(assembleHangul(11, jungIndices[1], jongIdx));
+        }
+
+        // Update stress flag
+        if (stressPositions.has(i)) {
+          nextSyllableStressed = true;
+        }
+        continue;
+      }
+    }
+
+    // 3. Try 2-char consonants (tʃ, dʒ)
     let consonantLen = 0;
     let choIdx: number | null = null;
 
-    // 1. Try consonant clusters first (pɹ, tɹ, etc.) - HIGHEST PRIORITY
-    const twoChar = text.substring(i, i + 2);
-    if (CONSONANT_CLUSTERS[twoChar] !== undefined) {
-      choIdx = CONSONANT_CLUSTERS[twoChar];
-      consonantLen = 2;
-    }
-    // 2. Try 2-char consonants (tʃ, dʒ)
-    else if (CONSONANT_TO_CHOSEONG[twoChar] !== undefined) {
+    if (CONSONANT_TO_CHOSEONG[twoChar] !== undefined) {
       choIdx = CONSONANT_TO_CHOSEONG[twoChar];
       consonantLen = 2;
     }
@@ -230,40 +427,44 @@ export function ipaToKorean(ipa: string | undefined): string {
         const jungIndices = VOWEL_TO_JUNGSEONG[vowel];
         i += vowelLen;
 
-        // Check for trailing consonant (jongseong)
+        // Check for trailing consonant (both simple and diphthongs)
         let jongIdx = 0;
+        let consonantConsumed = 0;
+
         const nextChar = text[i];
         const nextNextChar = text[i + 1];
 
         // Try 2-char consonant
         const nextTwoChar = text.substring(i, i + 2);
         if (CONSONANT_TO_JONGSEONG[nextTwoChar] !== undefined) {
-          // Check if it should be jongseong or start of next syllable
           const afterIdx = i + 2;
-          const isVowelAfter = afterIdx < text.length && isVowelIPA(text[afterIdx], text, afterIdx);
+          const startsNewSyllable = isNewSyllableStart(text, afterIdx);
 
-          if (!isVowelAfter) {
+          if (!startsNewSyllable) {
             jongIdx = CONSONANT_TO_JONGSEONG[nextTwoChar];
-            i += 2;
+            consonantConsumed = 2;
           }
         } else if (nextChar && CONSONANT_TO_JONGSEONG[nextChar] !== undefined) {
-          // Check if next char is start of new syllable
-          const isVowelAfter = nextNextChar && isVowelIPA(nextNextChar, text, i + 1);
+          // Check if consonant is followed by a vowel (then it's initial of next syllable)
+          const hasVowelAfter = nextNextChar && isVowelIPA(nextNextChar, text, i + 1);
+          const hasClusterAfter = isConsonantCluster(text, i);
 
-          if (!isVowelAfter) {
+          if (!hasVowelAfter && !hasClusterAfter) {
             jongIdx = CONSONANT_TO_JONGSEONG[nextChar];
-            i += 1;
+            consonantConsumed = 1;
           }
         }
 
         // Assemble syllable(s)
         if (jungIndices.length === 1) {
           // Simple vowel
+          i += consonantConsumed;
           const syllable = assembleHangul(choIdx, jungIndices[0], jongIdx);
           result.push(wrapIfStressed(syllable, nextSyllableStressed));
           nextSyllableStressed = false;
         } else {
-          // Diphthong - create two syllables
+          // Diphthong - attach jongseong to second syllable (타임, not 타이므)
+          i += consonantConsumed;
           const firstSyllable = assembleHangul(choIdx, jungIndices[0], 0);
           result.push(wrapIfStressed(firstSyllable, nextSyllableStressed));
           nextSyllableStressed = false;
@@ -305,39 +506,45 @@ export function ipaToKorean(ipa: string | undefined): string {
       const jungIndices = VOWEL_TO_JUNGSEONG[vowel];
       i += vowelLen;
 
-      // Check for trailing consonant
+      // For diphthongs, don't check for trailing consonants
       let jongIdx = 0;
-      const nextChar = text[i];
-      const nextNextChar = text[i + 1];
+      let consonantConsumed = 0;
 
-      const nextTwoChar = text.substring(i, i + 2);
-      if (CONSONANT_TO_JONGSEONG[nextTwoChar] !== undefined) {
-        const afterIdx = i + 2;
-        const isVowelAfter = afterIdx < text.length && isVowelIPA(text[afterIdx], text, afterIdx);
+      if (jungIndices.length === 1) {
+        const nextChar = text[i];
+        const nextNextChar = text[i + 1];
 
-        if (!isVowelAfter) {
-          jongIdx = CONSONANT_TO_JONGSEONG[nextTwoChar];
-          i += 2;
-        }
-      } else if (nextChar && CONSONANT_TO_JONGSEONG[nextChar] !== undefined) {
-        const isVowelAfter = nextNextChar && isVowelIPA(nextNextChar, text, i + 1);
+        const nextTwoChar = text.substring(i, i + 2);
+        if (CONSONANT_TO_JONGSEONG[nextTwoChar] !== undefined) {
+          const afterIdx = i + 2;
+          const isVowelAfter = afterIdx < text.length && isVowelIPA(text[afterIdx], text, afterIdx);
 
-        if (!isVowelAfter) {
-          jongIdx = CONSONANT_TO_JONGSEONG[nextChar];
-          i += 1;
+          if (!isVowelAfter) {
+            jongIdx = CONSONANT_TO_JONGSEONG[nextTwoChar];
+            consonantConsumed = 2;
+          }
+        } else if (nextChar && CONSONANT_TO_JONGSEONG[nextChar] !== undefined) {
+          const isVowelAfter = nextNextChar && isVowelIPA(nextNextChar, text, i + 1);
+
+          if (!isVowelAfter) {
+            jongIdx = CONSONANT_TO_JONGSEONG[nextChar];
+            consonantConsumed = 1;
+          }
         }
       }
 
       // Assemble syllable(s) with ㅇ (null initial)
       if (jungIndices.length === 1) {
+        i += consonantConsumed;
         const syllable = assembleHangul(11, jungIndices[0], jongIdx); // 11 = ㅇ
         result.push(wrapIfStressed(syllable, nextSyllableStressed));
         nextSyllableStressed = false;
       } else {
+        // Diphthong - no jongseong
         const firstSyllable = assembleHangul(11, jungIndices[0], 0);
         result.push(wrapIfStressed(firstSyllable, nextSyllableStressed));
         nextSyllableStressed = false;
-        result.push(assembleHangul(11, jungIndices[1], jongIdx));
+        result.push(assembleHangul(11, jungIndices[1], 0));
       }
 
       // Update stress flag for next position
