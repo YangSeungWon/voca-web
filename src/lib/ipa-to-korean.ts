@@ -153,11 +153,12 @@ function assembleHangul(cho: number, jung: number, jong: number = 0): string {
 
 /**
  * Wrap syllable with <strong> tag if stressed
- * Uses color, extra bold weight, and slightly larger size for emphasis
+ * Uses color (blue-600/blue-400), extra bold weight, and slightly larger size for emphasis
+ * Automatically adapts to light/dark mode via Tailwind classes
  */
 function wrapIfStressed(syllable: string, isStressed: boolean): string {
   return isStressed
-    ? `<strong style="color: #2563EB; font-weight: 900; font-size: 1.1em;">${syllable}</strong>`
+    ? `<strong class="text-blue-600 dark:text-blue-400 font-black text-[1.1em]">${syllable}</strong>`
     : syllable;
 }
 

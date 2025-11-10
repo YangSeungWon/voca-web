@@ -394,7 +394,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                         />
                       </div>
                     </td>
-                    <td className="p-2 font-medium text-gray-900 dark:text-gray-100">
+                    <td className="p-2 font-medium text-lg text-gray-900 dark:text-gray-100">
                       <div className="flex items-center gap-2">
                         {item.word.word}
                         <button
@@ -422,11 +422,11 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                         );
                       })() : '-'}
                     </td>
-                    <td className="p-2 text-gray-900 dark:text-gray-100">{item.word.definitions[0]?.meaning || '-'}</td>
-                    <td className="p-2 text-gray-500 dark:text-gray-400">
+                    <td className="p-2 text-base text-gray-900 dark:text-gray-100">{item.word.definitions[0]?.meaning || '-'}</td>
+                    <td className="p-2 text-sm text-gray-500 dark:text-gray-400">
                       {item.word.definitions[0]?.partOfSpeech || '-'}
                     </td>
-                    <td className="p-2 text-gray-900 dark:text-gray-100">
+                    <td className="p-2 text-sm text-gray-900 dark:text-gray-100">
                       {item.group ? (
                         <div className="flex items-center gap-1">
                           <div
