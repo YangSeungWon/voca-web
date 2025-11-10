@@ -4,4 +4,5 @@
     <string name="title_activity_main">Voca Web</string>
     <string name="package_name">kr.ysw.voca</string>
     <string name="custom_url_scheme">kr.ysw.voca</string>
+    <string name="widget_description">Show a new vocabulary word every day</string>
 </resources>
