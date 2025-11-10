@@ -351,8 +351,6 @@ export function ipaToKorean(ipa: string | undefined): string {
 
         if (jungIndices.length === 1) {
           const nextChar = text[i];
-          const nextNextChar = text[i + 1];
-
           const nextTwoChar = text.substring(i, i + 2);
           if (CONSONANT_TO_JONGSEONG[nextTwoChar] !== undefined) {
             const afterIdx = i + 2;

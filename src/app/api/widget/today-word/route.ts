@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get total count of user's words
-    const totalWords = await prisma.vocabularyWord.count({
+    const totalWords = await prisma.vocabulary.count({
       where: { userId: user.id }
     });
 
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
     const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
     const randomIndex = seed % totalWords;
 
-    const randomWord = await prisma.vocabularyWord.findMany({
+    const randomWord = await prisma.vocabulary.findMany({
       where: { userId: user.id },
       include: {
         word: true

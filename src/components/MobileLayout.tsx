@@ -1,14 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default function MobileLayout({ children }: { children: React.ReactNode }) {
-  const [isCapacitor, setIsCapacitor] = useState(false);
-
   useEffect(() => {
     // Check if running in Capacitor
-    if (typeof window !== 'undefined' && (window as any).Capacitor) {
-      setIsCapacitor(true);
+    if (typeof window !== 'undefined' && 'Capacitor' in window) {
       document.body.classList.add('capacitor-app');
 
       // Add mobile-specific styles

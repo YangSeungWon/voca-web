@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get words that need review (level 1-3, or recently added)
-    const words = await prisma.vocabularyWord.findMany({
+    const words = await prisma.vocabulary.findMany({
       where: {
         userId: user.id,
         OR: [
@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
     });
 
     // Format response
-    const reviewWords = words.map(wordData => {
+    const reviewWords = words.map((wordData: { id: string; word: any; level: number }) => {
       const wordInfo = wordData.word as any;
       return {
         id: wordData.id,
