@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { getUserId } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
+import { formatPronunciation } from '@/lib/ipa-to-korean';
 
 interface VocabularyWord {
   id: string;
@@ -101,11 +102,20 @@ export default function VocabularyList() {
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h3 className="font-medium text-lg">{item.word.word}</h3>
-                {item.word.pronunciation && (
-                  <span className="text-sm text-gray-500">
-                    {item.word.pronunciation}
-                  </span>
-                )}
+                {item.word.pronunciation && (() => {
+                  const { korean, ipa } = formatPronunciation(item.word.pronunciation);
+                  return (
+                    <div className="flex items-center gap-1">
+                      {korean && (
+                        <span
+                          className="text-sm font-medium text-blue-600 dark:text-blue-400"
+                          dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
+                        />
+                      )}
+                      <span className="text-xs text-gray-500">{ipa}</span>
+                    </div>
+                  );
+                })()}
                 <button
                   onClick={() => toggleExpand(item.id)}
                   className="p-1 hover:bg-gray-100 rounded transition-colors"

@@ -6,6 +6,7 @@ import { DictionaryEntry } from '@/lib/dictionary';
 import { getUserId } from '@/lib/auth';
 import { speak } from '@/lib/speech';
 import { apiFetch } from '@/lib/api-client';
+import { formatPronunciation } from '@/lib/ipa-to-korean';
 
 interface WordDisplayProps {
   word: DictionaryEntry;
@@ -158,9 +159,20 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
         <div>
           <div className="flex items-center gap-3">
             <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">{word.word}</span>
-            {word.pronunciation && (
-              <span className="text-sm text-gray-500">{word.pronunciation}</span>
-            )}
+            {word.pronunciation && (() => {
+              const { korean, ipa } = formatPronunciation(word.pronunciation);
+              return (
+                <div className="flex items-center gap-2">
+                  {korean && (
+                    <span
+                      className="text-sm font-medium text-blue-600 dark:text-blue-400"
+                      dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
+                    />
+                  )}
+                  <span className="text-xs text-gray-500">{ipa}</span>
+                </div>
+              );
+            })()}
             <button
               onClick={() => speak(word.word)}
               className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-sm transition-colors"

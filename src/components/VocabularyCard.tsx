@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Trash2, Volume2, ChevronRight } from 'lucide-react';
 import { speak } from '@/lib/speech';
 import ExampleSentences from './ExampleSentences';
+import { formatPronunciation } from '@/lib/ipa-to-korean';
 
 interface VocabularyWord {
   id: string;
@@ -45,11 +46,20 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
               <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
                 {item.word.word}
               </h3>
-              {item.word.pronunciation && (
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {item.word.pronunciation}
-                </span>
-              )}
+              {item.word.pronunciation && (() => {
+                const { korean, ipa } = formatPronunciation(item.word.pronunciation);
+                return (
+                  <div className="flex items-center gap-1">
+                    {korean && (
+                      <span
+                        className="text-sm font-medium text-blue-600 dark:text-blue-400"
+                        dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
+                      />
+                    )}
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{ipa}</span>
+                  </div>
+                );
+              })()}
             </div>
             
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">

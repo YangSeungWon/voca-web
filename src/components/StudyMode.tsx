@@ -7,6 +7,7 @@ import { Volume2, ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { apiFetch } from '@/lib/api-client';
+import { formatPronunciation } from '@/lib/ipa-to-korean';
 
 interface StudyWord {
   id: string;
@@ -381,11 +382,20 @@ export default function StudyMode() {
                 <Volume2 size={20} />
               </button>
             </div>
-            {currentWord.word.pronunciation && (
-              <div className="text-sm text-gray-500 mt-2">
-                {currentWord.word.pronunciation}
-              </div>
-            )}
+            {currentWord.word.pronunciation && (() => {
+              const { korean, ipa } = formatPronunciation(currentWord.word.pronunciation);
+              return (
+                <div className="flex items-center justify-center gap-2 mt-2">
+                  {korean && (
+                    <span
+                      className="text-base font-medium text-blue-600 dark:text-blue-400"
+                      dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
+                    />
+                  )}
+                  <span className="text-sm text-gray-500">{ipa}</span>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Answer Side */}

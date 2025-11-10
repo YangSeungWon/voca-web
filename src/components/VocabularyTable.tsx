@@ -9,6 +9,7 @@ import ExampleSentences from './ExampleSentences';
 import VocabularyCard from './VocabularyCard';
 import PullToRefresh from './PullToRefresh';
 import { apiFetch } from '@/lib/api-client';
+import { formatPronunciation } from '@/lib/ipa-to-korean';
 
 interface VocabularyWord {
   id: string;
@@ -405,7 +406,22 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                         </button>
                       </div>
                     </td>
-                    <td className="p-2 text-gray-500 dark:text-gray-400">{item.word.pronunciation || '-'}</td>
+                    <td className="p-2 text-gray-500 dark:text-gray-400">
+                      {item.word.pronunciation ? (() => {
+                        const { korean, ipa } = formatPronunciation(item.word.pronunciation);
+                        return (
+                          <div className="flex flex-col">
+                            {korean && (
+                              <span
+                                className="font-medium text-blue-600 dark:text-blue-400 text-xs"
+                                dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
+                              />
+                            )}
+                            <span className="text-xs text-gray-400">{ipa}</span>
+                          </div>
+                        );
+                      })() : '-'}
+                    </td>
                     <td className="p-2 text-gray-900 dark:text-gray-100">{item.word.definitions[0]?.meaning || '-'}</td>
                     <td className="p-2 text-gray-500 dark:text-gray-400">
                       {item.word.definitions[0]?.partOfSpeech || '-'}
