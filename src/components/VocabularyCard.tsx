@@ -42,21 +42,21 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
       >
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+            <div className="flex items-center gap-3 mb-1">
+              <h3 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
                 {item.word.word}
               </h3>
               {item.word.pronunciation && (() => {
                 const { korean, ipa } = formatPronunciation(item.word.pronunciation);
                 return (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-3">
                     {korean && (
                       <span
-                        className="text-sm font-medium text-blue-600 dark:text-blue-400"
+                        className="text-2xl font-medium text-blue-600 dark:text-blue-400"
                         dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
                       />
                     )}
-                    <span className="text-xs text-gray-500 dark:text-gray-400">{ipa}</span>
+                    <span className="text-2xl text-gray-500 dark:text-gray-400">{ipa}</span>
                   </div>
                 );
               })()}

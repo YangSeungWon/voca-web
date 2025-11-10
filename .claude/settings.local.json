@@ -3,7 +3,10 @@
     "allow": [
       "Bash(npx cap:*)",
       "Bash(./gradlew:*)",
-      "Bash(xcodebuild:*)"
+      "Bash(xcodebuild:*)",
+      "Bash(cat:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx tsx:*)"
     ],
     "deny": [],
     "ask": []

@@ -158,18 +158,18 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
       <div className="p-4 space-y-3">
         <div>
           <div className="flex items-center gap-3">
-            <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">{word.word}</span>
+            <span className="text-2xl font-semibold text-gray-800 dark:text-gray-200">{word.word}</span>
             {word.pronunciation && (() => {
               const { korean, ipa } = formatPronunciation(word.pronunciation);
               return (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   {korean && (
                     <span
-                      className="text-sm font-medium text-blue-600 dark:text-blue-400"
+                      className="text-2xl font-medium text-blue-600 dark:text-blue-400"
                       dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
                     />
                   )}
-                  <span className="text-xs text-gray-500">{ipa}</span>
+                  <span className="text-2xl text-gray-500">{ipa}</span>
                 </div>
               );
             })()}

@@ -385,14 +385,14 @@ export default function StudyMode() {
             {currentWord.word.pronunciation && (() => {
               const { korean, ipa } = formatPronunciation(currentWord.word.pronunciation);
               return (
-                <div className="flex items-center justify-center gap-2 mt-2">
+                <div className="flex items-center justify-center gap-3 mt-2">
                   {korean && (
                     <span
-                      className="text-base font-medium text-blue-600 dark:text-blue-400"
+                      className="text-2xl font-medium text-blue-600 dark:text-blue-400"
                       dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
                     />
                   )}
-                  <span className="text-sm text-gray-500">{ipa}</span>
+                  <span className="text-2xl text-gray-500">{ipa}</span>
                 </div>
               );
             })()}
