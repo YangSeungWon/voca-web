@@ -9,70 +9,62 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
     // Check if running in Capacitor
     if (typeof window !== 'undefined' && (window as any).Capacitor) {
       setIsCapacitor(true);
-      // Add mobile-specific class to body
       document.body.classList.add('capacitor-app');
-      
+
       // Add mobile-specific styles
       const style = document.createElement('style');
       style.innerHTML = `
-        .mobile-safe-area {
-          padding-top: env(safe-area-inset-top);
-          padding-left: env(safe-area-inset-left);
-          padding-right: env(safe-area-inset-right);
+        /* Root variables for safe area insets */
+        :root {
+          --safe-area-top: env(safe-area-inset-top, 0px);
+          --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+          --safe-area-left: env(safe-area-inset-left, 0px);
+          --safe-area-right: env(safe-area-inset-right, 0px);
         }
-        
-        /* Fixed header for mobile */
+
+        /* Prevent horizontal scroll */
+        html, body {
+          overflow-x: hidden;
+          width: 100%;
+        }
+
+        /* Capacitor app container */
+        .capacitor-app {
+          min-height: 100vh;
+          min-height: -webkit-fill-available;
+        }
+
+        /* Fixed header with safe area */
         .capacitor-app header {
-          position: fixed !important;
+          position: fixed;
           top: 0;
           left: 0;
           right: 0;
           z-index: 50;
-          padding-top: env(safe-area-inset-top);
-          background: white;
+          padding-top: var(--safe-area-top);
+          padding-left: var(--safe-area-left);
+          padding-right: var(--safe-area-right);
         }
-        
-        .capacitor-app .dark header {
-          background: rgb(31, 41, 55);
-        }
-        
-        /* Ensure header background in container */
-        .capacitor-app .bg-white.dark\\:bg-gray-800 {
-          background: white !important;
-        }
-        
-        .capacitor-app .dark .bg-white.dark\\:bg-gray-800 {
-          background: rgb(31, 41, 55) !important;
-        }
-        
-        /* Adjust main content to account for fixed header */
+
+        /* Main content with proper spacing */
         .capacitor-app main {
-          padding-top: calc(env(safe-area-inset-top) + 50px);
+          padding-top: calc(var(--safe-area-top) + 64px);
+          padding-bottom: calc(var(--safe-area-bottom) + 80px);
+          padding-left: var(--safe-area-left);
+          padding-right: var(--safe-area-right);
+          min-height: 100vh;
         }
-        
-        /* Fix bottom navigation overlap */
-        .capacitor-app .mobile-bottom-nav {
-          position: fixed !important;
+
+        /* Bottom navigation with safe area */
+        .capacitor-app nav[class*="bottom"] {
+          position: fixed;
           bottom: 0;
           left: 0;
           right: 0;
-          padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
-          background: inherit;
           z-index: 40;
-        }
-        
-        /* Add padding to content to account for bottom nav */
-        .capacitor-app main {
-          padding-bottom: calc(env(safe-area-inset-bottom) + 80px) !important;
-        }
-        
-        html, body { overflow-x: hidden; width: 100%; }
-        .mobile-viewport-fix { max-width: 100vw; overflow-x: hidden; }
-        * { max-width: 100vw; }
-        
-        .capacitor-app {
-          min-height: 100vh;
-          min-height: -webkit-fill-available;
+          padding-bottom: var(--safe-area-bottom);
+          padding-left: var(--safe-area-left);
+          padding-right: var(--safe-area-right);
         }
       `;
       document.head.appendChild(style);
@@ -84,23 +76,15 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
       };
       setVH();
       window.addEventListener('resize', setVH);
+      window.addEventListener('orientationchange', setVH);
 
       return () => {
         window.removeEventListener('resize', setVH);
+        window.removeEventListener('orientationchange', setVH);
         document.body.classList.remove('capacitor-app');
       };
     }
   }, []);
-
-  if (isCapacitor) {
-    return (
-      <div className="mobile-safe-area mobile-viewport-fix">
-        <div className="mobile-container">
-          {children}
-        </div>
-      </div>
-    );
-  }
 
   return <>{children}</>;
 }
