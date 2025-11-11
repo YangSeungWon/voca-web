@@ -8,54 +8,102 @@
  * Jongseong (종성): (none)(0) ㄱ(1) ㄲ(2) ㄳ(3) ㄴ(4) ㄵ(5) ㄶ(6) ㄷ(7) ㄹ(8) ㄺ(9) ㄻ(10) ㄼ(11) ㄽ(12) ㄾ(13) ㄿ(14) ㅀ(15) ㅁ(16) ㅂ(17) ㅄ(18) ㅅ(19) ㅆ(20) ㅇ(21) ㅈ(22) ㅊ(23) ㅋ(24) ㅌ(25) ㅍ(26) ㅎ(27)
  */
 
+// Choseong (초성) index constants for readability
+const CHOSEONG = {
+  GIYEOK: 0,   // ㄱ
+  SSANGGIYEOK: 1,  // ㄲ
+  NIEUN: 2,    // ㄴ
+  DIGEUT: 3,   // ㄷ
+  SSANGDIGEUT: 4,  // ㄸ
+  RIEUL: 5,    // ㄹ
+  MIEUM: 6,    // ㅁ
+  BIEUP: 7,    // ㅂ
+  SSANGBIEUP: 8,   // ㅃ
+  SIOS: 9,     // ㅅ
+  SSANGSIOS: 10,   // ㅆ
+  IEUNG: 11,   // ㅇ
+  JIEUT: 12,   // ㅈ
+  SSANGJIEUT: 13,  // ㅉ
+  CHIEUT: 14,  // ㅊ
+  KIEUK: 15,   // ㅋ
+  TIEUT: 16,   // ㅌ
+  PIEUP: 17,   // ㅍ
+  HIEUT: 18,   // ㅎ
+} as const;
+
+// Jungseong (중성) index constants for readability
+const JUNGSEONG = {
+  A: 0,        // ㅏ
+  AE: 1,       // ㅐ
+  YA: 2,       // ㅑ
+  YAE: 3,      // ㅒ
+  EO: 4,       // ㅓ
+  E: 5,        // ㅔ
+  YEO: 6,      // ㅕ
+  YE: 7,       // ㅖ
+  O: 8,        // ㅗ
+  WA: 9,       // ㅘ
+  WAE: 10,     // ㅙ
+  OE: 11,      // ㅚ
+  YO: 12,      // ㅛ
+  U: 13,       // ㅜ
+  WO: 14,      // ㅝ
+  WE: 15,      // ㅞ
+  WI: 16,      // ㅟ
+  YU: 17,      // ㅠ
+  EU: 18,      // ㅡ
+  UI: 19,      // ㅢ
+  I: 20,       // ㅣ
+} as const;
+
 // Consonant clusters - these need to be split into two syllables
 // Format: [first consonant cho index, second consonant cho index]
 // Example: pɹ → p(ㅍ) + ㅡ + ɹ(ㄹ) → 프 + ㄹ... → 프라/프리/etc
 const CONSONANT_CLUSTERS: Record<string, [number, number]> = {
-  'pɹ': [17, 5], // ㅍ + ㄹ (pr → 프르)
-  'bɹ': [7, 5],  // ㅂ + ㄹ (br → 브르)
-  'tɹ': [16, 5], // ㅌ + ㄹ (tr → 트르)
-  'dɹ': [3, 5],  // ㄷ + ㄹ (dr → 드르)
-  'kɹ': [15, 5], // ㅋ + ㄹ (kr → 크르)
-  'gɹ': [0, 5],  // ㄱ + ㄹ (gr → 그르)
-  'fɹ': [17, 5], // ㅍ + ㄹ (fr → 프르)
-  'θɹ': [9, 5],  // ㅅ + ㄹ (thr → 스르)
-  'ʃɹ': [9, 5],  // ㅅ + ㄹ (shr → 슈르)
-  'pl': [17, 5], // ㅍ + ㄹ (pl → 플)
-  'bl': [7, 5],  // ㅂ + ㄹ (bl → 블)
-  'kl': [15, 5], // ㅋ + ㄹ (kl → 클)
-  'gl': [0, 5],  // ㄱ + ㄹ (gl → 글)
-  'fl': [17, 5], // ㅍ + ㄹ (fl → 플)
-  'sl': [9, 5],  // ㅅ + ㄹ (sl → 슬)
+  'pɹ': [CHOSEONG.PIEUP, CHOSEONG.RIEUL],   // ㅍ + ㄹ (pr → 프르)
+  'bɹ': [CHOSEONG.BIEUP, CHOSEONG.RIEUL],   // ㅂ + ㄹ (br → 브르)
+  'tɹ': [CHOSEONG.TIEUT, CHOSEONG.RIEUL],   // ㅌ + ㄹ (tr → 트르)
+  'dɹ': [CHOSEONG.DIGEUT, CHOSEONG.RIEUL],  // ㄷ + ㄹ (dr → 드르)
+  'kɹ': [CHOSEONG.KIEUK, CHOSEONG.RIEUL],   // ㅋ + ㄹ (kr → 크르)
+  'gɹ': [CHOSEONG.GIYEOK, CHOSEONG.RIEUL],  // ㄱ + ㄹ (gr → 그르)
+  'fɹ': [CHOSEONG.PIEUP, CHOSEONG.RIEUL],   // ㅍ + ㄹ (fr → 프르)
+  'θɹ': [CHOSEONG.SIOS, CHOSEONG.RIEUL],    // ㅅ + ㄹ (thr → 스르)
+  'ʃɹ': [CHOSEONG.SIOS, CHOSEONG.RIEUL],    // ㅅ + ㄹ (shr → 슈르)
+  'pl': [CHOSEONG.PIEUP, CHOSEONG.RIEUL],   // ㅍ + ㄹ (pl → 플)
+  'bl': [CHOSEONG.BIEUP, CHOSEONG.RIEUL],   // ㅂ + ㄹ (bl → 블)
+  'kl': [CHOSEONG.KIEUK, CHOSEONG.RIEUL],   // ㅋ + ㄹ (kl → 클)
+  'gl': [CHOSEONG.GIYEOK, CHOSEONG.RIEUL],  // ㄱ + ㄹ (gl → 글)
+  'fl': [CHOSEONG.PIEUP, CHOSEONG.RIEUL],   // ㅍ + ㄹ (fl → 플)
+  'sl': [CHOSEONG.SIOS, CHOSEONG.RIEUL],    // ㅅ + ㄹ (sl → 슬)
 };
 
 // IPA consonant to Korean Choseong (초성) index
 const CONSONANT_TO_CHOSEONG: Record<string, number> = {
-  'p': 17, // ㅍ
-  'b': 7,  // ㅂ
-  't': 16, // ㅌ
-  'd': 3,  // ㄷ
-  'k': 15, // ㅋ
-  'g': 0,  // ㄱ
-  'm': 6,  // ㅁ
-  'n': 2,  // ㄴ
-  'ŋ': 11, // ㅇ
-  'f': 17, // ㅍ
-  'v': 7,  // ㅂ
-  'θ': 9,  // ㅅ
-  'ð': 3,  // ㄷ
-  's': 9,  // ㅅ
-  'z': 12, // ㅈ
-  'ʃ': 9,  // ㅅ
-  'ʒ': 12, // ㅈ
-  'h': 18, // ㅎ
-  'tʃ': 14, // ㅊ
-  'dʒ': 12, // ㅈ
-  'l': 5,  // ㄹ
-  'r': 5,  // ㄹ
-  'ɹ': 5,  // ㄹ
-  'w': 11, // ㅇ (use ㅇ for w, will combine with vowel)
-  'j': 11, // ㅇ (use ㅇ for j, will combine with vowel)
+  'p': CHOSEONG.PIEUP,   // ㅍ
+  'b': CHOSEONG.BIEUP,   // ㅂ
+  't': CHOSEONG.TIEUT,   // ㅌ
+  'd': CHOSEONG.DIGEUT,  // ㄷ
+  'k': CHOSEONG.KIEUK,   // ㅋ
+  'g': CHOSEONG.GIYEOK,  // ㄱ
+  'm': CHOSEONG.MIEUM,   // ㅁ
+  'n': CHOSEONG.NIEUN,   // ㄴ
+  'ŋ': CHOSEONG.IEUNG,   // ㅇ
+  'f': CHOSEONG.PIEUP,   // ㅍ
+  'v': CHOSEONG.BIEUP,   // ㅂ
+  'θ': CHOSEONG.SIOS,    // ㅅ
+  'ð': CHOSEONG.DIGEUT,  // ㄷ
+  's': CHOSEONG.SIOS,    // ㅅ
+  'z': CHOSEONG.JIEUT,   // ㅈ
+  'ʃ': CHOSEONG.SIOS,    // ㅅ
+  'ʒ': CHOSEONG.JIEUT,   // ㅈ
+  'h': CHOSEONG.HIEUT,   // ㅎ
+  'tʃ': CHOSEONG.CHIEUT, // ㅊ
+  'dʒ': CHOSEONG.JIEUT,  // ㅈ
+  'l': CHOSEONG.RIEUL,   // ㄹ
+  'r': CHOSEONG.RIEUL,   // ㄹ
+  'ɹ': CHOSEONG.RIEUL,   // ㄹ
+  'w': CHOSEONG.IEUNG,   // ㅇ (use ㅇ for w, will combine with vowel)
+  'j': CHOSEONG.IEUNG,   // ㅇ (use ㅇ for j, will combine with vowel)
 };
 
 // Jongseong (종성) index constants for readability
@@ -102,71 +150,71 @@ const CONSONANT_TO_JONGSEONG: Record<string, number> = {
 // IPA vowel to Korean Jungseong (중성) - returns array for diphthongs
 const VOWEL_TO_JUNGSEONG: Record<string, number[]> = {
   // w + vowel combinations (semi-vowel w)
-  'wɜː': [14],     // ㅝ (wer → 워)
-  'wɜ': [14],      // ㅝ (wer → 워)
-  'wə': [14],      // ㅝ (wuh → 워)
-  'wɔː': [14],     // ㅝ (wor → 워)
-  'wɔ': [14],      // ㅝ (wor → 워)
-  'wɑː': [9],      // ㅘ (war → 와)
-  'wɑ': [9],       // ㅘ (war → 와)
-  'wɪ': [16],      // ㅟ (wi → 위)
-  'wi': [16],      // ㅟ (wi → 위)
-  'weɪ': [15],     // ㅞ (way → 웨이) - but eɪ part needs handling
+  'wɜː': [JUNGSEONG.WO],     // ㅝ (wer → 워)
+  'wɜ': [JUNGSEONG.WO],      // ㅝ (wer → 워)
+  'wə': [JUNGSEONG.WO],      // ㅝ (wuh → 워)
+  'wɔː': [JUNGSEONG.WO],     // ㅝ (wor → 워)
+  'wɔ': [JUNGSEONG.WO],      // ㅝ (wor → 워)
+  'wɑː': [JUNGSEONG.WA],     // ㅘ (war → 와)
+  'wɑ': [JUNGSEONG.WA],      // ㅘ (war → 와)
+  'wɪ': [JUNGSEONG.WI],      // ㅟ (wi → 위)
+  'wi': [JUNGSEONG.WI],      // ㅟ (wi → 위)
+  'weɪ': [JUNGSEONG.WE],     // ㅞ (way → 웨이) - but eɪ part needs handling
 
   // j + vowel combinations (semi-vowel j/y)
-  'juː': [17],     // ㅠ (yu → 유)
-  'ju': [17],      // ㅠ (yu → 유)
-  'jə': [6],       // ㅕ (yuh → 여)
-  'jɛ': [6],       // ㅕ (yeh → 여)
-  'jɑː': [2],      // ㅑ (ya → 야)
-  'jɑ': [2],       // ㅑ (ya → 야)
-  'jɔː': [12],     // ㅛ (yo → 요)
-  'jɔ': [12],      // ㅛ (yo → 요)
-  'ji': [20],      // ㅣ (yi → 이)
-  'jɪ': [20],      // ㅣ (yi → 이)
+  'juː': [JUNGSEONG.YU],     // ㅠ (yu → 유)
+  'ju': [JUNGSEONG.YU],      // ㅠ (yu → 유)
+  'jə': [JUNGSEONG.YEO],     // ㅕ (yuh → 여)
+  'jɛ': [JUNGSEONG.YEO],     // ㅕ (yeh → 여)
+  'jɑː': [JUNGSEONG.YA],     // ㅑ (ya → 야)
+  'jɑ': [JUNGSEONG.YA],      // ㅑ (ya → 야)
+  'jɔː': [JUNGSEONG.YO],     // ㅛ (yo → 요)
+  'jɔ': [JUNGSEONG.YO],      // ㅛ (yo → 요)
+  'ji': [JUNGSEONG.I],       // ㅣ (yi → 이)
+  'jɪ': [JUNGSEONG.I],       // ㅣ (yi → 이)
 
   // Simple vowels
-  'iː': [20],      // ㅣ
-  'i': [20],       // ㅣ
-  'ɪ': [20],       // ㅣ
-  'e': [5],        // ㅔ
-  'ɛ': [5],        // ㅔ
-  'æ': [1],        // ㅐ
-  'ɑː': [0],       // ㅏ
-  'ɑ': [0],        // ㅏ
-  'ɒ': [8],        // ㅗ
-  'ɔː': [8],       // ㅗ
-  'ɔ': [8],        // ㅗ
-  'ʌ': [4],        // ㅓ
-  'ə': [4],        // ㅓ
-  'ɜː': [4],       // ㅓ
-  'ɜ': [4],        // ㅓ
-  'ɝ': [4],        // ㅓ (rhotic schwa, American English r-colored)
-  'ʊ': [13],       // ㅜ
-  'uː': [13],      // ㅜ
-  'u': [13],       // ㅜ
+  'iː': [JUNGSEONG.I],       // ㅣ
+  'i': [JUNGSEONG.I],        // ㅣ
+  'ɪ': [JUNGSEONG.I],        // ㅣ
+  'e': [JUNGSEONG.E],        // ㅔ
+  'ɛ': [JUNGSEONG.E],        // ㅔ
+  'æ': [JUNGSEONG.AE],       // ㅐ
+  'ɑː': [JUNGSEONG.A],       // ㅏ
+  'ɑ': [JUNGSEONG.A],        // ㅏ
+  'ɒ': [JUNGSEONG.O],        // ㅗ
+  'ɔː': [JUNGSEONG.O],       // ㅗ
+  'ɔ': [JUNGSEONG.O],        // ㅗ
+  'ʌ': [JUNGSEONG.EO],       // ㅓ
+  'ə': [JUNGSEONG.EO],       // ㅓ
+  'ɜː': [JUNGSEONG.EO],      // ㅓ
+  'ɜ': [JUNGSEONG.EO],       // ㅓ
+  'ɝ': [JUNGSEONG.EO],       // ㅓ (rhotic schwa, American English r-colored)
+  'ʊ': [JUNGSEONG.U],        // ㅜ
+  'uː': [JUNGSEONG.U],       // ㅜ
+  'u': [JUNGSEONG.U],        // ㅜ
 
   // Syllabic consonants (act as vowel + consonant)
-  'l̩': [18],       // ㅡ (syllabic L: will add ㄹ as jongseong)
-  'n̩': [18],       // ㅡ (syllabic N: will add ㄴ as jongseong)
-  'm̩': [18],       // ㅡ (syllabic M: will add ㅁ as jongseong)
+  'l̩': [JUNGSEONG.EU],       // ㅡ (syllabic L: will add ㄹ as jongseong)
+  'n̩': [JUNGSEONG.EU],       // ㅡ (syllabic N: will add ㄴ as jongseong)
+  'm̩': [JUNGSEONG.EU],       // ㅡ (syllabic M: will add ㅁ as jongseong)
 
   // Diphthongs - create two syllables
-  'eɪ': [5, 20],   // ㅔ + ㅣ = 에이
-  'aɪ': [0, 20],   // ㅏ + ㅣ = 아이
-  'ɔɪ': [8, 20],   // ㅗ + ㅣ = 오이
-  'aʊ': [0, 13],   // ㅏ + ㅜ = 아우
-  'əʊ': [8],       // ㅗ (simplified)
-  'oʊ': [8],       // ㅗ (simplified)
-  'ɪə': [20, 4],   // ㅣ + ㅓ = 이어
-  'eə': [5, 4],    // ㅔ + ㅓ = 에어
-  'ʊə': [13, 4],   // ㅜ + ㅓ = 우어
+  'eɪ': [JUNGSEONG.E, JUNGSEONG.I],   // ㅔ + ㅣ = 에이
+  'aɪ': [JUNGSEONG.A, JUNGSEONG.I],   // ㅏ + ㅣ = 아이
+  'ɔɪ': [JUNGSEONG.O, JUNGSEONG.I],   // ㅗ + ㅣ = 오이
+  'aʊ': [JUNGSEONG.A, JUNGSEONG.U],   // ㅏ + ㅜ = 아우
+  'əʊ': [JUNGSEONG.O],                 // ㅗ (simplified)
+  'oʊ': [JUNGSEONG.O],                 // ㅗ (simplified)
+  'ɪə': [JUNGSEONG.I, JUNGSEONG.EO],  // ㅣ + ㅓ = 이어
+  'eə': [JUNGSEONG.E, JUNGSEONG.EO],  // ㅔ + ㅓ = 에어
+  'ʊə': [JUNGSEONG.U, JUNGSEONG.EO],  // ㅜ + ㅓ = 우어
 };
 
 /**
  * Create a Hangul syllable from Jamo components
  */
-function assembleHangul(cho: number, jung: number, jong: number = 0): string {
+function assembleHangul(cho: number, jung: number, jong: number = JONGSEONG.NONE): string {
   const code = 0xAC00 + (cho * 588) + (jung * 28) + jong;
   return String.fromCharCode(code);
 }
@@ -259,7 +307,7 @@ export function ipaToKorean(ipa: string | undefined): string {
       i += 2;
 
       // Create first syllable: consonant + ㅡ (e.g., 트)
-      const firstSyllable = assembleHangul(firstCho, 18, 0); // 18 = ㅡ
+      const firstSyllable = assembleHangul(firstCho, JUNGSEONG.EU, JONGSEONG.NONE);
       result.push(wrapIfStressed(firstSyllable, nextSyllableStressed));
       nextSyllableStressed = false;
 
@@ -320,10 +368,10 @@ export function ipaToKorean(ipa: string | undefined): string {
         } else {
           // Diphthong - attach jongseong to second syllable (타임, not 타이므)
           i += consonantConsumed;
-          const firstSyllable = assembleHangul(secondCho, jungIndices[0], 0);
+          const firstSyllable = assembleHangul(secondCho, jungIndices[0], JONGSEONG.NONE);
           result.push(wrapIfStressed(firstSyllable, nextSyllableStressed));
           nextSyllableStressed = false;
-          result.push(assembleHangul(11, jungIndices[1], jongIdx));
+          result.push(assembleHangul(CHOSEONG.IEUNG, jungIndices[1], jongIdx));
         }
 
         // Update stress flag
@@ -332,7 +380,7 @@ export function ipaToKorean(ipa: string | undefined): string {
         }
       } else {
         // No vowel after cluster, use default ㅡ for second consonant
-        const syllable = assembleHangul(secondCho, 18, 0);
+        const syllable = assembleHangul(secondCho, JUNGSEONG.EU, JONGSEONG.NONE);
         result.push(wrapIfStressed(syllable, nextSyllableStressed));
         nextSyllableStressed = false;
 
@@ -402,16 +450,16 @@ export function ipaToKorean(ipa: string | undefined): string {
             autoJongIdx = JONGSEONG.MIEUM; // ㅁ
           }
 
-          const syllable = assembleHangul(11, jungIndices[0], autoJongIdx); // 11 = ㅇ
+          const syllable = assembleHangul(CHOSEONG.IEUNG, jungIndices[0], autoJongIdx);
           result.push(wrapIfStressed(syllable, nextSyllableStressed));
           nextSyllableStressed = false;
         } else {
           // Diphthong - attach jongseong to second syllable
           i += consonantConsumed;
-          const firstSyllable = assembleHangul(11, jungIndices[0], 0);
+          const firstSyllable = assembleHangul(CHOSEONG.IEUNG, jungIndices[0], JONGSEONG.NONE);
           result.push(wrapIfStressed(firstSyllable, nextSyllableStressed));
           nextSyllableStressed = false;
-          result.push(assembleHangul(11, jungIndices[1], jongIdx));
+          result.push(assembleHangul(CHOSEONG.IEUNG, jungIndices[1], jongIdx));
         }
 
         // Update stress flag
@@ -509,10 +557,10 @@ export function ipaToKorean(ipa: string | undefined): string {
         } else {
           // Diphthong - attach jongseong to second syllable (타임, not 타이므)
           i += consonantConsumed;
-          const firstSyllable = assembleHangul(choIdx, jungIndices[0], 0);
+          const firstSyllable = assembleHangul(choIdx, jungIndices[0], JONGSEONG.NONE);
           result.push(wrapIfStressed(firstSyllable, nextSyllableStressed));
           nextSyllableStressed = false;
-          result.push(assembleHangul(11, jungIndices[1], jongIdx)); // 11 = ㅇ (null initial)
+          result.push(assembleHangul(CHOSEONG.IEUNG, jungIndices[1], jongIdx));
         }
 
         // Update stress flag for next position
@@ -521,7 +569,7 @@ export function ipaToKorean(ipa: string | undefined): string {
         }
       } else {
         // Consonant without vowel - use default ㅡ
-        const syllable = assembleHangul(choIdx, 18, 0); // 18 = ㅡ
+        const syllable = assembleHangul(choIdx, JUNGSEONG.EU, JONGSEONG.NONE);
         result.push(wrapIfStressed(syllable, nextSyllableStressed));
         nextSyllableStressed = false;
 
@@ -580,15 +628,15 @@ export function ipaToKorean(ipa: string | undefined): string {
       // Assemble syllable(s) with ㅇ (null initial)
       if (jungIndices.length === 1) {
         i += consonantConsumed;
-        const syllable = assembleHangul(11, jungIndices[0], jongIdx); // 11 = ㅇ
+        const syllable = assembleHangul(CHOSEONG.IEUNG, jungIndices[0], jongIdx);
         result.push(wrapIfStressed(syllable, nextSyllableStressed));
         nextSyllableStressed = false;
       } else {
         // Diphthong - no jongseong
-        const firstSyllable = assembleHangul(11, jungIndices[0], 0);
+        const firstSyllable = assembleHangul(CHOSEONG.IEUNG, jungIndices[0], JONGSEONG.NONE);
         result.push(wrapIfStressed(firstSyllable, nextSyllableStressed));
         nextSyllableStressed = false;
-        result.push(assembleHangul(11, jungIndices[1], 0));
+        result.push(assembleHangul(CHOSEONG.IEUNG, jungIndices[1], JONGSEONG.NONE));
       }
 
       // Update stress flag for next position
