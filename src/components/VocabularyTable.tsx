@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { Trash2, Download, Upload, Filter, ChevronUp, ChevronDown, Volume2, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Trash2, Filter, ChevronUp, ChevronDown, Volume2, ChevronRight } from 'lucide-react';
 import { getUserId } from '@/lib/auth';
 import { speak } from '@/lib/speech';
-import { parseCSV, generateCSV, downloadCSV, getCSVTemplate } from '@/lib/csv';
 import ExampleSentences from './ExampleSentences';
 import VocabularyCard from './VocabularyCard';
 import PullToRefresh from './PullToRefresh';
@@ -46,9 +45,8 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [filter, setFilter] = useState('');
-  const [isImporting, setIsImporting] = useState(false);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-  const fileInputRef = useRef<HTMLInputElement>(null);
+
 
   useEffect(() => {
     fetchVocabulary();
@@ -131,56 +129,6 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
     setExpandedRows(newExpanded);
   };
 
-  const exportToCSV = () => {
-    const exportData = selectedRows.size > 0 
-      ? filteredWords.filter(w => selectedRows.has(w.id))
-      : filteredWords;
-    
-    const csvContent = generateCSV(exportData);
-    downloadCSV(csvContent, `vocabulary_${new Date().toISOString().split('T')[0]}.csv`);
-  };
-
-  const handleFileImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setIsImporting(true);
-    try {
-      const text = await file.text();
-      const parsedWords = parseCSV(text);
-      
-      if (parsedWords.length === 0) {
-        alert('No valid words found in the CSV file');
-        return;
-      }
-
-      const response = await apiFetch('/api/vocabulary/import', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-id': getUserId()
-        },
-        body: JSON.stringify({ words: parsedWords })
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        alert(`Import complete!\n✅ Imported: ${result.imported}\n⚠️ Duplicates: ${result.duplicates}\n❌ Failed: ${result.failed}`);
-        fetchVocabulary(); // Refresh the list
-      } else {
-        alert('Failed to import words');
-      }
-    } catch (error) {
-      console.error('Import error:', error);
-      alert('Error reading CSV file. Please check the format.');
-    } finally {
-      setIsImporting(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    }
-  };
-
   const filteredWords = words
     .filter(item => 
       filter === '' || 
@@ -237,72 +185,27 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
           </button>
         </div>
         <div className="flex items-center gap-2">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".csv"
-            onChange={handleFileImport}
-            className="hidden"
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isImporting}
-            className="px-3 py-1 text-xs bg-blue-600 text-white rounded-sm hover:bg-blue-700 flex items-center gap-1 disabled:opacity-50"
-            title="Import words from CSV file"
-          >
-            <Upload size={12} />
-            {isImporting ? 'Importing...' : 'Import'}
-          </button>
-          <button
-            onClick={() => downloadCSV(getCSVTemplate(), 'vocabulary_template.csv')}
-            className="px-3 py-1 text-xs bg-gray-600 text-white rounded-sm hover:bg-gray-700"
-            title="Download CSV template"
-          >
-            Template
-          </button>
-          <button
-            onClick={exportToCSV}
-            className="px-3 py-1 text-xs bg-green-600 text-white rounded-sm hover:bg-green-700 flex items-center gap-1"
-          >
-            <Download size={12} />
-            Export{selectedRows.size > 0 && ` (${selectedRows.size})`}
-          </button>
           <span className="text-xs text-gray-500">
             {filteredWords.length} words
           </span>
         </div>
       </div>
       
-      {/* Mobile Header */}
-      <div className="md:hidden border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
-        <div className="flex items-center justify-between mb-3">
+      {/* Mobile Header - Only show when there are words */}
+      {filteredWords.length > 0 && (
+        <div className="md:hidden border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
           <input
             type="text"
             placeholder="Search..."
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:border-blue-500"
           />
+          <div className="text-center text-xs text-gray-500 dark:text-gray-400 mt-2">
+            {filteredWords.length} words
+          </div>
         </div>
-        <div className="flex gap-3">
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isImporting}
-            className="flex-1 px-3 py-3 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Import CSV
-          </button>
-          <button
-            onClick={exportToCSV}
-            className="flex-1 px-3 py-3 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            Export {selectedRows.size > 0 && `(${selectedRows.size})`}
-          </button>
-        </div>
-        <div className="text-center text-xs text-gray-500 dark:text-gray-400 mt-2">
-          {filteredWords.length} words
-        </div>
-      </div>
+      )}
 
       {/* Desktop Table View */}
       <div className="hidden md:block overflow-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
@@ -472,23 +375,28 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
       {/* Mobile Card View */}
       <div className="md:hidden h-full">
         <PullToRefresh onRefresh={fetchVocabulary}>
-          <div className="p-4">
-            {filteredWords.length === 0 ? (
-              <div className="text-center text-gray-400 dark:text-gray-500 py-8">
-                No words in your vocabulary yet.
+          {filteredWords.length === 0 ? (
+            <div className="flex flex-col items-center justify-center px-6" style={{ minHeight: 'calc(100vh - 200px)' }}>
+              <div className="text-center">
+                <div className="text-gray-400 dark:text-gray-500 text-lg font-medium mb-2">
+                  No words in your vocabulary yet
+                </div>
+                <p className="text-sm text-gray-400 dark:text-gray-500">
+                  Add words from search or import from More section
+                </p>
               </div>
-            ) : (
-              <div>
-                {filteredWords.map((item) => (
-                  <VocabularyCard
-                    key={item.id}
-                    item={item}
-                    onDelete={handleDelete}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="p-4">
+              {filteredWords.map((item) => (
+                <VocabularyCard
+                  key={item.id}
+                  item={item}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          )}
         </PullToRefresh>
       </div>
     </div>

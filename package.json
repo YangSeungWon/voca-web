@@ -23,7 +23,8 @@
     "icon:android": "node scripts/generate-android-icon.js",
     "icon:all": "node scripts/generate-ios-icon.js && node scripts/generate-android-icon.js",
     "version:update": "node scripts/update-build-version.js",
-    "version:check": "node scripts/update-build-version.js --check"
+    "version:check": "node scripts/update-build-version.js --check",
+    "prepare": "husky"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.3",
@@ -56,6 +57,8 @@
     "eslint-config-next": "15.0.3",
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"

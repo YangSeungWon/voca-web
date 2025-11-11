@@ -216,23 +216,27 @@ export default function StudyMode() {
 
   if (words.length === 0) {
     return (
-      <div className="p-8 text-center">
-        <div className="text-gray-500 mb-4">No words to study</div>
-        <div className="text-sm text-gray-400">Add some words to your vocabulary first!</div>
+      <div className="flex flex-col items-center justify-center px-6" style={{ minHeight: 'calc(100vh - 200px)' }}>
+        <div className="text-center">
+          <div className="text-gray-500 dark:text-gray-400 text-lg font-medium mb-2">No words to study</div>
+          <div className="text-sm text-gray-400 dark:text-gray-500">Add some words to your vocabulary first!</div>
+        </div>
       </div>
     );
   }
 
   if (studyState === 'ready') {
     return (
-      <div className="p-8 text-center">
-        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Ready to Study?</h2>
-        <div className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-          You have {words.length} words to review today
+      <div className="flex flex-col items-center justify-center px-6" style={{ minHeight: 'calc(100vh - 200px)' }}>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Ready to Study?</h2>
+          <div className="text-base text-gray-600 dark:text-gray-400">
+            You have {words.length} words to review today
+          </div>
         </div>
         <button
           onClick={handleStart}
-          className="px-6 py-2 bg-gray-800 text-white rounded-sm hover:bg-gray-700"
+          className="px-8 py-4 text-lg font-medium bg-gray-800 text-white rounded-xl hover:bg-gray-700 shadow-lg transition-all active:scale-95"
         >
           Start Study Session
         </button>
@@ -241,40 +245,42 @@ export default function StudyMode() {
   }
 
   if (studyState === 'complete') {
-    const accuracy = sessionStats.total > 0 
-      ? Math.round((sessionStats.correct / sessionStats.total) * 100) 
+    const accuracy = sessionStats.total > 0
+      ? Math.round((sessionStats.correct / sessionStats.total) * 100)
       : 0;
 
     return (
-      <div className="p-8 text-center">
-        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Session Complete!</h2>
-        
-        <div className="mb-6 space-y-2">
-          <div className="text-3xl font-bold text-gray-800 dark:text-gray-200">{accuracy}%</div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Accuracy</div>
-        </div>
+      <div className="flex flex-col items-center justify-center px-6" style={{ minHeight: 'calc(100vh - 200px)' }}>
+        <div className="text-center w-full max-w-md">
+          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6">Session Complete!</h2>
 
-        <div className="grid grid-cols-3 gap-4 mb-6 max-w-md mx-auto">
-          <div className="bg-green-50 p-3 rounded-sm">
-            <div className="text-2xl font-semibold text-green-600">{sessionStats.correct}</div>
-            <div className="text-xs text-green-600">Correct</div>
+          <div className="mb-8 space-y-2">
+            <div className="text-4xl font-bold text-gray-800 dark:text-gray-200">{accuracy}%</div>
+            <div className="text-base text-gray-600 dark:text-gray-400">Accuracy</div>
           </div>
-          <div className="bg-red-50 p-3 rounded-sm">
-            <div className="text-2xl font-semibold text-red-600">{sessionStats.incorrect}</div>
-            <div className="text-xs text-red-600">Incorrect</div>
-          </div>
-          <div className="bg-gray-50 p-3 rounded-sm">
-            <div className="text-2xl font-semibold text-gray-600 dark:text-gray-400">{sessionStats.total}</div>
-            <div className="text-xs text-gray-600 dark:text-gray-400">Total</div>
-          </div>
-        </div>
 
-        <button
-          onClick={() => window.location.reload()}
-          className="px-6 py-2 bg-gray-800 text-white rounded-sm hover:bg-gray-700"
-        >
-          Study Again
-        </button>
+          <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl">
+              <div className="text-3xl font-semibold text-green-600 dark:text-green-400">{sessionStats.correct}</div>
+              <div className="text-sm text-green-600 dark:text-green-400">Correct</div>
+            </div>
+            <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl">
+              <div className="text-3xl font-semibold text-red-600 dark:text-red-400">{sessionStats.incorrect}</div>
+              <div className="text-sm text-red-600 dark:text-red-400">Incorrect</div>
+            </div>
+            <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-xl">
+              <div className="text-3xl font-semibold text-gray-600 dark:text-gray-400">{sessionStats.total}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Total</div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => window.location.reload()}
+            className="px-8 py-4 text-lg font-medium bg-gray-800 text-white rounded-xl hover:bg-gray-700 shadow-lg transition-all active:scale-95"
+          >
+            Study Again
+          </button>
+        </div>
       </div>
     );
   }

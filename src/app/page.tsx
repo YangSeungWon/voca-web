@@ -135,26 +135,32 @@ export default function Home() {
 
         <main className={isMobile ? '' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm mt-2 transition-colors'}>
           {activeView === 'home' && (
-            <div className={isMobile ? 'py-6 space-y-6' : 'p-4'}>
-              <div className={isMobile ? '' : 'mb-4'}>
-                <SearchBar onWordFound={handleWordFound} />
-              </div>
-              {currentWord && (
-                <WordDisplay
-                  word={currentWord}
-                  onSave={handleWordSaved}
-                />
-              )}
-              {!currentWord && isMobile && (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="text-gray-400 dark:text-gray-600 mb-3">
-                    <svg className="w-16 h-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+            <div className={isMobile ? 'flex flex-col justify-center px-6' : 'p-4'} style={isMobile ? { minHeight: 'calc(100vh - 140px)' } : undefined}>
+              {!currentWord && isMobile ? (
+                <div className="space-y-8">
+                  <div className="flex flex-col items-center text-center mb-6">
+                    <div className="text-gray-400 dark:text-gray-600 mb-3">
+                      <svg className="w-16 h-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                    <p className="text-lg text-gray-500 dark:text-gray-400 font-medium">Search for a word</p>
+                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Type and press enter to look up</p>
                   </div>
-                  <p className="text-lg text-gray-500 dark:text-gray-400 font-medium">Search for a word</p>
-                  <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Type and press enter to look up</p>
+                  <SearchBar onWordFound={handleWordFound} />
                 </div>
+              ) : (
+                <>
+                  <div className={isMobile ? 'mb-6' : 'mb-4'}>
+                    <SearchBar onWordFound={handleWordFound} />
+                  </div>
+                  {currentWord && (
+                    <WordDisplay
+                      word={currentWord}
+                      onSave={handleWordSaved}
+                    />
+                  )}
+                </>
               )}
             </div>
           )}

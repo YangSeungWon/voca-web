@@ -1,16 +1,85 @@
 'use client';
 
-import { useState } from 'react';
-import { ChevronRight, Sun, User, RefreshCw, FolderOpen, BookOpen } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { ChevronRight, Sun, User, RefreshCw, FolderOpen, BookOpen, Download, Upload } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import AuthStatus from './AuthStatus';
 import SyncStatus from './SyncStatus';
 import GroupManager from './GroupManager';
 import PhoneticsReference from './PhoneticsReference';
+import { parseCSV, generateCSV, downloadCSV, getCSVTemplate } from '@/lib/csv';
+import { getUserId } from '@/lib/auth';
+import { apiFetch } from '@/lib/api-client';
 
 export default function MoreView() {
   const [showPhonetics, setShowPhonetics] = useState(false);
   const [showGroups, setShowGroups] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    try {
+      const text = await file.text();
+      const parsedWords = parseCSV(text);
+
+      if (parsedWords.length === 0) {
+        alert('No valid words found in the CSV file');
+        return;
+      }
+
+      const response = await apiFetch('/api/vocabulary/import', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': getUserId()
+        },
+        body: JSON.stringify({ words: parsedWords })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Import complete!\n✅ Imported: ${result.imported}\n⚠️ Duplicates: ${result.duplicates}\n❌ Failed: ${result.failed}`);
+      } else {
+        alert('Failed to import words');
+      }
+    } catch (error) {
+      console.error('Import error:', error);
+      alert('Error reading CSV file. Please check the format.');
+    } finally {
+      setIsImporting(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const response = await apiFetch('/api/vocabulary', {
+        headers: {
+          'x-user-id': getUserId()
+        }
+      });
+      if (response.ok) {
+        const words = await response.json();
+        const csvContent = generateCSV(words);
+        downloadCSV(csvContent, `vocabulary_${new Date().toISOString().split('T')[0]}.csv`);
+      } else {
+        alert('Failed to export words');
+      }
+    } catch (error) {
+      console.error('Export error:', error);
+      alert('Error exporting vocabulary');
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -20,6 +89,46 @@ export default function MoreView() {
 
       {/* Settings Sections */}
       <div className="space-y-4">
+        {/* Import/Export Section */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+          <div className="mb-4">
+            <h3 className="font-medium text-gray-900 dark:text-white mb-1">Import & Export</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Manage your vocabulary data</p>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv"
+            onChange={handleFileImport}
+            className="hidden"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isImporting}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Upload size={18} />
+              <span className="font-medium">{isImporting ? 'Importing...' : 'Import CSV'}</span>
+            </button>
+            <button
+              onClick={handleExport}
+              disabled={isExporting}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Download size={18} />
+              <span className="font-medium">{isExporting ? 'Exporting...' : 'Export CSV'}</span>
+            </button>
+            <button
+              onClick={() => downloadCSV(getCSVTemplate(), 'vocabulary_template.csv')}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              <Download size={18} />
+              <span className="font-medium">Template</span>
+            </button>
+          </div>
+        </div>
+
         {/* Phonetics Reference */}
         <button
           onClick={() => setShowPhonetics(!showPhonetics)}
