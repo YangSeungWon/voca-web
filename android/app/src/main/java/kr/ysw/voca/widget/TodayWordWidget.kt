@@ -41,7 +41,7 @@ class TodayWordWidget : AppWidgetProvider() {
     }
 
     companion object {
-        private const val API_URL = "https://yourdomain.com/api/widget/today-word"
+        private const val API_URL = "https://voca.ysw.kr/api/widget/today-word"
 
         fun updateAppWidget(
             context: Context,

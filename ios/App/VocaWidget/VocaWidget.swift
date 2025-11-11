@@ -62,8 +62,7 @@ struct Provider: TimelineProvider {
     }
 
     private func fetchTodayWord(completion: @escaping (WordEntry?) -> Void) {
-        // TODO: Replace with your actual API endpoint
-        guard let url = URL(string: "https://yourdomain.com/api/widget/today-word") else {
+        guard let url = URL(string: "https://voca.ysw.kr/api/widget/today-word") else {
             completion(nil)
             return
         }

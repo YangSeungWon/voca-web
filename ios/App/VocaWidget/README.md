@@ -29,10 +29,9 @@
    - 프로젝트 설정 → VocaWidget 타겟
    - Bundle Identifier: `kr.ysw.voca.VocaWidget`
 
-5. **API 엔드포인트 설정**
-   - `VocaWidget.swift` 파일 열기
-   - 70번째 줄 찾기: `https://yourdomain.com/api/widget/today-word`
-   - 실제 도메인으로 변경 (또는 로컬 테스트용 IP)
+5. **API 엔드포인트**
+   - 이미 설정됨: `https://voca.ysw.kr/api/widget/today-word`
+   - 로컬 테스트 시에만 IP로 변경 필요
 
 6. **빌드 및 실행**
    - 타겟을 "VocaWidget" 선택

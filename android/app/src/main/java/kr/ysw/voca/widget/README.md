@@ -25,10 +25,9 @@
    npx cap open android
    ```
 
-2. **Update API Endpoint**
-   - Open `TodayWordWidget.kt`
-   - Find line 48: `private const val API_URL`
-   - Replace `https://yourdomain.com` with your actual domain
+2. **API Endpoint**
+   - Already configured: `https://voca.ysw.kr/api/widget/today-word`
+   - Change only if testing locally
 
 3. **Add Dependencies (if needed)**
 
