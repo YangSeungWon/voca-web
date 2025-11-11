@@ -108,7 +108,7 @@ const CONSONANT_TO_CHOSEONG: Record<string, number> = {
 
 // Jongseong (종성) index constants for readability
 const JONGSEONG = {
-  NONE: 0,  // 종성 없음
+  NONE: 0,    // 종성 없음
   GIYEOK: 1,  // ㄱ
   NIEUN: 4,   // ㄴ
   DIGEUT: 7,  // ㄷ
@@ -118,33 +118,35 @@ const JONGSEONG = {
   SIOS: 19,   // ㅅ
   IEUNG: 21,  // ㅇ
   JIEUT: 22,  // ㅈ
+  CHIEUT: 23, // ㅊ
+  TIEUT: 25,  // ㅌ
+  PIEUP: 26,  // ㅍ
 } as const;
 
 // IPA consonant to Korean Jongseong (종성) index
-// NOTE: Prefer simple finals (m→ㅁ, n→ㄴ, l→ㄹ) for natural Korean pronunciation
 const CONSONANT_TO_JONGSEONG: Record<string, number> = {
   'p': JONGSEONG.BIEUP,  // ㅂ
   'b': JONGSEONG.BIEUP,  // ㅂ
-  't': JONGSEONG.DIGEUT, // ㄷ (simplified from ㅌ)
+  't': JONGSEONG.TIEUT,  // ㅌ
   'd': JONGSEONG.DIGEUT, // ㄷ
   'k': JONGSEONG.GIYEOK, // ㄱ
   'g': JONGSEONG.GIYEOK, // ㄱ
   'm': JONGSEONG.MIEUM,  // ㅁ
   'n': JONGSEONG.NIEUN,  // ㄴ
   'ŋ': JONGSEONG.IEUNG,  // ㅇ
-  'f': JONGSEONG.BIEUP,  // ㅂ (simplified from ㅍ)
+  'f': JONGSEONG.PIEUP,  // ㅍ
   'v': JONGSEONG.BIEUP,  // ㅂ
   'θ': JONGSEONG.SIOS,   // ㅅ
   'ð': JONGSEONG.DIGEUT, // ㄷ
   's': JONGSEONG.SIOS,   // ㅅ
-  'z': JONGSEONG.SIOS,   // ㅅ (simplified from ㅈ)
+  'z': JONGSEONG.JIEUT,  // ㅈ
   'ʃ': JONGSEONG.SIOS,   // ㅅ
   'ʒ': JONGSEONG.JIEUT,  // ㅈ
   'l': JONGSEONG.RIEUL,  // ㄹ
   'r': JONGSEONG.RIEUL,  // ㄹ
   'ɹ': JONGSEONG.RIEUL,  // ㄹ
-  'tʃ': JONGSEONG.SIOS,  // ㅅ (simplified from ㅊ)
-  'dʒ': JONGSEONG.JIEUT, // ㅈ
+  'tʃ': JONGSEONG.CHIEUT, // ㅊ
+  'dʒ': JONGSEONG.JIEUT,  // ㅈ
 };
 
 // IPA vowel to Korean Jungseong (중성) - returns array for diphthongs
