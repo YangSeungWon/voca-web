@@ -73,6 +73,18 @@ export default function AuthPage() {
       localStorage.setItem('token', data.token);
       localStorage.setItem('userId', data.user.id);
       localStorage.setItem('userEmail', data.user.email);
+
+      // Save token to App Groups for widget access (iOS only)
+      if ((window as any).Capacitor?.isNativePlatform?.()) {
+        try {
+          const { AppGroupStorage } = await import('@/lib/capacitor-plugins');
+          await AppGroupStorage.saveToken({ token: data.token });
+          console.log('[Auth] Token saved to App Groups for widget');
+        } catch (error) {
+          console.error('[Auth] Failed to save token to App Groups:', error);
+        }
+      }
+
       console.log('[Auth] Authentication successful, redirecting...');
 
       // Redirect to main page

@@ -67,8 +67,19 @@ struct Provider: TimelineProvider {
             return
         }
 
+        // Get token from App Groups
+        let appGroup = "group.kr.ysw.voca"
+        let sharedDefaults = UserDefaults(suiteName: appGroup)
+        let token = sharedDefaults?.string(forKey: "token")
+
         var request = URLRequest(url: url)
-        request.addValue("default-user", forHTTPHeaderField: "x-user-id")
+
+        // Use token if available, otherwise fallback to default-user
+        if let token = token {
+            request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            request.addValue("default-user", forHTTPHeaderField: "x-user-id")
+        }
 
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data,
@@ -100,12 +111,16 @@ struct VocaWidgetEntryView : View {
 
     var body: some View {
         ZStack {
-            // Background gradient
-            LinearGradient(
-                gradient: Gradient(colors: [Color(red: 0.14, green: 0.16, blue: 0.22), Color(red: 0.25, green: 0.29, blue: 0.38)]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            // Background gradient (for iOS 16 and below)
+            if #available(iOS 17.0, *) {
+                // Background is handled by containerBackground in iOS 17+
+            } else {
+                LinearGradient(
+                    gradient: Gradient(colors: [Color(red: 0.14, green: 0.16, blue: 0.22), Color(red: 0.25, green: 0.29, blue: 0.38)]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            }
 
             VStack(alignment: .leading, spacing: 8) {
                 // Header
@@ -175,7 +190,18 @@ struct VocaWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            VocaWidgetEntryView(entry: entry)
+            if #available(iOS 17.0, *) {
+                VocaWidgetEntryView(entry: entry)
+                    .containerBackground(for: .widget) {
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color(red: 0.14, green: 0.16, blue: 0.22), Color(red: 0.25, green: 0.29, blue: 0.38)]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    }
+            } else {
+                VocaWidgetEntryView(entry: entry)
+            }
         }
         .configurationDisplayName("Today's Word")
         .description("Show a new vocabulary word every day")

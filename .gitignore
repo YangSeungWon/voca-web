@@ -48,8 +48,8 @@ next-env.d.ts
 *.keystore
 *.jks
 voca-web-*.apk
-ios/App/build/
-ios/App/ExportOptions*.plist
+ios/App/build*/
+!ios/App/ExportOptionsDev.plist
 android/app/build/
 android/.gradle/
 build-output/
