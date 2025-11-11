@@ -273,12 +273,15 @@ function isNewSyllableStart(text: string, index: number): boolean {
 export function ipaToKorean(ipa: string | undefined): string {
   if (!ipa) return '';
 
+  // Remove optional sounds (parentheses and their content)
+  let preprocessed = ipa.replace(/\([^)]*\)/g, '');
+
   // Parse IPA and track stress positions
   const stressPositions = new Set<number>();
   let cleanedText = '';
 
-  for (let idx = 0; idx < ipa.length; idx++) {
-    const char = ipa[idx];
+  for (let idx = 0; idx < preprocessed.length; idx++) {
+    const char = preprocessed[idx];
 
     // Mark stress position (before next character)
     if (char === 'ˈ' || char === 'ˌ' || char === '′' || char === "'") {
