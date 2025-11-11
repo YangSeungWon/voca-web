@@ -1,10 +1,10 @@
 'use client';
 
-import { Home, FolderOpen, BookOpen, BarChart3, Type } from 'lucide-react';
+import { Home, FolderOpen, BookOpen, BarChart3, MoreHorizontal } from 'lucide-react';
 
 interface MobileNavProps {
-  activeView: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics';
-  onViewChange: (view: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics') => void;
+  activeView: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics' | 'more';
+  onViewChange: (view: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics' | 'more') => void;
 }
 
 export default function MobileNav({ activeView, onViewChange }: MobileNavProps) {
@@ -13,11 +13,11 @@ export default function MobileNav({ activeView, onViewChange }: MobileNavProps) 
     { id: 'vocabulary' as const, label: 'Words', icon: FolderOpen },
     { id: 'study' as const, label: 'Study', icon: BookOpen },
     { id: 'statistics' as const, label: 'Stats', icon: BarChart3 },
-    { id: 'phonetics' as const, label: 'IPA', icon: Type },
+    { id: 'more' as const, label: 'More', icon: MoreHorizontal },
   ];
 
   return (
-    <nav className="mobile-bottom-nav fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 md:hidden z-50">
+    <nav className="mobile-bottom-nav fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 md:hidden z-50" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <div className="grid grid-cols-5 h-16">
         {tabs.map((tab) => {
           const Icon = tab.icon;

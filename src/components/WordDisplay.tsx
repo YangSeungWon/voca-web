@@ -156,31 +156,31 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
       </div>
 
       <div className="p-4 space-y-3">
-        <div>
-          <div className="flex items-center gap-3">
-            <span className="text-2xl font-semibold text-gray-800 dark:text-gray-200">{word.word}</span>
-            {word.pronunciation && (() => {
-              const { korean, ipa } = formatPronunciation(word.pronunciation);
-              return (
-                <div className="flex items-center gap-3">
-                  {korean && (
-                    <span
-                      className="text-2xl font-medium text-blue-600 dark:text-blue-400"
-                      dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
-                    />
-                  )}
-                  <span className="text-2xl text-gray-500">{ipa}</span>
-                </div>
-              );
-            })()}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 break-words">{word.word}</span>
             <button
               onClick={() => speak(word.word)}
-              className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-sm transition-colors"
+              className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-sm transition-colors flex-shrink-0"
               title="Pronounce"
             >
               <Volume2 size={16} />
             </button>
           </div>
+          {word.pronunciation && (() => {
+            const { korean, ipa } = formatPronunciation(word.pronunciation);
+            return (
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                {korean && (
+                  <span
+                    className="text-lg sm:text-2xl font-medium text-blue-600 dark:text-blue-400"
+                    dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
+                  />
+                )}
+                <span className="text-lg sm:text-2xl text-gray-500">{ipa}</span>
+              </div>
+            );
+          })()}
         </div>
 
         <div className="space-y-2">

@@ -1,6 +1,6 @@
 interface NavigationProps {
-  activeView: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics';
-  onViewChange: (view: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics') => void;
+  activeView: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics' | 'more';
+  onViewChange: (view: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics' | 'more') => void;
 }
 
 export default function Navigation({ activeView, onViewChange }: NavigationProps) {

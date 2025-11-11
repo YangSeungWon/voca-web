@@ -14,9 +14,10 @@ import ThemeToggle from '@/components/ThemeToggle';
 import MobileNav from '@/components/MobileNav';
 import SyncStatus from '@/components/SyncStatus';
 import ExtensionBanner from '@/components/ExtensionBanner';
+import MoreView from '@/components/MoreView';
 import { DictionaryEntry } from '@/lib/dictionary';
 
-type ViewType = 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics';
+type ViewType = 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics' | 'more';
 
 const hashToView: Record<string, ViewType> = {
   '#home': 'home',
@@ -26,6 +27,7 @@ const hashToView: Record<string, ViewType> = {
   '#statistics': 'statistics',
   '#phonetics': 'phonetics',
   '#ipa': 'phonetics', // Alias for phonetics
+  '#more': 'more',
 };
 
 const viewToHash: Record<ViewType, string> = {
@@ -34,6 +36,7 @@ const viewToHash: Record<ViewType, string> = {
   'study': '#study',
   'statistics': '#statistics',
   'phonetics': '#ipa',
+  'more': '#more',
 };
 
 export default function Home() {
@@ -90,10 +93,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      {/* Desktop-only header */}
+      <div className="hidden md:block bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4">
           <header className="py-2">
-            <div className="hidden sm:flex items-center justify-between">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <img src="/favicon.ico" alt="Voca" className="w-6 h-6" />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Voca Web</span>
@@ -101,20 +105,6 @@ export default function Home() {
               <div className="flex items-center gap-2">
                 <SyncStatus />
                 <ThemeToggle />
-                <AuthStatus />
-              </div>
-            </div>
-            {/* Mobile two-line header */}
-            <div className="sm:hidden px-2">
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-2">
-                  <img src="/favicon.ico" alt="Voca" className="w-5 h-5" />
-                  <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Voca Web</span>
-                </div>
-                <ThemeToggle />
-              </div>
-              <div className="flex items-center justify-between">
-                <SyncStatus />
                 <AuthStatus />
               </div>
             </div>
@@ -169,6 +159,10 @@ export default function Home() {
 
           {activeView === 'phonetics' && (
             <PhoneticsReference />
+          )}
+
+          {activeView === 'more' && (
+            <MoreView />
           )}
         </main>
       </div>
