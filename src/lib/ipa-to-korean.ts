@@ -274,7 +274,7 @@ export function ipaToKorean(ipa: string | undefined): string {
   if (!ipa) return '';
 
   // Remove optional sounds (parentheses and their content)
-  let preprocessed = ipa.replace(/\([^)]*\)/g, '');
+  const preprocessed = ipa.replace(/\([^)]*\)/g, '');
 
   // Parse IPA and track stress positions
   const stressPositions = new Set<number>();

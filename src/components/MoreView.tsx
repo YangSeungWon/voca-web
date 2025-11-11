@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronRight, Moon, Sun, User, RefreshCw, FolderOpen, BookOpen } from 'lucide-react';
+import { ChevronRight, Sun, User, RefreshCw, FolderOpen, BookOpen } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import AuthStatus from './AuthStatus';
 import SyncStatus from './SyncStatus';
