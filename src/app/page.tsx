@@ -44,6 +44,20 @@ export default function Home() {
   const [activeView, setActiveView] = useState<ViewType>('home');
   const [refreshVocab, setRefreshVocab] = useState(0);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile environment based on screen width
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobileSize = window.innerWidth < 768;
+      console.log('Mobile detection:', { windowWidth: window.innerWidth, isMobile: isMobileSize });
+      setIsMobile(isMobileSize);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Handle initial hash and hash changes
   useEffect(() => {
@@ -94,28 +108,30 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       {/* Desktop-only header */}
-      <div className="hidden md:block bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4">
-          <header className="py-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <img src="/favicon.ico" alt="Voca" className="w-6 h-6" />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Voca Web</span>
+      {!isMobile && (
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-7xl mx-auto px-4">
+            <header className="py-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <img src="/favicon.ico" alt="Voca" className="w-6 h-6" />
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Voca Web</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <SyncStatus />
+                  <ThemeToggle />
+                  <AuthStatus />
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <SyncStatus />
-                <ThemeToggle />
-                <AuthStatus />
-              </div>
-            </div>
-          </header>
+            </header>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 py-2">
-        <div className="hidden md:block">
+        {!isMobile && (
           <Navigation activeView={activeView} onViewChange={handleViewChange} />
-        </div>
+        )}
         
         <main className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm mt-2 transition-colors">
           {activeView === 'home' && (
@@ -167,10 +183,10 @@ export default function Home() {
         </main>
       </div>
       
-      <MobileNav activeView={activeView} onViewChange={handleViewChange} />
-      
+      {isMobile && <MobileNav activeView={activeView} onViewChange={handleViewChange} />}
+
       {/* Add padding at bottom for mobile nav */}
-      <div className="h-16 md:hidden" />
+      {isMobile && <div className="h-16" />}
       
       {/* Chrome Extension Banner */}
       <ExtensionBanner />

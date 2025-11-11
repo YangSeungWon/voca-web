@@ -20,6 +20,8 @@
     "build:all": "bash scripts/build-all.sh",
     "build:mobile": "bash scripts/build-all.sh",
     "icon:ios": "node scripts/generate-ios-icon.js",
+    "icon:android": "node scripts/generate-android-icon.js",
+    "icon:all": "node scripts/generate-ios-icon.js && node scripts/generate-android-icon.js",
     "version:update": "node scripts/update-build-version.js",
     "version:check": "node scripts/update-build-version.js --check"
   },

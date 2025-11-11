@@ -19,6 +19,14 @@ PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 
 cd "$PROJECT_ROOT"
 
+# Step 0: Generate Android icons and copy to public folder
+if [ -f "voca.png" ]; then
+    echo -e "${YELLOW}🤖 Generating Android app icons...${NC}"
+    node scripts/generate-android-icon.js
+    cp voca.png public/voca-icon.png
+    echo -e "${GREEN}✅ Android icons generated and app icon copied to public folder${NC}"
+fi
+
 # Step 1: Build Next.js project
 echo -e "${YELLOW}🔨 Building Next.js project...${NC}"
 npm run build

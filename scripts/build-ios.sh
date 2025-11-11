@@ -19,10 +19,12 @@ PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 
 cd "$PROJECT_ROOT"
 
-# Step 1: Generate iOS app icon
+# Step 1: Generate iOS app icon and copy to public
 echo -e "${YELLOW}📱 Generating iOS app icon...${NC}"
 if [ -f "voca.png" ]; then
     node scripts/generate-ios-icon.js
+    # Copy icon to public folder for app use
+    cp voca.png public/voca-icon.png
     echo -e "${GREEN}✅ iOS app icon generated successfully${NC}"
 else
     echo -e "${RED}❌ Error: voca.png not found in project root${NC}"
