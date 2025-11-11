@@ -62,11 +62,11 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
               })()}
             </div>
             
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+            <p className="text-base text-gray-600 dark:text-gray-300 mb-2">
               {item.word.definitions[0]?.meaning || '-'}
             </p>
-            
-            <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+
+            <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
               {item.word.definitions[0]?.partOfSpeech && (
                 <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">
                   {item.word.definitions[0].partOfSpeech}
@@ -100,9 +100,9 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
                 e.stopPropagation();
                 speak(item.word.word);
               }}
-              className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-base font-medium"
             >
-              <Volume2 size={16} />
+              <Volume2 size={18} />
               Pronounce
             </button>
             <button
@@ -110,21 +110,21 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
                 e.stopPropagation();
                 onDelete(item.id);
               }}
-              className="flex items-center gap-2 px-3 py-1.5 bg-red-600 text-white rounded-lg text-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg text-base font-medium"
             >
-              <Trash2 size={16} />
+              <Trash2 size={18} />
               Delete
             </button>
           </div>
-          
+
           {item.word.definitions.length > 1 && (
             <div className="mb-4">
-              <h4 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Other Definitions:
               </h4>
               <div className="space-y-1">
                 {item.word.definitions.slice(1).map((def, idx) => (
-                  <div key={idx} className="text-sm text-gray-600 dark:text-gray-400">
+                  <div key={idx} className="text-base text-gray-600 dark:text-gray-400">
                     {def.partOfSpeech && (
                       <span className="font-medium">{def.partOfSpeech}: </span>
                     )}

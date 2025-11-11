@@ -139,13 +139,13 @@ export default function Home() {
               {!currentWord && isMobile ? (
                 <div className="space-y-8">
                   <div className="flex flex-col items-center text-center mb-6">
-                    <div className="text-gray-400 dark:text-gray-600 mb-3">
-                      <svg className="w-16 h-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="text-gray-400 dark:text-gray-600 mb-4">
+                      <svg className="w-20 h-20 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                       </svg>
                     </div>
-                    <p className="text-lg text-gray-500 dark:text-gray-400 font-medium">Search for a word</p>
-                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Type and press enter to look up</p>
+                    <p className="text-2xl text-gray-600 dark:text-gray-400 font-semibold mb-2">Search for a word</p>
+                    <p className="text-base text-gray-500 dark:text-gray-500">Type and press enter to look up</p>
                   </div>
                   <SearchBar onWordFound={handleWordFound} />
                 </div>

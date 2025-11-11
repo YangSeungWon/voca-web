@@ -116,14 +116,14 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
                     {def.partOfSpeech}
                   </span>
                 )}
-                <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 leading-relaxed flex-1">
+                <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed flex-1">
                   {def.meaning}
                 </p>
               </div>
               {def.examples && def.examples.length > 0 && (
                 <div className="ml-12 space-y-1">
                   {def.examples.map((example, i) => (
-                    <p key={i} className="text-sm text-gray-500 dark:text-gray-400 italic leading-relaxed">
+                    <p key={i} className="text-base text-gray-500 dark:text-gray-400 italic leading-relaxed">
                       &quot;{example}&quot;
                     </p>
                   ))}
@@ -140,13 +140,13 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
           <div className="relative flex-1">
             <button
               onClick={() => setShowGroupSelector(!showGroupSelector)}
-              className="w-full px-4 py-2.5 text-sm border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center gap-2 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+              className="w-full px-4 py-3 text-base border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center gap-2 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
             >
-              <Folder size={16} />
+              <Folder size={18} />
               {selectedGroup ? (
                 <div className="flex items-center gap-2">
                   <div
-                    className="w-2.5 h-2.5 rounded-full"
+                    className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: groups.find(g => g.id === selectedGroup)?.color }}
                   />
                   <span className="font-medium">{groups.find(g => g.id === selectedGroup)?.name}</span>
@@ -162,7 +162,7 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
                     setSelectedGroup(null);
                     setShowGroupSelector(false);
                   }}
-                  className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="w-full text-left px-4 py-3 text-base hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <span className="font-medium">No Group</span>
                 </button>
@@ -173,10 +173,10 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
                       setSelectedGroup(group.id);
                       setShowGroupSelector(false);
                     }}
-                    className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+                    className="w-full text-left px-4 py-3 text-base hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
                   >
                     <div
-                      className="w-2.5 h-2.5 rounded-full"
+                      className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: group.color }}
                     />
                     <span className="font-medium">{group.name}</span>
@@ -190,7 +190,7 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
           onClick={handleSave}
           disabled={isSaving || isSaved}
           className={`
-            px-6 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 transition-all shadow-lg
+            px-6 py-3 rounded-xl font-medium text-base flex items-center gap-2 transition-all shadow-lg
             ${isSaved
               ? 'bg-green-500 text-white'
               : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
@@ -201,12 +201,12 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
         >
           {isSaved ? (
             <>
-              <Check size={18} />
+              <Check size={20} />
               <span>Saved</span>
             </>
           ) : (
             <>
-              <Save size={18} />
+              <Save size={20} />
               <span>Add to List</span>
             </>
           )}

@@ -191,22 +191,6 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
         </div>
       </div>
       
-      {/* Mobile Header - Only show when there are words */}
-      {filteredWords.length > 0 && (
-        <div className="md:hidden border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
-          <input
-            type="text"
-            placeholder="Search..."
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:border-blue-500"
-          />
-          <div className="text-center text-xs text-gray-500 dark:text-gray-400 mt-2">
-            {filteredWords.length} words
-          </div>
-        </div>
-      )}
-
       {/* Desktop Table View */}
       <div className="hidden md:block overflow-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
         <table className="w-full text-xs">
@@ -387,15 +371,28 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
               </div>
             </div>
           ) : (
-            <div className="p-4">
-              {filteredWords.map((item) => (
-                <VocabularyCard
-                  key={item.id}
-                  item={item}
-                  onDelete={handleDelete}
+            <>
+              <div className="p-4 pb-24">
+                {filteredWords.map((item) => (
+                  <VocabularyCard
+                    key={item.id}
+                    item={item}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+
+              {/* Fixed Bottom Search Bar */}
+              <div className="fixed bottom-16 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 shadow-lg z-10">
+                <input
+                  type="text"
+                  placeholder="Search words..."
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  className="w-full px-4 py-3 text-base border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
                 />
-              ))}
-            </div>
+              </div>
+            </>
           )}
         </PullToRefresh>
       </div>

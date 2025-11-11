@@ -41,7 +41,7 @@ export default function SearchBar({ onWordFound }: SearchBarProps) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search for a word..."
-          className="w-full pl-12 pr-4 py-3.5 text-base md:text-lg border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors shadow-sm"
+          className="w-full pl-12 pr-4 py-4 text-lg md:text-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors shadow-sm"
           disabled={isSearching}
           autoCapitalize="off"
           autoCorrect="off"
