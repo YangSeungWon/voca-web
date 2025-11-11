@@ -58,31 +58,45 @@ const CONSONANT_TO_CHOSEONG: Record<string, number> = {
   'j': 11, // ㅇ (use ㅇ for j, will combine with vowel)
 };
 
+// Jongseong (종성) index constants for readability
+const JONGSEONG = {
+  NONE: 0,  // 종성 없음
+  GIYEOK: 1,  // ㄱ
+  NIEUN: 4,   // ㄴ
+  DIGEUT: 7,  // ㄷ
+  RIEUL: 8,   // ㄹ
+  MIEUM: 16,  // ㅁ
+  BIEUP: 17,  // ㅂ
+  SIOS: 19,   // ㅅ
+  IEUNG: 21,  // ㅇ
+  JIEUT: 22,  // ㅈ
+} as const;
+
 // IPA consonant to Korean Jongseong (종성) index
 // NOTE: Prefer simple finals (m→ㅁ, n→ㄴ, l→ㄹ) for natural Korean pronunciation
 const CONSONANT_TO_JONGSEONG: Record<string, number> = {
-  'p': 17, // ㅂ
-  'b': 17, // ㅂ
-  't': 7,  // ㄷ (simplified from ㅌ)
-  'd': 7,  // ㄷ
-  'k': 1,  // ㄱ
-  'g': 1,  // ㄱ
-  'm': 16, // ㅁ
-  'n': 4,  // ㄴ
-  'ŋ': 21, // ㅇ
-  'f': 17, // ㅂ (simplified from ㅍ)
-  'v': 17, // ㅂ
-  'θ': 19, // ㅅ
-  'ð': 7,  // ㄷ
-  's': 19, // ㅅ
-  'z': 19, // ㅅ (simplified from ㅈ)
-  'ʃ': 19, // ㅅ
-  'ʒ': 22, // ㅈ
-  'l': 8,  // ㄹ
-  'r': 8,  // ㄹ
-  'ɹ': 8,  // ㄹ
-  'tʃ': 19, // ㅅ (simplified from ㅊ)
-  'dʒ': 22, // ㅈ
+  'p': JONGSEONG.BIEUP,  // ㅂ
+  'b': JONGSEONG.BIEUP,  // ㅂ
+  't': JONGSEONG.DIGEUT, // ㄷ (simplified from ㅌ)
+  'd': JONGSEONG.DIGEUT, // ㄷ
+  'k': JONGSEONG.GIYEOK, // ㄱ
+  'g': JONGSEONG.GIYEOK, // ㄱ
+  'm': JONGSEONG.MIEUM,  // ㅁ
+  'n': JONGSEONG.NIEUN,  // ㄴ
+  'ŋ': JONGSEONG.IEUNG,  // ㅇ
+  'f': JONGSEONG.BIEUP,  // ㅂ (simplified from ㅍ)
+  'v': JONGSEONG.BIEUP,  // ㅂ
+  'θ': JONGSEONG.SIOS,   // ㅅ
+  'ð': JONGSEONG.DIGEUT, // ㄷ
+  's': JONGSEONG.SIOS,   // ㅅ
+  'z': JONGSEONG.SIOS,   // ㅅ (simplified from ㅈ)
+  'ʃ': JONGSEONG.SIOS,   // ㅅ
+  'ʒ': JONGSEONG.JIEUT,  // ㅈ
+  'l': JONGSEONG.RIEUL,  // ㄹ
+  'r': JONGSEONG.RIEUL,  // ㄹ
+  'ɹ': JONGSEONG.RIEUL,  // ㄹ
+  'tʃ': JONGSEONG.SIOS,  // ㅅ (simplified from ㅊ)
+  'dʒ': JONGSEONG.JIEUT, // ㅈ
 };
 
 // IPA vowel to Korean Jungseong (중성) - returns array for diphthongs
@@ -380,12 +394,12 @@ export function ipaToKorean(ipa: string | undefined): string {
 
           // Check if this is a syllabic consonant that needs automatic jongseong
           let autoJongIdx = jongIdx;
-          if (semiVowelCombo === 'l̩' && autoJongIdx === 0) {
-            autoJongIdx = 8; // ㄹ
-          } else if (semiVowelCombo === 'n̩' && autoJongIdx === 0) {
-            autoJongIdx = 4; // ㄴ
-          } else if (semiVowelCombo === 'm̩' && autoJongIdx === 0) {
-            autoJongIdx = 16; // ㅁ
+          if (semiVowelCombo === 'l̩' && autoJongIdx === JONGSEONG.NONE) {
+            autoJongIdx = JONGSEONG.RIEUL; // ㄹ
+          } else if (semiVowelCombo === 'n̩' && autoJongIdx === JONGSEONG.NONE) {
+            autoJongIdx = JONGSEONG.NIEUN; // ㄴ
+          } else if (semiVowelCombo === 'm̩' && autoJongIdx === JONGSEONG.NONE) {
+            autoJongIdx = JONGSEONG.MIEUM; // ㅁ
           }
 
           const syllable = assembleHangul(11, jungIndices[0], autoJongIdx); // 11 = ㅇ
@@ -481,12 +495,12 @@ export function ipaToKorean(ipa: string | undefined): string {
 
           // Check if this is a syllabic consonant that needs automatic jongseong
           let autoJongIdx = jongIdx;
-          if (vowel === 'l̩' && autoJongIdx === 0) {
-            autoJongIdx = 8; // ㄹ
-          } else if (vowel === 'n̩' && autoJongIdx === 0) {
-            autoJongIdx = 4; // ㄴ
-          } else if (vowel === 'm̩' && autoJongIdx === 0) {
-            autoJongIdx = 16; // ㅁ
+          if (vowel === 'l̩' && autoJongIdx === JONGSEONG.NONE) {
+            autoJongIdx = JONGSEONG.RIEUL; // ㄹ
+          } else if (vowel === 'n̩' && autoJongIdx === JONGSEONG.NONE) {
+            autoJongIdx = JONGSEONG.NIEUN; // ㄴ
+          } else if (vowel === 'm̩' && autoJongIdx === JONGSEONG.NONE) {
+            autoJongIdx = JONGSEONG.MIEUM; // ㅁ
           }
 
           const syllable = assembleHangul(choIdx, jungIndices[0], autoJongIdx);
