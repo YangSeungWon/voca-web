@@ -127,9 +127,15 @@ const VOWEL_TO_JUNGSEONG: Record<string, number[]> = {
   'ə': [4],        // ㅓ
   'ɜː': [4],       // ㅓ
   'ɜ': [4],        // ㅓ
+  'ɝ': [4],        // ㅓ (rhotic schwa, American English r-colored)
   'ʊ': [13],       // ㅜ
   'uː': [13],      // ㅜ
   'u': [13],       // ㅜ
+
+  // Syllabic consonants (act as vowel + consonant)
+  'l̩': [18],       // ㅡ (syllabic L: will add ㄹ as jongseong)
+  'n̩': [18],       // ㅡ (syllabic N: will add ㄴ as jongseong)
+  'm̩': [18],       // ㅡ (syllabic M: will add ㅁ as jongseong)
 
   // Diphthongs - create two syllables
   'eɪ': [5, 20],   // ㅔ + ㅣ = 에이
@@ -371,7 +377,18 @@ export function ipaToKorean(ipa: string | undefined): string {
         // Create syllable(s) with ㅇ (null initial)
         if (jungIndices.length === 1) {
           i += consonantConsumed;
-          const syllable = assembleHangul(11, jungIndices[0], jongIdx); // 11 = ㅇ
+
+          // Check if this is a syllabic consonant that needs automatic jongseong
+          let autoJongIdx = jongIdx;
+          if (semiVowelCombo === 'l̩' && autoJongIdx === 0) {
+            autoJongIdx = 8; // ㄹ
+          } else if (semiVowelCombo === 'n̩' && autoJongIdx === 0) {
+            autoJongIdx = 4; // ㄴ
+          } else if (semiVowelCombo === 'm̩' && autoJongIdx === 0) {
+            autoJongIdx = 16; // ㅁ
+          }
+
+          const syllable = assembleHangul(11, jungIndices[0], autoJongIdx); // 11 = ㅇ
           result.push(wrapIfStressed(syllable, nextSyllableStressed));
           nextSyllableStressed = false;
         } else {
@@ -461,7 +478,18 @@ export function ipaToKorean(ipa: string | undefined): string {
         if (jungIndices.length === 1) {
           // Simple vowel
           i += consonantConsumed;
-          const syllable = assembleHangul(choIdx, jungIndices[0], jongIdx);
+
+          // Check if this is a syllabic consonant that needs automatic jongseong
+          let autoJongIdx = jongIdx;
+          if (vowel === 'l̩' && autoJongIdx === 0) {
+            autoJongIdx = 8; // ㄹ
+          } else if (vowel === 'n̩' && autoJongIdx === 0) {
+            autoJongIdx = 4; // ㄴ
+          } else if (vowel === 'm̩' && autoJongIdx === 0) {
+            autoJongIdx = 16; // ㅁ
+          }
+
+          const syllable = assembleHangul(choIdx, jungIndices[0], autoJongIdx);
           result.push(wrapIfStressed(syllable, nextSyllableStressed));
           nextSyllableStressed = false;
         } else {
