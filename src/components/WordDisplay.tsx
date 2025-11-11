@@ -124,7 +124,7 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
                 <div className="ml-12 space-y-1">
                   {def.examples.map((example, i) => (
                     <p key={i} className="text-sm text-gray-500 dark:text-gray-400 italic leading-relaxed">
-                      "{example}"
+                      &quot;{example}&quot;
                     </p>
                   ))}
                 </div>
