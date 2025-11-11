@@ -74,131 +74,57 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
   };
 
   return (
-    <div className="border border-gray-200 rounded-sm">
-      <div className="bg-gray-50 border-b border-gray-200 px-4 py-2 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Dictionary Result</h3>
-        <div className="flex items-center gap-2">
-          {groups.length > 0 && (
-            <div className="relative">
-              <button
-                onClick={() => setShowGroupSelector(!showGroupSelector)}
-                className="px-2 py-1 text-xs border border-gray-300 rounded-sm flex items-center gap-1 hover:bg-gray-100"
-              >
-                <Folder size={12} />
-                {selectedGroup ? (
-                  <div className="flex items-center gap-1">
-                    <div 
-                      className="w-2 h-2 rounded-sm" 
-                      style={{ backgroundColor: groups.find(g => g.id === selectedGroup)?.color }}
-                    />
-                    {groups.find(g => g.id === selectedGroup)?.name}
-                  </div>
-                ) : (
-                  'No Group'
-                )}
-              </button>
-              {showGroupSelector && (
-                <div className="absolute top-full left-0 mt-1 w-40 bg-white border border-gray-200 rounded-sm shadow-lg z-10">
-                  <button
-                    onClick={() => {
-                      setSelectedGroup(null);
-                      setShowGroupSelector(false);
-                    }}
-                    className="w-full text-left px-3 py-1.5 text-xs hover:bg-gray-100"
-                  >
-                    No Group
-                  </button>
-                  {groups.map(group => (
-                    <button
-                      key={group.id}
-                      onClick={() => {
-                        setSelectedGroup(group.id);
-                        setShowGroupSelector(false);
-                      }}
-                      className="w-full text-left px-3 py-1.5 text-xs hover:bg-gray-100 flex items-center gap-2"
-                    >
-                      <div
-                        className="w-2 h-2 rounded-sm"
-                        style={{ backgroundColor: group.color }}
+    <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="p-6 space-y-4">
+        <div className="space-y-3">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white break-words">
+                {word.word}
+              </h2>
+              {word.pronunciation && (() => {
+                const { korean, ipa } = formatPronunciation(word.pronunciation);
+                return (
+                  <div className="mt-2 flex flex-col gap-1">
+                    {korean && (
+                      <span
+                        className="text-xl sm:text-2xl font-medium text-blue-600 dark:text-blue-400"
+                        dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
                       />
-                      {group.name}
-                    </button>
-                  ))}
-                </div>
-              )}
+                    )}
+                    <span className="text-lg sm:text-xl text-gray-500 dark:text-gray-400">{ipa}</span>
+                  </div>
+                );
+              })()}
             </div>
-          )}
-          <button
-            onClick={handleSave}
-            disabled={isSaving || isSaved}
-            className={`
-              px-3 py-1 text-xs rounded-sm flex items-center gap-1 transition-colors
-              ${isSaved 
-                ? 'bg-green-600 text-white' 
-                : 'bg-blue-600 text-white hover:bg-blue-700'
-              }
-              disabled:opacity-50 disabled:cursor-not-allowed
-            `}
-          >
-            {isSaved ? (
-              <>
-                <Check size={12} />
-                Saved
-              </>
-            ) : (
-              <>
-                <Save size={12} />
-                Add to List
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      <div className="p-4 space-y-3">
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 break-words">{word.word}</span>
             <button
               onClick={() => speak(word.word)}
-              className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-sm transition-colors flex-shrink-0"
+              className="p-3 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-full transition-colors flex-shrink-0"
               title="Pronounce"
             >
-              <Volume2 size={16} />
+              <Volume2 size={24} />
             </button>
           </div>
-          {word.pronunciation && (() => {
-            const { korean, ipa } = formatPronunciation(word.pronunciation);
-            return (
-              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-                {korean && (
-                  <span
-                    className="text-lg sm:text-2xl font-medium text-blue-600 dark:text-blue-400"
-                    dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
-                  />
-                )}
-                <span className="text-lg sm:text-2xl text-gray-500">{ipa}</span>
-              </div>
-            );
-          })()}
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3 pt-2">
           {word.definitions.map((def, index) => (
-            <div key={index} className="border-l-2 border-gray-200 pl-3">
-              <div className="flex items-start gap-2">
+            <div key={index} className="space-y-1.5">
+              <div className="flex items-start gap-3">
                 {def.partOfSpeech && (
-                  <span className="inline-block px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-sm">
+                  <span className="inline-flex px-2.5 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full flex-shrink-0">
                     {def.partOfSpeech}
                   </span>
                 )}
-                <p className="text-sm text-gray-700 dark:text-gray-300 flex-1">{def.meaning}</p>
+                <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 leading-relaxed flex-1">
+                  {def.meaning}
+                </p>
               </div>
               {def.examples && def.examples.length > 0 && (
-                <div className="mt-1 ml-12">
+                <div className="ml-12 space-y-1">
                   {def.examples.map((example, i) => (
-                    <p key={i} className="text-xs text-gray-500 italic">
-                      Example: {example}
+                    <p key={i} className="text-sm text-gray-500 dark:text-gray-400 italic leading-relaxed">
+                      "{example}"
                     </p>
                   ))}
                 </div>
@@ -206,6 +132,85 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Floating action buttons */}
+      <div className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-white dark:from-gray-800 via-white dark:via-gray-800 to-transparent p-4 pt-8 flex items-center justify-between gap-3">
+        {groups.length > 0 && (
+          <div className="relative flex-1">
+            <button
+              onClick={() => setShowGroupSelector(!showGroupSelector)}
+              className="w-full px-4 py-2.5 text-sm border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center gap-2 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+            >
+              <Folder size={16} />
+              {selectedGroup ? (
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-2.5 h-2.5 rounded-full"
+                    style={{ backgroundColor: groups.find(g => g.id === selectedGroup)?.color }}
+                  />
+                  <span className="font-medium">{groups.find(g => g.id === selectedGroup)?.name}</span>
+                </div>
+              ) : (
+                <span className="font-medium">Select Group</span>
+              )}
+            </button>
+            {showGroupSelector && (
+              <div className="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-10 max-h-48 overflow-y-auto">
+                <button
+                  onClick={() => {
+                    setSelectedGroup(null);
+                    setShowGroupSelector(false);
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <span className="font-medium">No Group</span>
+                </button>
+                {groups.map(group => (
+                  <button
+                    key={group.id}
+                    onClick={() => {
+                      setSelectedGroup(group.id);
+                      setShowGroupSelector(false);
+                    }}
+                    className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+                  >
+                    <div
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{ backgroundColor: group.color }}
+                    />
+                    <span className="font-medium">{group.name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        <button
+          onClick={handleSave}
+          disabled={isSaving || isSaved}
+          className={`
+            px-6 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 transition-all shadow-lg
+            ${isSaved
+              ? 'bg-green-500 text-white'
+              : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
+            }
+            ${groups.length === 0 ? 'flex-1' : ''}
+            disabled:opacity-50 disabled:cursor-not-allowed
+          `}
+        >
+          {isSaved ? (
+            <>
+              <Check size={18} />
+              <span>Saved</span>
+            </>
+          ) : (
+            <>
+              <Save size={18} />
+              <span>Add to List</span>
+            </>
+          )}
+        </button>
       </div>
     </div>
   );
