@@ -63,6 +63,7 @@ struct Provider: TimelineProvider {
 
     private func fetchTodayWord(completion: @escaping (WordEntry?) -> Void) {
         guard let url = URL(string: "https://voca.ysw.kr/api/widget/today-word") else {
+            print("Widget: Invalid URL")
             completion(nil)
             return
         }
@@ -73,18 +74,67 @@ struct Provider: TimelineProvider {
         let token = sharedDefaults?.string(forKey: "token")
 
         var request = URLRequest(url: url)
+        request.timeoutInterval = 10 // 10 second timeout
 
         // Use token if available, otherwise fallback to default-user
         if let token = token {
             request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            print("Widget: Using token authentication")
         } else {
             request.addValue("default-user", forHTTPHeaderField: "x-user-id")
+            print("Widget: Using default-user authentication")
         }
 
         URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data,
-                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let wordData = json["word"] as? [String: Any] else {
+            if let error = error {
+                print("Widget: Network error - \(error.localizedDescription)")
+                completion(nil)
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Widget: Invalid response")
+                completion(nil)
+                return
+            }
+
+            print("Widget: HTTP status code - \(httpResponse.statusCode)")
+
+            guard let data = data else {
+                print("Widget: No data received")
+                completion(nil)
+                return
+            }
+
+            // Try to parse JSON
+            guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                print("Widget: Failed to parse JSON")
+                if let dataString = String(data: data, encoding: .utf8) {
+                    print("Widget: Response data - \(dataString)")
+                }
+                completion(nil)
+                return
+            }
+
+            print("Widget: JSON received - \(json)")
+
+            // Check if word is null (no vocabulary yet)
+            if json["word"] is NSNull || json["word"] == nil {
+                print("Widget: No words in vocabulary")
+                let entry = WordEntry(
+                    date: Date(),
+                    word: "No words yet",
+                    pronunciation: "",
+                    meaning: "Add words to your vocabulary to see them here",
+                    partOfSpeech: "",
+                    level: 0
+                )
+                completion(entry)
+                return
+            }
+
+            guard let wordData = json["word"] as? [String: Any] else {
+                print("Widget: Invalid word data format")
                 completion(nil)
                 return
             }
@@ -98,6 +148,7 @@ struct Provider: TimelineProvider {
                 level: wordData["level"] as? Int ?? 0
             )
 
+            print("Widget: Successfully created entry for word - \(entry.word)")
             completion(entry)
         }.resume()
     }

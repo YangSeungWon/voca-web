@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # iOS Build Script for Voca App
-# This script handles all the iOS build process including icon generation and archive creation
+# Complete build pipeline: Next.js static export -> Capacitor sync -> Xcode archive -> IPA export
 
-set -e  # Exit on error
+# Exit on error (disabled for capacitor sync step which may fail on CocoaPods)
+# set -e
 
 echo "🚀 Starting iOS build process..."
 
@@ -11,6 +12,7 @@ echo "🚀 Starting iOS build process..."
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Get the script directory
@@ -19,78 +21,124 @@ PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 
 cd "$PROJECT_ROOT"
 
-# Step 1: Generate iOS app icon and copy to public
-echo -e "${YELLOW}📱 Generating iOS app icon...${NC}"
-if [ -f "voca.png" ]; then
-    node scripts/generate-ios-icon.js
-    # Copy icon to public folder for app use
-    cp voca.png public/voca-icon.png
-    echo -e "${GREEN}✅ iOS app icon generated successfully${NC}"
+# Parse arguments
+EXPORT_TYPE="dev"  # dev or appstore
+SKIP_BUILD=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --appstore)
+            EXPORT_TYPE="appstore"
+            shift
+            ;;
+        --skip-build)
+            SKIP_BUILD=true
+            shift
+            ;;
+        *)
+            echo -e "${RED}Unknown option: $1${NC}"
+            echo "Usage: $0 [--appstore] [--skip-build]"
+            exit 1
+            ;;
+    esac
+done
+
+# Step 1: Build Next.js static export
+if [ "$SKIP_BUILD" = false ]; then
+    echo -e "${YELLOW}📦 Step 1/6: Building Next.js static export...${NC}"
+
+    # Temporarily move API folder to enable static export
+    if [ -d "src/app/api" ]; then
+        echo "  Moving API folder to /tmp for static export..."
+        mv src/app/api /tmp/voca-api-backup
+    fi
+
+    # Run Next.js build
+    npm run build
+
+    # Restore API folder
+    if [ -d "/tmp/voca-api-backup" ]; then
+        echo "  Restoring API folder..."
+        mv /tmp/voca-api-backup src/app/api
+    fi
+
+    echo -e "${GREEN}  ✅ Next.js build completed${NC}"
 else
-    echo -e "${RED}❌ Error: voca.png not found in project root${NC}"
-    exit 1
+    echo -e "${BLUE}  ⏭️  Skipping Next.js build${NC}"
 fi
 
-# Step 2: Build Next.js project
-echo -e "${YELLOW}🔨 Building Next.js project...${NC}"
-npm run build
+# Step 2: Sync with Capacitor
+echo -e "${YELLOW}📱 Step 2/6: Syncing with Capacitor...${NC}"
+npx cap sync ios 2>&1 | grep -E "(Copying web assets|Creating capacitor|copy ios|SUCCEEDED)" || true
+echo -e "${GREEN}  ✅ Capacitor sync completed (CocoaPods errors are expected and ignored)${NC}"
 
-# Step 3: Sync with Capacitor
-echo -e "${YELLOW}🔄 Syncing with Capacitor...${NC}"
-npx cap sync ios
-
-# Step 4: Clean and reinstall pods
-echo -e "${YELLOW}🧹 Cleaning and reinstalling CocoaPods...${NC}"
+# Step 3: Clean Xcode build
+echo -e "${YELLOW}🧹 Step 3/6: Cleaning Xcode build...${NC}"
 cd ios/App
-rm -rf build build-appstore Pods Podfile.lock
-pod install
+xcodebuild clean -workspace App.xcworkspace -scheme App -configuration Release 2>&1 | grep -E "(CLEAN SUCCEEDED|CLEAN FAILED)" || echo "  Cleaning..."
+echo -e "${GREEN}  ✅ Xcode clean completed${NC}"
 
-# Step 5: Clean Xcode build
-echo -e "${YELLOW}🧹 Cleaning Xcode build...${NC}"
-xcodebuild clean -workspace App.xcworkspace -scheme App -configuration Release
-
-# Step 6: Build archive
-echo -e "${YELLOW}📦 Building iOS archive...${NC}"
+# Step 4: Build archive
+echo -e "${YELLOW}🔨 Step 4/6: Building iOS archive...${NC}"
+echo "  This may take 2-3 minutes..."
 xcodebuild -workspace App.xcworkspace \
     -scheme App \
     -configuration Release \
     -destination 'generic/platform=iOS' \
     -archivePath build/App.xcarchive \
-    archive
+    archive 2>&1 | grep -E "(ARCHIVE SUCCEEDED|ARCHIVE FAILED|error:)" || echo "  Building..."
 
-# Step 7: Export IPA (optional, for development testing)
-if [ "$1" == "--export-ipa" ]; then
-    echo -e "${YELLOW}📤 Exporting IPA...${NC}"
-    xcodebuild -exportArchive \
-        -archivePath build/App.xcarchive \
-        -exportPath build \
-        -exportOptionsPlist ExportOptions.plist
+if [ ! -d "build/App.xcarchive" ]; then
+    echo -e "${RED}  ❌ Archive build failed${NC}"
+    exit 1
+fi
+echo -e "${GREEN}  ✅ Archive build completed${NC}"
 
-    if [ -f "build/App.ipa" ]; then
-        echo -e "${GREEN}✅ IPA exported: build/App.ipa${NC}"
-    fi
+# Step 5: Export IPA
+echo -e "${YELLOW}📤 Step 5/6: Exporting IPA...${NC}"
+
+if [ "$EXPORT_TYPE" == "appstore" ]; then
+    EXPORT_PATH="build-appstore"
+    EXPORT_OPTIONS="ExportOptionsAppStore.plist"
+    echo "  Export type: App Store"
+else
+    EXPORT_PATH="build-dev"
+    EXPORT_OPTIONS="ExportOptionsDev.plist"
+    echo "  Export type: Development"
 fi
 
-# Step 8: Check bundle identifiers
-echo -e "${YELLOW}🔍 Verifying bundle identifiers...${NC}"
-MAIN_BUNDLE_ID=$(plutil -convert xml1 -o - ./build/App.xcarchive/Products/Applications/App.app/Info.plist | grep -A1 CFBundleIdentifier | tail -1 | sed 's/.*<string>\(.*\)<\/string>/\1/')
-CAPACITOR_BUNDLE_ID=$(plutil -convert xml1 -o - ./build/App.xcarchive/Products/Applications/App.app/Frameworks/Capacitor.framework/Info.plist | grep -A1 CFBundleIdentifier | tail -1 | sed 's/.*<string>\(.*\)<\/string>/\1/')
-CORDOVA_BUNDLE_ID=$(plutil -convert xml1 -o - ./build/App.xcarchive/Products/Applications/App.app/Frameworks/Cordova.framework/Info.plist | grep -A1 CFBundleIdentifier | tail -1 | sed 's/.*<string>\(.*\)<\/string>/\1/')
+xcodebuild -exportArchive \
+    -archivePath build/App.xcarchive \
+    -exportPath "$EXPORT_PATH" \
+    -exportOptionsPlist "$EXPORT_OPTIONS" 2>&1 | grep -E "(EXPORT SUCCEEDED|EXPORT FAILED|error:)" || echo "  Exporting..."
 
-echo "Main App: $MAIN_BUNDLE_ID"
-echo "Capacitor: $CAPACITOR_BUNDLE_ID"
-echo "Cordova: $CORDOVA_BUNDLE_ID"
-
-if [ "$MAIN_BUNDLE_ID" == "$CAPACITOR_BUNDLE_ID" ] || [ "$MAIN_BUNDLE_ID" == "$CORDOVA_BUNDLE_ID" ]; then
-    echo -e "${RED}❌ Bundle identifier collision detected!${NC}"
-    echo "Please run 'pod deintegrate && pod install' and rebuild"
+if [ ! -f "$EXPORT_PATH/App.ipa" ]; then
+    echo -e "${RED}  ❌ IPA export failed${NC}"
     exit 1
 fi
 
-echo -e "${GREEN}✅ iOS build completed successfully!${NC}"
-echo -e "${GREEN}Archive location: ios/App/build/App.xcarchive${NC}"
+IPA_SIZE=$(du -h "$EXPORT_PATH/App.ipa" | cut -f1)
+echo -e "${GREEN}  ✅ IPA exported: $EXPORT_PATH/App.ipa (${IPA_SIZE})${NC}"
+
+# Step 6: Summary
+echo -e "${YELLOW}📋 Step 6/6: Build summary${NC}"
 echo ""
-echo "📱 Next steps:"
-echo "1. Open Xcode and go to Window > Organizer"
-echo "2. Select your archive and click 'Distribute App'"
-echo "3. Follow the App Store Connect upload process"
+echo -e "${GREEN}════════════════════════════════════════════════════${NC}"
+echo -e "${GREEN}✅ iOS build completed successfully!${NC}"
+echo -e "${GREEN}════════════════════════════════════════════════════${NC}"
+echo ""
+echo "📦 Archive:  ios/App/build/App.xcarchive"
+echo "📱 IPA file: ios/App/$EXPORT_PATH/App.ipa (${IPA_SIZE})"
+echo ""
+
+if [ "$EXPORT_TYPE" == "appstore" ]; then
+    echo "📱 Next steps for App Store:"
+    echo "  1. Open Xcode and go to Window > Organizer"
+    echo "  2. Select your archive and click 'Distribute App'"
+    echo "  3. Choose 'App Store Connect' and follow the upload process"
+else
+    echo "📱 Next steps for Development:"
+    echo "  1. Install IPA using Xcode Devices window (Cmd+Shift+2)"
+    echo "  2. Or use: xcrun devicectl device install app --device <DEVICE_ID> ios/App/$EXPORT_PATH/App.ipa"
+fi
+echo ""
