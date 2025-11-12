@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { ChevronRight, Sun, User, RefreshCw, FolderOpen, BookOpen, Download, Upload } from 'lucide-react';
+import { ChevronRight, Sun, User, RefreshCw, FolderOpen, BookOpen, Download, Upload, Code } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import AuthStatus from './AuthStatus';
 import SyncStatus from './SyncStatus';
 import GroupManager from './GroupManager';
 import PhoneticsReference from './PhoneticsReference';
+import DeveloperSettings from './DeveloperSettings';
 import { parseCSV, generateCSV, downloadCSV, getCSVTemplate } from '@/lib/csv';
 import { getUserId } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
@@ -14,6 +15,7 @@ import { apiFetch } from '@/lib/api-client';
 export default function MoreView() {
   const [showPhonetics, setShowPhonetics] = useState(false);
   const [showGroups, setShowGroups] = useState(false);
+  const [showDeveloper, setShowDeveloper] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -242,6 +244,33 @@ export default function MoreView() {
             <AuthStatus />
           </div>
         </div>
+
+        {/* Developer Settings */}
+        <button
+          onClick={() => setShowDeveloper(!showDeveloper)}
+          className="w-full bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+              <Code className="w-5 h-5 text-red-600 dark:text-red-400" />
+            </div>
+            <div className="text-left">
+              <div className="font-medium text-gray-900 dark:text-white">
+                Developer Settings
+              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Debug and test features
+              </div>
+            </div>
+          </div>
+          <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${showDeveloper ? 'rotate-90' : ''}`} />
+        </button>
+
+        {showDeveloper && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <DeveloperSettings />
+          </div>
+        )}
       </div>
 
       {/* App Info */}

@@ -1,46 +1,52 @@
 import { Preferences } from '@capacitor/preferences';
-import { registerPlugin } from '@capacitor/core';
 
 const TOKEN_KEY = 'token';
 
-interface AppGroupStoragePlugin {
-  set(options: { key: string; value: string }): Promise<void>;
-  get(options: { key: string }): Promise<{ value: string | null }>;
-  remove(options: { key: string }): Promise<void>;
-}
-
-const AppGroupStorage = registerPlugin<AppGroupStoragePlugin>('AppGroupStorage');
-
 /**
- * Save token to both localStorage and App Groups (for widget access)
+ * Save token to localStorage, Capacitor Preferences, and notify iOS for App Groups sync
  */
 export async function saveToken(token: string): Promise<void> {
-  // Save to localStorage for web
+  // Save to localStorage for web and quick access
   if (typeof window !== 'undefined') {
     localStorage.setItem(TOKEN_KEY, token);
   }
 
-  // Save to Capacitor Preferences
+  // Save to Capacitor Preferences for native persistence
   try {
     await Preferences.set({
       key: TOKEN_KEY,
       value: token,
     });
-
-    // Save to App Groups for iOS widget access
-    if ((window as any).Capacitor?.isNativePlatform?.()) {
-      try {
-        await AppGroupStorage.set({
-          key: TOKEN_KEY,
-          value: token,
-        });
-        console.log('Token saved to App Groups for widget');
-      } catch (error) {
-        console.error('Failed to save token to App Groups:', error);
-      }
-    }
   } catch (error) {
-    console.error('Failed to save token to Capacitor:', error);
+    console.error('[TokenStorage] Failed to save to Preferences:', error);
+  }
+
+  // Notify iOS to sync token to App Groups (for widget access)
+  notifyIOSTokenUpdate(token);
+}
+
+/**
+ * Notify iOS native code to save token to App Groups
+ * Uses WKScriptMessageHandler - iOS AppDelegate listens for this message
+ */
+function notifyIOSTokenUpdate(token: string): void {
+  if (typeof window === 'undefined') return;
+
+  const isNative = (window as any).Capacitor?.isNativePlatform?.();
+  const isIOS = (window as any).Capacitor?.getPlatform?.() === 'ios';
+
+  if (isNative && isIOS) {
+    try {
+      // Check if webkit message handler is available
+      if ((window as any).webkit?.messageHandlers?.saveTokenToAppGroups) {
+        (window as any).webkit.messageHandlers.saveTokenToAppGroups.postMessage(token);
+        console.log('[TokenStorage] Token sync notification sent to iOS');
+      } else {
+        console.log('[TokenStorage] iOS message handler not ready yet');
+      }
+    } catch (error) {
+      console.error('[TokenStorage] Failed to notify iOS:', error);
+    }
   }
 }
 
@@ -65,7 +71,7 @@ export async function getToken(): Promise<string | null> {
 }
 
 /**
- * Remove token from both storage locations
+ * Remove token from all storage locations
  */
 export async function removeToken(): Promise<void> {
   // Remove from localStorage
@@ -76,17 +82,10 @@ export async function removeToken(): Promise<void> {
   // Remove from Capacitor Preferences
   try {
     await Preferences.remove({ key: TOKEN_KEY });
-
-    // Remove from App Groups
-    if ((window as any).Capacitor?.isNativePlatform?.()) {
-      try {
-        await AppGroupStorage.remove({ key: TOKEN_KEY });
-        console.log('Token removed from App Groups');
-      } catch (error) {
-        console.error('Failed to remove token from App Groups:', error);
-      }
-    }
   } catch (error) {
-    console.error('Failed to remove token from Capacitor:', error);
+    console.error('[TokenStorage] Failed to remove from Preferences:', error);
   }
+
+  // Clear token from App Groups by sending empty string
+  notifyIOSTokenUpdate('');
 }

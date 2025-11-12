@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion, PanInfo } from 'framer-motion';
 import SearchBar from '@/components/SearchBar';
 import WordDisplay from '@/components/WordDisplay';
 import VocabularyTable from '@/components/VocabularyTable';
@@ -40,6 +41,9 @@ const viewToHash: Record<ViewType, string> = {
   'phonetics': '#ipa',
   'more': '#more',
 };
+
+// Tab order for swipe navigation
+const tabOrder: ViewType[] = ['home', 'vocabulary', 'study', 'statistics', 'phonetics', 'more'];
 
 export default function Home() {
   const [currentWord, setCurrentWord] = useState<DictionaryEntry | null>(null);
@@ -108,6 +112,23 @@ export default function Home() {
     setRefreshVocab(prev => prev + 1);
   };
 
+  // Handle swipe navigation on mobile
+  const handleSwipe = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    if (!isMobile) return;
+
+    const swipeThreshold = 75; // minimum swipe distance
+    const currentIndex = tabOrder.indexOf(activeView);
+
+    // Swipe left (next tab)
+    if (info.offset.x < -swipeThreshold && currentIndex < tabOrder.length - 1) {
+      handleViewChange(tabOrder[currentIndex + 1]);
+    }
+    // Swipe right (previous tab)
+    else if (info.offset.x > swipeThreshold && currentIndex > 0) {
+      handleViewChange(tabOrder[currentIndex - 1]);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       {/* Desktop-only header */}
@@ -136,7 +157,19 @@ export default function Home() {
           <Navigation activeView={activeView} onViewChange={handleViewChange} />
         )}
 
-        <main className={isMobile ? '' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm mt-2 transition-colors'}>
+        <motion.main
+          className={isMobile ? '' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm mt-2 transition-colors'}
+          drag={isMobile ? "x" : false}
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.2}
+          dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+          onDragEnd={handleSwipe}
+          key={activeView}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
           {activeView === 'home' && (
             <div className={isMobile ? 'flex flex-col justify-center px-6' : 'p-4'} style={isMobile ? { minHeight: 'calc(100vh - 140px)' } : undefined}>
               {!currentWord && isMobile ? (
@@ -216,7 +249,7 @@ export default function Home() {
               <MoreView />
             )
           )}
-        </main>
+        </motion.main>
       </div>
       
       {isMobile && <MobileNav activeView={activeView} onViewChange={handleViewChange} />}
