@@ -161,14 +161,8 @@ export default function Home() {
           className={isMobile ? '' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm mt-2 transition-colors'}
           drag={isMobile ? "x" : false}
           dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.2}
-          dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+          dragElastic={0.3}
           onDragEnd={handleSwipe}
-          key={activeView}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
           {activeView === 'home' && (
             <div className={isMobile ? 'flex flex-col justify-center px-6' : 'p-4'} style={isMobile ? { minHeight: 'calc(100vh - 140px)' } : undefined}>

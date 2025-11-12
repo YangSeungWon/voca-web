@@ -116,7 +116,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WKScriptMessageHandler {
     }
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        // Handle widget deep links
+        if url.scheme == "vocaweb" {
+            handleDeepLink(url)
+            return true
+        }
+
         return ApplicationDelegateProxy.shared.application(app, open: url, options: options)
+    }
+
+    private func handleDeepLink(_ url: URL) {
+        guard let webView = findWebView() else {
+            NSLog("[DeepLink] WebView not found")
+            return
+        }
+
+        // Map URL host to hash routes
+        let hashMap: [String: String] = [
+            "home": "#home",
+            "search": "#home", // Opens home page with search focus
+            "study": "#study",
+            "vocabulary": "#vocabulary",
+            "statistics": "#statistics"
+        ]
+
+        if let host = url.host, let hash = hashMap[host] {
+            NSLog("[DeepLink] Navigating to: \(hash)")
+
+            // Navigate by changing window.location.hash
+            webView.evaluateJavaScript("window.location.hash = '\(hash)';") { _, error in
+                if let error = error {
+                    NSLog("[DeepLink] Navigation error: \(error)")
+                }
+            }
+        }
     }
 
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {

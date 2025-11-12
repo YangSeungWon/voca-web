@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyToken } from '@/lib/jwt';
+import { ipaToHangul } from 'ipa-hangul';
 
 /**
  * Widget API: Get today's word for widget display
@@ -79,10 +80,10 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Get a random word using deterministic seed based on today's date
-    // This ensures the same "today's word" throughout the day
-    const today = new Date();
-    const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+    // Get a random word using time-based seed
+    // Changes every time the widget is opened
+    const now = new Date();
+    const seed = Math.floor(now.getTime() / 1000); // Unix timestamp in seconds
     const randomIndex = seed % totalWords;
 
     const randomWord = await prisma.vocabulary.findMany({
@@ -104,16 +105,21 @@ export async function GET(req: NextRequest) {
     const wordData = randomWord[0];
     const wordInfo = wordData.word as any;
 
+    // Convert IPA to Hangul
+    const ipaText = wordInfo.pronunciation || '';
+    const hangulPronunciation = ipaText ? ipaToHangul(ipaText) : '';
+
     // Return simplified data for widget
     return NextResponse.json({
       word: {
         text: wordInfo.word,
-        pronunciation: wordInfo.pronunciation,
+        pronunciation: ipaText,
+        pronunciationKr: hangulPronunciation,
         meaning: wordInfo.definitions?.[0]?.meaning || '',
         partOfSpeech: wordInfo.definitions?.[0]?.partOfSpeech || '',
         level: wordData.level
       },
-      date: today.toISOString().split('T')[0]
+      date: now.toISOString().split('T')[0]
     });
 
   } catch (error) {
