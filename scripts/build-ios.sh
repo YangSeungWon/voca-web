@@ -47,14 +47,20 @@ done
 if [ "$SKIP_BUILD" = false ]; then
     echo -e "${YELLOW}📦 Step 1/6: Building Next.js static export...${NC}"
 
+    # Clean out directory for fresh build
+    if [ -d "out" ]; then
+        echo "  Removing old build artifacts..."
+        rm -rf out
+    fi
+
     # Temporarily move API folder to enable static export
     if [ -d "src/app/api" ]; then
         echo "  Moving API folder to /tmp for static export..."
         mv src/app/api /tmp/voca-api-backup
     fi
 
-    # Run Next.js build
-    npm run build
+    # Run Next.js static export build
+    npm run build:static
 
     # Restore API folder
     if [ -d "/tmp/voca-api-backup" ]; then

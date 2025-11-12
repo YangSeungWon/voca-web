@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api-client';
+import { saveToken } from '@/lib/token-storage';
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -70,20 +71,10 @@ export default function AuthPage() {
       }
 
       // Store token and user info
-      localStorage.setItem('token', data.token);
+      await saveToken(data.token);
       localStorage.setItem('userId', data.user.id);
       localStorage.setItem('userEmail', data.user.email);
-
-      // Save token to App Groups for widget access (iOS only)
-      if ((window as any).Capacitor?.isNativePlatform?.()) {
-        try {
-          const { AppGroupStorage } = await import('@/lib/capacitor-plugins');
-          await AppGroupStorage.saveToken({ token: data.token });
-          console.log('[Auth] Token saved to App Groups for widget');
-        } catch (error) {
-          console.error('[Auth] Failed to save token to App Groups:', error);
-        }
-      }
+      console.log('[Auth] Token saved via token-storage (includes App Groups)');
 
       console.log('[Auth] Authentication successful, redirecting...');
 
