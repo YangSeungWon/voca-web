@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Check, Save, Volume2, Folder } from 'lucide-react';
 import { DictionaryEntry } from '@/lib/dictionary';
 import { getUserId } from '@/lib/auth';
 import { speak } from '@/lib/speech';
 import { apiFetch } from '@/lib/api-client';
 import { formatPronunciation } from '@/lib/ipa-to-korean';
+import { useAuth } from '@/hooks/useAuth';
 
 interface WordDisplayProps {
   word: DictionaryEntry;
@@ -20,6 +22,8 @@ interface Group {
 }
 
 export default function WordDisplay({ word, onSave }: WordDisplayProps) {
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [groups, setGroups] = useState<Group[]>([]);
@@ -47,17 +51,23 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
   };
 
   const handleSave = async () => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      router.push('/auth');
+      return;
+    }
+
     setIsSaving(true);
     try {
       const response = await apiFetch('/api/vocabulary', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'x-user-id': getUserId()
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           word: word.word,
-          groupId: selectedGroup 
+          groupId: selectedGroup
         }),
       });
 

@@ -15,7 +15,9 @@ import MobileNav from '@/components/MobileNav';
 import SyncStatus from '@/components/SyncStatus';
 import ExtensionBanner from '@/components/ExtensionBanner';
 import MoreView from '@/components/MoreView';
+import LoginPrompt from '@/components/LoginPrompt';
 import { DictionaryEntry } from '@/lib/dictionary';
+import { useAuth } from '@/hooks/useAuth';
 
 type ViewType = 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics' | 'more';
 
@@ -45,6 +47,7 @@ export default function Home() {
   const [refreshVocab, setRefreshVocab] = useState(0);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const { isAuthenticated, isLoading } = useAuth();
 
   // Detect mobile environment based on screen width
   useEffect(() => {
@@ -166,28 +169,40 @@ export default function Home() {
           )}
 
           {activeView === 'vocabulary' && (
-            <div className="flex h-full">
-              <div className="hidden md:block w-64 border-r border-gray-200 dark:border-gray-700">
-                <GroupManager 
-                  selectedGroup={selectedGroup}
-                  onGroupChange={setSelectedGroup}
-                />
+            !isAuthenticated && !isLoading ? (
+              <LoginPrompt message="Sign in to access your vocabulary list" />
+            ) : (
+              <div className="flex h-full">
+                <div className="hidden md:block w-64 border-r border-gray-200 dark:border-gray-700">
+                  <GroupManager
+                    selectedGroup={selectedGroup}
+                    onGroupChange={setSelectedGroup}
+                  />
+                </div>
+                <div className="flex-1">
+                  <VocabularyTable
+                    key={`${refreshVocab}-${selectedGroup}`}
+                    selectedGroup={selectedGroup}
+                  />
+                </div>
               </div>
-              <div className="flex-1">
-                <VocabularyTable 
-                  key={`${refreshVocab}-${selectedGroup}`} 
-                  selectedGroup={selectedGroup}
-                />
-              </div>
-            </div>
+            )
           )}
 
           {activeView === 'study' && (
-            <StudyMode />
+            !isAuthenticated && !isLoading ? (
+              <LoginPrompt message="Sign in to start studying your words" />
+            ) : (
+              <StudyMode />
+            )
           )}
 
           {activeView === 'statistics' && (
-            <Statistics />
+            !isAuthenticated && !isLoading ? (
+              <LoginPrompt message="Sign in to view your learning statistics" />
+            ) : (
+              <Statistics />
+            )
           )}
 
           {activeView === 'phonetics' && (
@@ -195,7 +210,11 @@ export default function Home() {
           )}
 
           {activeView === 'more' && (
-            <MoreView />
+            !isAuthenticated && !isLoading ? (
+              <LoginPrompt message="Sign in to access settings and manage your data" />
+            ) : (
+              <MoreView />
+            )
           )}
         </main>
       </div>

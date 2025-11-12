@@ -7,6 +7,11 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  safelist: [
+    // IPA stress markers - used in dangerouslySetInnerHTML
+    'stress-primary',
+    'stress-secondary',
+  ],
   theme: {
     extend: {
       colors: {
