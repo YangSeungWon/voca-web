@@ -52,7 +52,7 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
                   <div className="flex items-center gap-2 flex-wrap">
                     {korean && (
                       <span
-                        className="text-lg sm:text-2xl font-medium text-blue-600 dark:text-blue-400"
+                        className="text-lg sm:text-2xl font-medium text-blue-500 dark:text-blue-500"
                         dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
                       />
                     )}

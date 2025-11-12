@@ -394,7 +394,7 @@ export default function StudyMode() {
                 <div className="flex items-center justify-center gap-3 mt-2">
                   {korean && (
                     <span
-                      className="text-2xl font-medium text-blue-600 dark:text-blue-400"
+                      className="text-2xl font-medium text-blue-500 dark:text-blue-500"
                       dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
                     />
                   )}

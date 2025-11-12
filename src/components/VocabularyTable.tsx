@@ -300,7 +300,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                           <div className="flex flex-col gap-1">
                             {korean && (
                               <span
-                                className="font-medium text-blue-600 dark:text-blue-400 text-lg"
+                                className="font-medium text-blue-500 dark:text-blue-500 text-lg"
                                 dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
                               />
                             )}

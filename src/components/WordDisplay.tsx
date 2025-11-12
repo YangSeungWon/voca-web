@@ -88,7 +88,7 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
                   <div className="mt-2 flex flex-col gap-1">
                     {korean && (
                       <span
-                        className="text-xl sm:text-2xl font-medium text-blue-600 dark:text-blue-400"
+                        className="text-xl sm:text-2xl font-medium text-blue-500 dark:text-blue-500"
                         dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
                       />
                     )}

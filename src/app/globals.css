@@ -26,9 +26,9 @@
     @apply w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 transition-colors;
   }
 
-  /* IPA stress markers - brighter in dark mode */
+  /* IPA stress markers - darker when stressed in light mode, brighter when stressed in dark mode */
   .stress-primary {
-    @apply text-blue-600 dark:text-blue-400 font-black text-[1.1em];
+    @apply text-blue-700 dark:text-blue-300 font-black text-[1.1em];
   }
 
   .stress-secondary {

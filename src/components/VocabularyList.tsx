@@ -108,7 +108,7 @@ export default function VocabularyList() {
                     <div className="flex items-center gap-3">
                       {korean && (
                         <span
-                          className="text-2xl font-medium text-blue-600 dark:text-blue-400"
+                          className="text-2xl font-medium text-blue-500 dark:text-blue-500"
                           dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
                         />
                       )}
