@@ -1,7 +1,15 @@
 import { Preferences } from '@capacitor/preferences';
+import { registerPlugin } from '@capacitor/core';
 
 const TOKEN_KEY = 'token';
-const APP_GROUP = 'group.kr.ysw.voca';
+
+interface AppGroupStoragePlugin {
+  set(options: { key: string; value: string }): Promise<void>;
+  get(options: { key: string }): Promise<{ value: string | null }>;
+  remove(options: { key: string }): Promise<void>;
+}
+
+const AppGroupStorage = registerPlugin<AppGroupStoragePlugin>('AppGroupStorage');
 
 /**
  * Save token to both localStorage and App Groups (for widget access)
@@ -12,19 +20,24 @@ export async function saveToken(token: string): Promise<void> {
     localStorage.setItem(TOKEN_KEY, token);
   }
 
-  // Save to Capacitor Preferences with App Group (for iOS widget)
+  // Save to Capacitor Preferences
   try {
     await Preferences.set({
       key: TOKEN_KEY,
       value: token,
     });
 
-    // Also save to shared container for widget
+    // Save to App Groups for iOS widget access
     if ((window as any).Capacitor?.isNativePlatform?.()) {
-      await Preferences.set({
-        key: `${APP_GROUP}.${TOKEN_KEY}`,
-        value: token,
-      });
+      try {
+        await AppGroupStorage.set({
+          key: TOKEN_KEY,
+          value: token,
+        });
+        console.log('Token saved to App Groups for widget');
+      } catch (error) {
+        console.error('Failed to save token to App Groups:', error);
+      }
     }
   } catch (error) {
     console.error('Failed to save token to Capacitor:', error);
@@ -64,8 +77,14 @@ export async function removeToken(): Promise<void> {
   try {
     await Preferences.remove({ key: TOKEN_KEY });
 
+    // Remove from App Groups
     if ((window as any).Capacitor?.isNativePlatform?.()) {
-      await Preferences.remove({ key: `${APP_GROUP}.${TOKEN_KEY}` });
+      try {
+        await AppGroupStorage.remove({ key: TOKEN_KEY });
+        console.log('Token removed from App Groups');
+      } catch (error) {
+        console.error('Failed to remove token from App Groups:', error);
+      }
     }
   } catch (error) {
     console.error('Failed to remove token from Capacitor:', error);
