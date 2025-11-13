@@ -17,6 +17,20 @@ struct SimpleEntry: TimelineEntry {
     let date: Date
 }
 
+struct StudyStatsEntry: TimelineEntry {
+    let date: Date
+    let sessions: Int
+    let wordsStudied: Int
+}
+
+struct VocaAppEntry: TimelineEntry {
+    let date: Date
+    let todayWords: Int
+    let totalWords: Int
+    let studySessions: Int
+    let wordsStudied: Int
+}
+
 // MARK: - Timeline Provider for Word Widget
 
 struct WordProvider: TimelineProvider {
@@ -126,6 +140,176 @@ struct SimpleProvider: TimelineProvider {
     }
 }
 
+// MARK: - Timeline Provider for Study Stats Widget
+
+struct StudyStatsProvider: TimelineProvider {
+    func placeholder(in context: Context) -> StudyStatsEntry {
+        StudyStatsEntry(date: Date(), sessions: 0, wordsStudied: 0)
+    }
+
+    func getSnapshot(in context: Context, completion: @escaping (StudyStatsEntry) -> ()) {
+        completion(StudyStatsEntry(date: Date(), sessions: 0, wordsStudied: 0))
+    }
+
+    func getTimeline(in context: Context, completion: @escaping (Timeline<StudyStatsEntry>) -> ()) {
+        fetchStudyStats { statsData in
+            let currentDate = Date()
+
+            let entry = statsData ?? StudyStatsEntry(
+                date: currentDate,
+                sessions: 0,
+                wordsStudied: 0
+            )
+
+            // Refresh every hour
+            let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: currentDate)!
+            let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+            completion(timeline)
+        }
+    }
+
+    private func fetchStudyStats(completion: @escaping (StudyStatsEntry?) -> Void) {
+        guard let url = URL(string: "https://voca.ysw.kr/api/widget/study-stats") else {
+            completion(nil)
+            return
+        }
+
+        let appGroup = "group.kr.ysw.voca"
+        let sharedDefaults = UserDefaults(suiteName: appGroup)
+        let token = sharedDefaults?.string(forKey: "token")
+
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 10
+
+        if let token = token {
+            request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            request.addValue("default-user", forHTTPHeaderField: "x-user-id")
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data,
+                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                completion(nil)
+                return
+            }
+
+            let entry = StudyStatsEntry(
+                date: Date(),
+                sessions: json["sessions"] as? Int ?? 0,
+                wordsStudied: json["wordsStudied"] as? Int ?? 0
+            )
+
+            completion(entry)
+        }.resume()
+    }
+}
+
+// MARK: - Timeline Provider for Voca App Widget
+
+struct VocaAppProvider: TimelineProvider {
+    func placeholder(in context: Context) -> VocaAppEntry {
+        VocaAppEntry(date: Date(), todayWords: 0, totalWords: 0, studySessions: 0, wordsStudied: 0)
+    }
+
+    func getSnapshot(in context: Context, completion: @escaping (VocaAppEntry) -> ()) {
+        completion(VocaAppEntry(date: Date(), todayWords: 5, totalWords: 120, studySessions: 2, wordsStudied: 15))
+    }
+
+    func getTimeline(in context: Context, completion: @escaping (Timeline<VocaAppEntry>) -> ()) {
+        fetchAppStats { statsData in
+            let currentDate = Date()
+
+            let entry = statsData ?? VocaAppEntry(
+                date: currentDate,
+                todayWords: 0,
+                totalWords: 0,
+                studySessions: 0,
+                wordsStudied: 0
+            )
+
+            // Refresh every hour
+            let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: currentDate)!
+            let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+            completion(timeline)
+        }
+    }
+
+    private func fetchAppStats(completion: @escaping (VocaAppEntry?) -> Void) {
+        let appGroup = "group.kr.ysw.voca"
+        let sharedDefaults = UserDefaults(suiteName: appGroup)
+        let token = sharedDefaults?.string(forKey: "token")
+
+        let group = DispatchGroup()
+        var statsResult: [String: Any]?
+        var studyStatsResult: [String: Any]?
+
+        // Fetch statistics
+        group.enter()
+        if let url = URL(string: "https://voca.ysw.kr/api/statistics") {
+            var request = URLRequest(url: url)
+            if let token = token {
+                request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            } else {
+                request.addValue("default-user", forHTTPHeaderField: "x-user-id")
+            }
+
+            URLSession.shared.dataTask(with: request) { data, _, _ in
+                if let data = data,
+                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    statsResult = json
+                }
+                group.leave()
+            }.resume()
+        } else {
+            group.leave()
+        }
+
+        // Fetch study stats
+        group.enter()
+        if let url = URL(string: "https://voca.ysw.kr/api/widget/study-stats") {
+            var request = URLRequest(url: url)
+            if let token = token {
+                request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            } else {
+                request.addValue("default-user", forHTTPHeaderField: "x-user-id")
+            }
+
+            URLSession.shared.dataTask(with: request) { data, _, _ in
+                if let data = data,
+                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    studyStatsResult = json
+                }
+                group.leave()
+            }.resume()
+        } else {
+            group.leave()
+        }
+
+        group.notify(queue: .main) {
+            var todayWords = 0
+            var totalWords = 0
+            if let overview = statsResult?["overview"] as? [String: Any] {
+                todayWords = overview["today"] as? Int ?? 0
+                totalWords = overview["total"] as? Int ?? 0
+            }
+
+            let studySessions = studyStatsResult?["sessions"] as? Int ?? 0
+            let wordsStudied = studyStatsResult?["wordsStudied"] as? Int ?? 0
+
+            let entry = VocaAppEntry(
+                date: Date(),
+                todayWords: todayWords,
+                totalWords: totalWords,
+                studySessions: studySessions,
+                wordsStudied: wordsStudied
+            )
+
+            completion(entry)
+        }
+    }
+}
+
 // MARK: - Widget Views
 
 struct TodayWordView: View {
@@ -136,29 +320,6 @@ struct TodayWordView: View {
         Link(destination: URL(string: "vocaweb://home")!) {
             ZStack {
                 VStack(alignment: .leading, spacing: 6) {
-                    // Header
-                    HStack {
-                        Text("📚 Today's Word")
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(.white.opacity(0.7))
-
-                        Spacer()
-
-                        if entry.level > 0 {
-                            Text("Lv.\(entry.level)")
-                                .font(.caption2)
-                                .fontWeight(.bold)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(Color.blue.opacity(0.3))
-                                .cornerRadius(4)
-                        }
-                    }
-
-                    Spacer()
-
                     // Word
                     Text(entry.word)
                         .font(family == .systemSmall ? .title3 : .title2)
@@ -196,7 +357,7 @@ struct TodayWordView: View {
                             .cornerRadius(4)
                     }
                 }
-                .padding()
+                .padding(8)
             }
         }
     }
@@ -248,70 +409,146 @@ struct LockScreenInlineView: View {
     }
 }
 
-struct SearchWidgetView: View {
+struct VocaAppWidgetView: View {
+    let entry: VocaAppEntry
     @Environment(\.widgetFamily) var family
 
     var body: some View {
-        Link(destination: URL(string: "vocaweb://search")!) {
-            ZStack {
-                VStack(spacing: 12) {
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: family == .systemSmall ? 32 : 48))
-                        .foregroundColor(.white)
-
-                    Text("Search")
-                        .font(family == .systemSmall ? .subheadline : .title3)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-
-                    if family != .systemSmall {
-                        Text("Look up a word")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.7))
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
+        if family == .systemSmall {
+            smallWidgetView
+        } else {
+            mediumWidgetView
         }
     }
-}
 
-struct StudyWidgetView: View {
-    @Environment(\.widgetFamily) var family
+    // Small Widget: App Summary
+    var smallWidgetView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("📚 Voca")
+                .font(.caption)
+                .foregroundColor(.white.opacity(0.7))
 
-    var body: some View {
-        Link(destination: URL(string: "vocaweb://study")!) {
-            ZStack {
-                VStack(spacing: 12) {
-                    Image(systemName: "book.fill")
-                        .font(.system(size: family == .systemSmall ? 32 : 48))
+            Spacer()
+
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Text("\(entry.totalWords)")
+                        .font(.system(size: 32))
+                        .fontWeight(.bold)
                         .foregroundColor(.white)
-
-                    Text("Study")
-                        .font(family == .systemSmall ? .subheadline : .title3)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-
-                    if family != .systemSmall {
-                        Text("Start reviewing words")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.7))
-                    }
+                    Text("words")
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.7))
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                if entry.todayWords > 0 {
+                    Text("+\(entry.todayWords) today")
+                        .font(.caption)
+                        .foregroundColor(.green.opacity(0.9))
+                }
+
+                if entry.studySessions > 0 {
+                    Text("\(entry.studySessions) study sessions")
+                        .font(.caption)
+                        .foregroundColor(.blue.opacity(0.9))
+                }
             }
+        }
+        .padding(8)
+    }
+
+    // Medium Widget: Search + Quick Actions
+    var mediumWidgetView: some View {
+        VStack(spacing: 0) {
+            // Top: Search Bar
+            Link(destination: URL(string: "vocaweb://search")!) {
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.white.opacity(0.6))
+                    Text("Search for a word...")
+                        .foregroundColor(.white.opacity(0.6))
+                        .font(.subheadline)
+                    Spacer()
+                }
+                .padding(12)
+                .background(Color.white.opacity(0.1))
+                .cornerRadius(8)
+                .padding(8)
+            }
+
+            // Bottom: 4 Quick Action Buttons
+            HStack(spacing: 8) {
+                quickActionButton(icon: "house.fill", label: "Home", url: "vocaweb://home")
+                quickActionButton(icon: "folder.fill", label: "Words", url: "vocaweb://vocabulary")
+                quickActionButton(icon: "book.fill", label: "Study", url: "vocaweb://study")
+                quickActionButton(icon: "chart.bar.fill", label: "Stats", url: "vocaweb://statistics")
+            }
+            .padding(.horizontal, 8)
+            .padding(.bottom, 8)
+        }
+    }
+
+    func quickActionButton(icon: String, label: String, url: String) -> some View {
+        Link(destination: URL(string: url)!) {
+            VStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.title3)
+                    .foregroundColor(.white)
+                Text(label)
+                    .font(.caption2)
+                    .foregroundColor(.white.opacity(0.8))
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.white.opacity(0.1))
+            .cornerRadius(8)
         }
     }
 }
 
 // MARK: - Widget Configurations
 
+struct VocaAppWidget: Widget {
+    let kind: String = "VocaAppWidget"
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: VocaAppProvider()) { entry in
+            if #available(iOS 17.0, *) {
+                VocaAppWidgetView(entry: entry)
+                    .containerBackground(for: .widget) {
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color(red: 0.2, green: 0.3, blue: 0.5),
+                                Color(red: 0.1, green: 0.2, blue: 0.4)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    }
+            } else {
+                VocaAppWidgetView(entry: entry)
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color(red: 0.2, green: 0.3, blue: 0.5),
+                                Color(red: 0.1, green: 0.2, blue: 0.4)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+        }
+        .configurationDisplayName("Voca")
+        .description("Quick access to your vocabulary app")
+        .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+
 @main
 struct VocaWidgetBundle: WidgetBundle {
     var body: some Widget {
+        VocaAppWidget()
         TodayWordWidget()
-        SearchWidget()
-        StudyWidget()
     }
 }
 
@@ -377,85 +614,29 @@ struct TodayWordWidgetEntryView: View {
     }
 }
 
-struct SearchWidget: Widget {
-    let kind: String = "SearchWidget"
-
-    var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: SimpleProvider()) { entry in
-            if #available(iOS 17.0, *) {
-                SearchWidgetView()
-                    .containerBackground(for: .widget) {
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color(red: 0.2, green: 0.4, blue: 0.8),
-                                Color(red: 0.1, green: 0.3, blue: 0.7)
-                            ]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    }
-            } else {
-                SearchWidgetView()
-                    .background(
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color(red: 0.2, green: 0.4, blue: 0.8),
-                                Color(red: 0.1, green: 0.3, blue: 0.7)
-                            ]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-            }
-        }
-        .configurationDisplayName("Quick Search")
-        .description("Tap to search for a word")
-        .supportedFamilies([.systemSmall, .systemMedium])
-    }
-}
-
-struct StudyWidget: Widget {
-    let kind: String = "StudyWidget"
-
-    var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: SimpleProvider()) { entry in
-            if #available(iOS 17.0, *) {
-                StudyWidgetView()
-                    .containerBackground(for: .widget) {
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color(red: 0.6, green: 0.2, blue: 0.8),
-                                Color(red: 0.5, green: 0.1, blue: 0.7)
-                            ]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    }
-            } else {
-                StudyWidgetView()
-                    .background(
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color(red: 0.6, green: 0.2, blue: 0.8),
-                                Color(red: 0.5, green: 0.1, blue: 0.7)
-                            ]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-            }
-        }
-        .configurationDisplayName("Start Study")
-        .description("Tap to begin studying your words")
-        .supportedFamilies([.systemSmall, .systemMedium])
-    }
-}
-
 // MARK: - Preview
 
 struct VocaWidget_Previews: PreviewProvider {
     static var previews: some View {
         Group {
+            VocaAppWidgetView(entry: VocaAppEntry(
+                date: Date(),
+                todayWords: 5,
+                totalWords: 120,
+                studySessions: 2,
+                wordsStudied: 15
+            ))
+            .previewContext(WidgetPreviewContext(family: .systemSmall))
+
+            VocaAppWidgetView(entry: VocaAppEntry(
+                date: Date(),
+                todayWords: 5,
+                totalWords: 120,
+                studySessions: 2,
+                wordsStudied: 15
+            ))
+            .previewContext(WidgetPreviewContext(family: .systemMedium))
+
             TodayWordView(entry: WordEntry(
                 date: Date(),
                 word: "serendipity",
@@ -466,12 +647,6 @@ struct VocaWidget_Previews: PreviewProvider {
                 level: 4
             ))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
-
-            SearchWidgetView()
-                .previewContext(WidgetPreviewContext(family: .systemSmall))
-
-            StudyWidgetView()
-                .previewContext(WidgetPreviewContext(family: .systemSmall))
         }
     }
 }
