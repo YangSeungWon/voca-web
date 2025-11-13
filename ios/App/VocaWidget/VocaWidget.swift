@@ -478,7 +478,7 @@ struct VocaAppWidgetView: View {
 
             // Bottom: 4 Quick Action Buttons
             HStack(spacing: 8) {
-                quickActionButton(icon: "house.fill", label: "Home", url: "vocaweb://home")
+                quickActionButton(icon: "textformat.abc", label: "IPA", url: "vocaweb://phonetics")
                 quickActionButton(icon: "folder.fill", label: "Words", url: "vocaweb://vocabulary")
                 quickActionButton(icon: "book.fill", label: "Study", url: "vocaweb://study")
                 quickActionButton(icon: "chart.bar.fill", label: "Stats", url: "vocaweb://statistics")
