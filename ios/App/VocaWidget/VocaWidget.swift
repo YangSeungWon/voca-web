@@ -202,6 +202,52 @@ struct TodayWordView: View {
     }
 }
 
+// MARK: - Lock Screen Widget Views
+
+struct LockScreenRectangularView: View {
+    let entry: WordEntry
+
+    var body: some View {
+        Link(destination: URL(string: "vocaweb://home")!) {
+            VStack(alignment: .leading, spacing: 2) {
+                HStack {
+                    Text(entry.word)
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                    if entry.level > 0 {
+                        Text("Lv.\(entry.level)")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                }
+
+                if !entry.pronunciationKr.isEmpty {
+                    Text(entry.pronunciationKr)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                Text(entry.meaning)
+                    .font(.caption)
+                    .lineLimit(2)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
+struct LockScreenInlineView: View {
+    let entry: WordEntry
+
+    var body: some View {
+        Link(destination: URL(string: "vocaweb://home")!) {
+            Text("\(entry.word) - \(entry.meaning)")
+                .font(.caption)
+                .lineLimit(1)
+        }
+    }
+}
+
 struct SearchWidgetView: View {
     @Environment(\.widgetFamily) var family
 
@@ -274,6 +320,25 @@ struct TodayWordWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WordProvider()) { entry in
+            TodayWordWidgetEntryView(entry: entry)
+        }
+        .configurationDisplayName("Random Word")
+        .description("Shows a random word from your vocabulary")
+        .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular, .accessoryInline])
+    }
+}
+
+struct TodayWordWidgetEntryView: View {
+    @Environment(\.widgetFamily) var family
+    let entry: WordEntry
+
+    var body: some View {
+        switch family {
+        case .accessoryRectangular:
+            LockScreenRectangularView(entry: entry)
+        case .accessoryInline:
+            LockScreenInlineView(entry: entry)
+        default:
             if #available(iOS 17.0, *) {
                 TodayWordView(entry: entry)
                     .containerBackground(for: .widget) {
@@ -300,9 +365,6 @@ struct TodayWordWidget: Widget {
                     )
             }
         }
-        .configurationDisplayName("Random Word")
-        .description("Shows a random word from your vocabulary")
-        .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
 
