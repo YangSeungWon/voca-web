@@ -19,12 +19,6 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
           --safe-area-right: env(safe-area-inset-right, 0px);
         }
 
-        /* Prevent horizontal scroll */
-        html, body {
-          overflow-x: hidden;
-          width: 100%;
-        }
-
         /* Capacitor app container */
         .capacitor-app {
           min-height: 100vh;

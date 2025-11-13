@@ -65,3 +65,11 @@
 .animate-slideIn {
   animation: slideIn 0.3s ease-out;
 }
+
+/* Prevent horizontal scroll on mobile */
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+  }
+}
