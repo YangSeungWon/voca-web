@@ -319,7 +319,7 @@ struct TodayWordView: View {
     var body: some View {
         Link(destination: URL(string: "vocaweb://home")!) {
             ZStack {
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 3) {
                     // Word
                     Text(entry.word)
                         .font(family == .systemSmall ? .title3 : .title2)
@@ -344,20 +344,20 @@ struct TodayWordView: View {
                     Text(entry.meaning)
                         .font(.subheadline)
                         .foregroundColor(.white.opacity(0.9))
-                        .lineLimit(family == .systemSmall ? 2 : 3)
+                        .lineLimit(family == .systemSmall ? 4 : 5)
 
                     // Part of speech
                     if !entry.partOfSpeech.isEmpty {
                         Text(entry.partOfSpeech)
                             .font(.caption2)
                             .foregroundColor(.white.opacity(0.6))
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 1)
                             .background(Color.white.opacity(0.1))
-                            .cornerRadius(4)
+                            .cornerRadius(3)
                     }
                 }
-                .padding(8)
+                .padding(6)
             }
         }
     }
@@ -370,7 +370,7 @@ struct LockScreenRectangularView: View {
 
     var body: some View {
         Link(destination: URL(string: "vocaweb://home")!) {
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 1) {
                 HStack {
                     Text(entry.word)
                         .font(.headline)
@@ -390,7 +390,7 @@ struct LockScreenRectangularView: View {
 
                 Text(entry.meaning)
                     .font(.caption)
-                    .lineLimit(2)
+                    .lineLimit(3)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -423,15 +423,15 @@ struct VocaAppWidgetView: View {
 
     // Small Widget: App Summary
     var smallWidgetView: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             Text("📚 Voca")
                 .font(.caption)
                 .foregroundColor(.white.opacity(0.7))
 
             Spacer()
 
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(alignment: .firstTextBaseline, spacing: 4) {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(alignment: .firstTextBaseline, spacing: 3) {
                     Text("\(entry.totalWords)")
                         .font(.system(size: 32))
                         .fontWeight(.bold)
@@ -454,7 +454,7 @@ struct VocaAppWidgetView: View {
                 }
             }
         }
-        .padding(8)
+        .padding(6)
     }
 
     // Medium Widget: Search + Quick Actions
@@ -470,27 +470,27 @@ struct VocaAppWidgetView: View {
                         .font(.subheadline)
                     Spacer()
                 }
-                .padding(12)
+                .padding(10)
                 .background(Color.white.opacity(0.1))
-                .cornerRadius(8)
-                .padding(8)
+                .cornerRadius(6)
+                .padding(6)
             }
 
             // Bottom: 4 Quick Action Buttons
-            HStack(spacing: 8) {
+            HStack(spacing: 6) {
                 quickActionButton(icon: "textformat.abc", label: "IPA", url: "vocaweb://phonetics")
                 quickActionButton(icon: "folder.fill", label: "Words", url: "vocaweb://vocabulary")
                 quickActionButton(icon: "book.fill", label: "Study", url: "vocaweb://study")
                 quickActionButton(icon: "chart.bar.fill", label: "Stats", url: "vocaweb://statistics")
             }
-            .padding(.horizontal, 8)
-            .padding(.bottom, 8)
+            .padding(.horizontal, 6)
+            .padding(.bottom, 6)
         }
     }
 
     func quickActionButton(icon: String, label: String, url: String) -> some View {
         Link(destination: URL(string: url)!) {
-            VStack(spacing: 4) {
+            VStack(spacing: 3) {
                 Image(systemName: icon)
                     .font(.title3)
                     .foregroundColor(.white)
@@ -500,7 +500,7 @@ struct VocaAppWidgetView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.white.opacity(0.1))
-            .cornerRadius(8)
+            .cornerRadius(6)
         }
     }
 }
