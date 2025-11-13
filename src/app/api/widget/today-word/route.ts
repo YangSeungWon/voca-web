@@ -89,7 +89,11 @@ export async function GET(req: NextRequest) {
     const randomWord = await prisma.vocabulary.findMany({
       where: { userId: user.id },
       include: {
-        word: true
+        word: {
+          include: {
+            definitions: true
+          }
+        }
       },
       skip: randomIndex,
       take: 1

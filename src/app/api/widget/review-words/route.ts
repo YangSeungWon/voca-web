@@ -51,7 +51,11 @@ export async function GET(req: NextRequest) {
         ]
       },
       include: {
-        word: true
+        word: {
+          include: {
+            definitions: true
+          }
+        }
       },
       orderBy: {
         level: 'asc' // Prioritize lower level words

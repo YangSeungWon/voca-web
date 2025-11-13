@@ -333,13 +333,15 @@ struct TodayWordWidgetEntryView: View {
     let entry: WordEntry
 
     var body: some View {
-        switch family {
-        case .accessoryRectangular:
-            LockScreenRectangularView(entry: entry)
-        case .accessoryInline:
-            LockScreenInlineView(entry: entry)
-        default:
-            if #available(iOS 17.0, *) {
+        if #available(iOS 17.0, *) {
+            switch family {
+            case .accessoryRectangular:
+                LockScreenRectangularView(entry: entry)
+                    .containerBackground(for: .widget) {}
+            case .accessoryInline:
+                LockScreenInlineView(entry: entry)
+                    .containerBackground(for: .widget) {}
+            default:
                 TodayWordView(entry: entry)
                     .containerBackground(for: .widget) {
                         LinearGradient(
@@ -351,7 +353,14 @@ struct TodayWordWidgetEntryView: View {
                             endPoint: .bottomTrailing
                         )
                     }
-            } else {
+            }
+        } else {
+            switch family {
+            case .accessoryRectangular:
+                LockScreenRectangularView(entry: entry)
+            case .accessoryInline:
+                LockScreenInlineView(entry: entry)
+            default:
                 TodayWordView(entry: entry)
                     .background(
                         LinearGradient(
