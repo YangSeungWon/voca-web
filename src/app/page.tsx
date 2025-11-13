@@ -133,29 +133,27 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       {/* Desktop-only header */}
       {!isMobile && (
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-          <div className="max-w-7xl mx-auto px-4">
-            <header className="py-2">
-              <div className="flex items-center justify-between">
+        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <img src="/favicon.ico" alt="Voca" className="w-6 h-6" />
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Voca Web</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <SyncStatus />
-                  <ThemeToggle />
-                  <AuthStatus />
-                </div>
+                <Navigation activeView={activeView} onViewChange={handleViewChange} />
               </div>
-            </header>
+              <div className="flex items-center gap-2">
+                <SyncStatus />
+                <ThemeToggle />
+                <AuthStatus />
+              </div>
+            </div>
           </div>
-        </div>
+        </header>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 py-2">
-        {!isMobile && (
-          <Navigation activeView={activeView} onViewChange={handleViewChange} />
-        )}
+      <div className="max-w-7xl mx-auto px-4 py-4">
 
         <motion.main
           className={isMobile ? '' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm mt-2 transition-colors'}
@@ -165,7 +163,7 @@ export default function Home() {
           onDragEnd={handleSwipe}
         >
           {activeView === 'home' && (
-            <div className={isMobile ? 'flex flex-col justify-center px-6' : 'p-4'} style={isMobile ? { minHeight: 'calc(100vh - 140px)' } : undefined}>
+            <div className={isMobile ? 'flex flex-col justify-center px-6' : 'p-1'} style={isMobile ? { minHeight: 'calc(100vh - 140px)' } : undefined}>
               {!currentWord && isMobile ? (
                 <div className="space-y-8">
                   <div className="flex flex-col items-center text-center mb-6">

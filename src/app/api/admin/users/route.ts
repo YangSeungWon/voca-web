@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
         createdAt: true,
         _count: {
           select: {
-            vocabulary: true
+            vocabularies: true
           }
         }
       },
@@ -62,13 +62,13 @@ export async function GET(req: NextRequest) {
       id: user.id,
       email: user.email,
       createdAt: user.createdAt,
-      vocabularyCount: user._count.vocabulary
+      vocabularyCount: user._count.vocabularies
     }));
 
     return NextResponse.json({
       users: formattedUsers,
       totalUsers: users.length,
-      totalVocabulary: users.reduce((sum, u) => sum + u._count.vocabulary, 0)
+      totalVocabulary: users.reduce((sum, u) => sum + u._count.vocabularies, 0)
     });
 
   } catch (error) {

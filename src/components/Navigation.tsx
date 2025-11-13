@@ -5,7 +5,7 @@ interface NavigationProps {
 
 export default function Navigation({ activeView, onViewChange }: NavigationProps) {
   const tabs = [
-    { id: 'home' as const, label: 'Home' },
+    { id: 'home' as const, label: 'Search' },
     { id: 'vocabulary' as const, label: 'Words' },
     { id: 'study' as const, label: 'Review' },
     { id: 'statistics' as const, label: 'Statistics' },
@@ -13,13 +13,13 @@ export default function Navigation({ activeView, onViewChange }: NavigationProps
   ];
 
   return (
-    <nav className="flex gap-2">
+    <nav className="flex flex-wrap gap-2">
       {tabs.map((tab) => (
         <button
           key={tab.id}
           onClick={() => onViewChange(tab.id)}
           className={`
-            px-6 py-2.5 text-sm font-medium rounded-lg transition-all
+            px-6 py-2.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap
             ${activeView === tab.id
               ? 'bg-blue-600 text-white shadow-md'
               : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'

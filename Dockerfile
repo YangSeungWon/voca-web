@@ -35,8 +35,8 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Install dependencies
-RUN apk add --no-cache openssl libc6-compat
+# Install dependencies (netcat for database wait, wget for healthcheck)
+RUN apk add --no-cache openssl libc6-compat netcat-openbsd wget
 
 # Create a non-root user
 RUN addgroup -g 1001 -S nodejs

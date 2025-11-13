@@ -1,6 +1,6 @@
 'use client';
 
-import { Home, FolderOpen, BookOpen, BarChart3, MoreHorizontal } from 'lucide-react';
+import { Search, FolderOpen, BookOpen, BarChart3, MoreHorizontal } from 'lucide-react';
 
 interface MobileNavProps {
   activeView: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics' | 'more';
@@ -9,7 +9,7 @@ interface MobileNavProps {
 
 export default function MobileNav({ activeView, onViewChange }: MobileNavProps) {
   const tabs = [
-    { id: 'home' as const, label: 'Home', icon: Home },
+    { id: 'home' as const, label: 'Search', icon: Search },
     { id: 'vocabulary' as const, label: 'Words', icon: FolderOpen },
     { id: 'study' as const, label: 'Study', icon: BookOpen },
     { id: 'statistics' as const, label: 'Stats', icon: BarChart3 },
