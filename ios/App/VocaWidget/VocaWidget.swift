@@ -300,8 +300,8 @@ struct TodayWordWidget: Widget {
                     )
             }
         }
-        .configurationDisplayName("Today's Word")
-        .description("Shows a random vocabulary word")
+        .configurationDisplayName("Random Word")
+        .description("Shows a random word from your vocabulary")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
