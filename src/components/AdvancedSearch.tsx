@@ -55,7 +55,7 @@ export default function AdvancedSearch({ onFilterChange, groups }: AdvancedSearc
   const activeFiltersCount = Object.values(filters).filter(v => v && v !== '').length;
 
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4 mb-4">
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 mb-4">
       {/* Basic Search */}
       <div className="flex gap-2 mb-3">
         <div className="relative flex-1">
@@ -65,14 +65,14 @@ export default function AdvancedSearch({ onFilterChange, groups }: AdvancedSearc
             value={filters.searchTerm}
             onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
             placeholder="Search words or meanings..."
-            className="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+            className="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
           />
         </div>
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className={`px-4 py-2 text-sm border rounded-sm flex items-center gap-2 transition-colors ${
-            showAdvanced 
-              ? 'bg-blue-500 text-white border-blue-500' 
+          className={`px-4 py-2 text-sm border rounded-xl flex items-center gap-2 transition-colors ${
+            showAdvanced
+              ? 'bg-blue-600 text-white border-blue-600'
               : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
           }`}
         >
@@ -98,7 +98,7 @@ export default function AdvancedSearch({ onFilterChange, groups }: AdvancedSearc
             <select
               value={filters.partOfSpeech}
               onChange={(e) => handleFilterChange('partOfSpeech', e.target.value)}
-              className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-sm focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:border-blue-500"
             >
               <option value="">All</option>
               {partsOfSpeech.map(pos => (
@@ -120,9 +120,9 @@ export default function AdvancedSearch({ onFilterChange, groups }: AdvancedSearc
                 <button
                   key={level}
                   onClick={() => handleFilterChange('level', filters.level === level ? null : level)}
-                  className={`px-3 py-1 text-xs rounded-sm transition-colors ${
+                  className={`px-3 py-1 text-xs rounded-lg transition-colors ${
                     filters.level === level
-                      ? 'bg-blue-500 text-white'
+                      ? 'bg-blue-600 text-white'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
@@ -141,7 +141,7 @@ export default function AdvancedSearch({ onFilterChange, groups }: AdvancedSearc
               <select
                 value={filters.groupId || ''}
                 onChange={(e) => handleFilterChange('groupId', e.target.value || null)}
-                className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-sm focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:border-blue-500"
               >
                 <option value="">All Groups</option>
                 {groups.map(group => (
@@ -164,7 +164,7 @@ export default function AdvancedSearch({ onFilterChange, groups }: AdvancedSearc
                 type="date"
                 value={filters.dateFrom}
                 onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
-                className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-sm focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
             <div>
@@ -175,7 +175,7 @@ export default function AdvancedSearch({ onFilterChange, groups }: AdvancedSearc
                 type="date"
                 value={filters.dateTo}
                 onChange={(e) => handleFilterChange('dateTo', e.target.value)}
-                className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-sm focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
           </div>

@@ -178,9 +178,9 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
             placeholder="Filter..."
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+            className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
           />
-          <button className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-sm">
+          <button className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg">
             <Filter size={14} />
           </button>
         </div>
@@ -266,7 +266,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => toggleExpandRow(item.id)}
-                          className="p-0.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-sm"
+                          className="p-0.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
                         >
                           <ChevronRight 
                             size={12} 
@@ -286,7 +286,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                         {item.word.word}
                         <button
                           onClick={() => speak(item.word.word)}
-                          className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-sm transition-colors"
+                          className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
                           title="Pronounce"
                         >
                           <Volume2 size={12} />
@@ -317,7 +317,7 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
                       {item.group ? (
                         <div className="flex items-center gap-1">
                           <div
-                            className="w-2 h-2 rounded-sm"
+                            className="w-2 h-2 rounded"
                             style={{ backgroundColor: item.group.color }}
                           />
                           <span className="text-xs">{item.group.name}</span>

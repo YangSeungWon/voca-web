@@ -80,7 +80,7 @@ export default function Statistics() {
     <div className="p-6 space-y-6">
       {/* Overview Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
             <Brain className="text-gray-400" size={20} />
             <span className="text-xs text-gray-500">Total</span>
@@ -89,7 +89,7 @@ export default function Statistics() {
           <div className="text-xs text-gray-500 mt-1">words in library</div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
             <TrendingUp className="text-green-500" size={20} />
             <span className="text-xs text-gray-500">This Week</span>
@@ -98,7 +98,7 @@ export default function Statistics() {
           <div className="text-xs text-gray-500 mt-1">words added</div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
             <Award className="text-yellow-500" size={20} />
             <span className="text-xs text-gray-500">Mastered</span>
@@ -111,7 +111,7 @@ export default function Statistics() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
             <Calendar className="text-blue-500" size={20} />
             <span className="text-xs text-gray-500">Streak</span>
@@ -122,14 +122,14 @@ export default function Statistics() {
       </div>
 
       {/* Progress Chart */}
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
         <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Daily Activity (Last 30 Days)</h3>
         <div className="h-32 flex items-end gap-1">
           {stats.dailyProgress.map((day, index) => (
             <div key={index} className="flex-1 flex flex-col gap-1 items-center">
               <div className="w-full flex flex-col gap-0.5" style={{ height: '120px' }}>
                 <div 
-                  className="bg-green-400 dark:bg-green-500 rounded-sm transition-all hover:bg-green-500 dark:hover:bg-green-400"
+                  className="bg-green-400 dark:bg-green-500 rounded transition-all hover:bg-green-500 dark:hover:bg-green-400"
                   style={{ 
                     flex: day.reviewed / maxDailyValue || 0.01,
                     minHeight: day.reviewed > 0 ? '2px' : '0'
@@ -137,7 +137,7 @@ export default function Statistics() {
                   title={`${day.date}: ${day.reviewed} reviewed`}
                 />
                 <div 
-                  className="bg-blue-400 dark:bg-blue-500 rounded-sm transition-all hover:bg-blue-500 dark:hover:bg-blue-400"
+                  className="bg-blue-400 dark:bg-blue-500 rounded transition-all hover:bg-blue-500 dark:hover:bg-blue-400"
                   style={{ 
                     flex: day.added / maxDailyValue || 0.01,
                     minHeight: day.added > 0 ? '2px' : '0'
@@ -161,11 +161,11 @@ export default function Statistics() {
         </div>
         <div className="flex items-center gap-4 mt-3 text-xs">
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-blue-400 dark:bg-blue-500 rounded-sm"></div>
+            <div className="w-3 h-3 bg-blue-400 dark:bg-blue-500 rounded"></div>
             <span className="text-gray-600 dark:text-gray-400">Added</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-green-400 dark:bg-green-500 rounded-sm"></div>
+            <div className="w-3 h-3 bg-green-400 dark:bg-green-500 rounded"></div>
             <span className="text-gray-600 dark:text-gray-400">Reviewed</span>
           </div>
         </div>
@@ -173,7 +173,7 @@ export default function Statistics() {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Level Distribution */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
           <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Mastery Levels</h3>
           <div className="space-y-2">
             {[0, 1, 2, 3, 4, 5].map(level => {
@@ -197,7 +197,7 @@ export default function Statistics() {
                     <span className="text-gray-600 dark:text-gray-400">{levelNames[level]}</span>
                     <span className="text-gray-500">{count} words</span>
                   </div>
-                  <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded-sm overflow-hidden">
+                  <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                     <div 
                       className={`h-full ${levelColors[level]} transition-all duration-500`}
                       style={{ width: `${percentage}%` }}
@@ -210,7 +210,7 @@ export default function Statistics() {
         </div>
 
         {/* Difficult Words */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
           <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Most Challenging Words</h3>
           {stats.difficultWords.length === 0 ? (
             <div className="text-xs text-gray-500 text-center py-4">
@@ -239,7 +239,7 @@ export default function Statistics() {
       </div>
 
       {/* Study Summary */}
-      <div className="bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-sm p-4">
+      <div className="bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-xl p-4">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-sm font-semibold mb-1">Study Progress</h3>

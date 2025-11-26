@@ -272,9 +272,9 @@ export default function PhoneticsReference() {
       <div className="flex gap-2 mb-4">
         <button
           onClick={() => setActiveTab('vowels')}
-          className={`px-4 py-2 text-xs rounded-sm font-medium transition-colors ${
+          className={`px-4 py-2 text-xs rounded-xl font-medium transition-colors ${
             activeTab === 'vowels'
-              ? 'bg-gray-800 dark:bg-gray-600 text-white'
+              ? 'bg-blue-600 dark:bg-blue-600 text-white'
               : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
           }`}
         >
@@ -282,9 +282,9 @@ export default function PhoneticsReference() {
         </button>
         <button
           onClick={() => setActiveTab('diphthongs')}
-          className={`px-4 py-2 text-xs rounded-sm font-medium transition-colors ${
+          className={`px-4 py-2 text-xs rounded-xl font-medium transition-colors ${
             activeTab === 'diphthongs'
-              ? 'bg-gray-800 dark:bg-gray-600 text-white'
+              ? 'bg-blue-600 dark:bg-blue-600 text-white'
               : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
           }`}
         >
@@ -292,9 +292,9 @@ export default function PhoneticsReference() {
         </button>
         <button
           onClick={() => setActiveTab('consonants')}
-          className={`px-4 py-2 text-xs rounded-sm font-medium transition-colors ${
+          className={`px-4 py-2 text-xs rounded-xl font-medium transition-colors ${
             activeTab === 'consonants'
-              ? 'bg-gray-800 dark:bg-gray-600 text-white'
+              ? 'bg-blue-600 dark:bg-blue-600 text-white'
               : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
           }`}
         >
@@ -307,7 +307,7 @@ export default function PhoneticsReference() {
         {getActiveSymbols().map((phonetic, index) => (
           <div
             key={index}
-            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-3 hover:shadow-lg transition-shadow"
+            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 hover:shadow-lg transition-shadow"
           >
             <div className="flex items-start justify-between mb-2">
               <div className="text-2xl font-bold text-gray-800 dark:text-gray-100">/{phonetic.symbol}/</div>
@@ -333,7 +333,7 @@ export default function PhoneticsReference() {
       </div>
 
       {/* Tips Section */}
-      <div className="mt-4 bg-yellow-50 dark:bg-gray-700 border border-yellow-200 dark:border-gray-600 rounded-sm p-3">
+      <div className="mt-4 bg-yellow-50 dark:bg-gray-700 border border-yellow-200 dark:border-gray-600 rounded-xl p-3">
         <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2">Quick Reference</h3>
         <ul className="space-y-1 text-xs text-gray-700 dark:text-gray-300">
           <li>• Red highlights show where the sound appears in spelling</li>

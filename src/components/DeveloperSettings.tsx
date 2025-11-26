@@ -4,6 +4,19 @@ import { useState } from 'react';
 import { Check, X } from 'lucide-react';
 import { saveToken, getToken } from '@/lib/token-storage';
 
+interface CapacitorWindow extends Window {
+  Capacitor?: {
+    isNativePlatform?: () => boolean;
+    getPlatform?: () => string;
+    Plugins?: Record<string, unknown>;
+  };
+  webkit?: {
+    messageHandlers?: {
+      saveTokenToAppGroups?: unknown;
+    };
+  };
+}
+
 export default function DeveloperSettings() {
   const [logs, setLogs] = useState<string[]>([]);
   const [testResult, setTestResult] = useState<'idle' | 'success' | 'error'>('idle');
@@ -17,9 +30,9 @@ export default function DeveloperSettings() {
 
   const checkPlatform = () => {
     addLog('=== Checking Platform ===');
-    const capacitor = (window as any).Capacitor;
+    const capacitor = (window as CapacitorWindow).Capacitor;
     const native = capacitor?.isNativePlatform?.();
-    setIsNative(native);
+    setIsNative(native ?? false);
     addLog(`Capacitor detected: ${!!capacitor}`);
     addLog(`isNativePlatform: ${native}`);
     addLog(`Platform: ${capacitor?.getPlatform?.() || 'web'}`);
@@ -34,7 +47,7 @@ export default function DeveloperSettings() {
     }
 
     // Check message handler
-    if ((window as any).webkit?.messageHandlers?.saveTokenToAppGroups) {
+    if ((window as CapacitorWindow).webkit?.messageHandlers?.saveTokenToAppGroups) {
       addLog('✅ iOS message handler available');
     } else {
       addLog('❌ iOS message handler NOT available');

@@ -133,33 +133,33 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
         </h4>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-sm"
+          className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
         >
           {showAddForm ? <X size={14} /> : <Plus size={14} />}
         </button>
       </div>
 
       {showAddForm && (
-        <div className="p-2 bg-gray-50 rounded-sm space-y-2">
+        <div className="p-2 bg-gray-50 rounded-lg space-y-2">
           <input
             type="text"
             value={newSentence}
             onChange={(e) => setNewSentence(e.target.value)}
             placeholder={`Example sentence with "${wordText}"...`}
-            className="w-full px-2 py-1 text-xs border border-gray-300 rounded-sm focus:outline-none focus:border-blue-500"
+            className="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
           />
           <input
             type="text"
             value={newTranslation}
             onChange={(e) => setNewTranslation(e.target.value)}
             placeholder="Translation (optional)..."
-            className="w-full px-2 py-1 text-xs border border-gray-300 rounded-sm focus:outline-none focus:border-blue-500"
+            className="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
           />
           <div className="flex gap-2">
             <button
               onClick={handleAdd}
               disabled={!newSentence.trim()}
-              className="px-2 py-1 text-xs bg-blue-600 text-white rounded-sm hover:bg-blue-700 disabled:opacity-50"
+              className="px-2 py-1 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
               Add
             </button>
@@ -169,7 +169,7 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
                 setNewSentence('');
                 setNewTranslation('');
               }}
-              className="px-2 py-1 text-xs bg-gray-300 text-gray-700 rounded-sm hover:bg-gray-400"
+              className="px-2 py-1 text-xs bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
             >
               Cancel
             </button>
@@ -182,32 +182,32 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
           <p className="text-xs text-gray-400 italic">No example sentences yet</p>
         ) : (
           examples.map((example) => (
-            <div key={example.id} className="p-2 bg-white border border-gray-200 rounded-sm">
+            <div key={example.id} className="p-2 bg-white border border-gray-200 rounded-lg">
               {editingId === example.id ? (
                 <div className="space-y-2">
                   <input
                     type="text"
                     value={editSentence}
                     onChange={(e) => setEditSentence(e.target.value)}
-                    className="w-full px-2 py-1 text-xs border border-gray-300 rounded-sm focus:outline-none focus:border-blue-500"
+                    className="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                   />
                   <input
                     type="text"
                     value={editTranslation}
                     onChange={(e) => setEditTranslation(e.target.value)}
                     placeholder="Translation (optional)..."
-                    className="w-full px-2 py-1 text-xs border border-gray-300 rounded-sm focus:outline-none focus:border-blue-500"
+                    className="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                   />
                   <div className="flex gap-1">
                     <button
                       onClick={() => handleUpdate(example.id)}
-                      className="p-1 text-green-600 hover:bg-green-50 rounded-sm"
+                      className="p-1 text-green-600 hover:bg-green-50 rounded"
                     >
                       <Check size={14} />
                     </button>
                     <button
                       onClick={() => setEditingId(null)}
-                      className="p-1 text-gray-600 hover:bg-gray-100 rounded-sm"
+                      className="p-1 text-gray-600 hover:bg-gray-100 rounded"
                     >
                       <X size={14} />
                     </button>
@@ -228,13 +228,13 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
                         setEditSentence(example.sentence);
                         setEditTranslation(example.translation || '');
                       }}
-                      className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-sm"
+                      className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
                     >
                       <Edit2 size={12} />
                     </button>
                     <button
                       onClick={() => handleDelete(example.id)}
-                      className="p-1 text-gray-400 hover:text-red-500 hover:bg-gray-100 rounded-sm"
+                      className="p-1 text-gray-400 hover:text-red-500 hover:bg-gray-100 rounded"
                     >
                       <X size={12} />
                     </button>

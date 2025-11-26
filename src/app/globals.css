@@ -5,8 +5,21 @@
 @layer base {
   body {
     @apply antialiased;
+    /* Prevent text selection for app-like feel */
+    -webkit-user-select: none;
+    user-select: none;
+    /* Remove tap highlight on mobile */
+    -webkit-tap-highlight-color: transparent;
+    /* Faster touch response */
+    touch-action: manipulation;
   }
-  
+
+  /* Allow text selection in inputs and text areas */
+  input, textarea, [contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
   /* Smooth transition for theme changes */
   * {
     @apply transition-colors duration-200;
@@ -66,10 +79,27 @@
   animation: slideIn 0.3s ease-out;
 }
 
-/* Prevent horizontal scroll on mobile */
+/* Mobile optimizations */
 @media (max-width: 768px) {
   html, body {
     overflow-x: hidden;
-    overscroll-behavior-x: none;
+    /* Prevent pull-to-refresh and bounce effects */
+    overscroll-behavior: none;
+  }
+
+  /* Prevent iOS zoom on input focus (font-size must be >= 16px) */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Standalone app mode (PWA/Capacitor) */
+@media (display-mode: standalone) {
+  body {
+    /* Prevent overscroll bounce in standalone mode */
+    overscroll-behavior: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
   }
 }

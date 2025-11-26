@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import type { User, Word, Definition } from '@prisma/client';
 
 /**
  * Widget API: Get words for review
@@ -12,7 +13,7 @@ export async function GET(req: NextRequest) {
     const limit = limitParam ? parseInt(limitParam) : 5;
 
     // Find or create user
-    let user: any;
+    let user: User | null;
     if (userId.includes('-')) {
       user = await prisma.user.findUnique({
         where: { id: userId }
@@ -64,8 +65,9 @@ export async function GET(req: NextRequest) {
     });
 
     // Format response
-    const reviewWords = words.map((wordData: { id: string; word: any; level: number }) => {
-      const wordInfo = wordData.word as any;
+    type WordWithDefinitions = Word & { definitions: Definition[] };
+    const reviewWords = words.map((wordData: { id: string; word: WordWithDefinitions; level: number }) => {
+      const wordInfo = wordData.word;
       return {
         id: wordData.id,
         text: wordInfo.word,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import type { User, Word, Definition } from '@prisma/client';
 import { verifyToken } from '@/lib/jwt';
 import { ipaToHangul } from 'ipa-hangul';
 
@@ -35,7 +36,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Find or create user
-    let user: any;
+    let user: User | null;
     console.log('[Widget API] Looking up user with userId:', userId);
 
     if (userId.includes('-')) {
@@ -107,7 +108,8 @@ export async function GET(req: NextRequest) {
     }
 
     const wordData = randomWord[0];
-    const wordInfo = wordData.word as any;
+    type WordWithDefinitions = Word & { definitions: Definition[] };
+    const wordInfo = wordData.word as WordWithDefinitions;
 
     // Convert IPA to Hangul
     const ipaText = wordInfo.pronunciation || '';

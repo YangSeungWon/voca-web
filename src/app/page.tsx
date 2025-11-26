@@ -18,6 +18,7 @@ import MoreView from '@/components/MoreView';
 import LoginPrompt from '@/components/LoginPrompt';
 import { DictionaryEntry } from '@/lib/dictionary';
 import { useAuth } from '@/hooks/useAuth';
+import { useBackButton } from '@/hooks/useBackButton';
 
 type ViewType = 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics' | 'more';
 
@@ -48,6 +49,18 @@ export default function Home() {
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
+
+  // Handle Android back button
+  useBackButton({
+    onBack: () => {
+      // If viewing a word on home, clear it first
+      if (activeView === 'home' && currentWord) {
+        setCurrentWord(null);
+        return true; // Handled
+      }
+      return false; // Use default behavior
+    }
+  });
 
   // Detect mobile environment based on screen width
   useEffect(() => {

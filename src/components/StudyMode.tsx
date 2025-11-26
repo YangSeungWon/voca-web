@@ -236,7 +236,7 @@ export default function StudyMode() {
         </div>
         <button
           onClick={handleStart}
-          className="px-8 py-4 text-lg font-medium bg-gray-800 text-white rounded-xl hover:bg-gray-700 shadow-lg transition-all active:scale-95"
+          className="px-8 py-4 text-lg font-medium bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-lg transition-all active:scale-95"
         >
           Start Study Session
         </button>
@@ -276,7 +276,7 @@ export default function StudyMode() {
 
           <button
             onClick={() => window.location.reload()}
-            className="px-8 py-4 text-lg font-medium bg-gray-800 text-white rounded-xl hover:bg-gray-700 shadow-lg transition-all active:scale-95"
+            className="px-8 py-4 text-lg font-medium bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-lg transition-all active:scale-95"
           >
             Study Again
           </button>
@@ -327,7 +327,7 @@ export default function StudyMode() {
             </div>
             <button
               onClick={() => setShowShortcuts(false)}
-              className="mt-4 w-full py-2 bg-gray-800 dark:bg-gray-600 text-white rounded hover:bg-gray-700 dark:hover:bg-gray-500"
+              className="mt-4 w-full py-2 bg-gray-600 dark:bg-gray-600 text-white rounded-xl hover:bg-gray-700 dark:hover:bg-gray-500"
             >
               Close
             </button>
@@ -341,7 +341,7 @@ export default function StudyMode() {
           <span>Word {currentIndex + 1} of {words.length}</span>
           <span>{Math.round(progress)}%</span>
         </div>
-        <div className="h-2 bg-gray-200 rounded-sm overflow-hidden">
+        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
           <div 
             className="h-full bg-gray-600 transition-all duration-300"
             style={{ width: `${progress}%` }}
@@ -353,7 +353,7 @@ export default function StudyMode() {
       <div className="max-w-2xl mx-auto">
         <div 
           ref={cardRef}
-          className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-sm p-8 min-h-[300px] flex flex-col justify-center relative"
+          className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-8 min-h-[300px] flex flex-col justify-center relative"
         >
           {/* Swipe Hints for Mobile */}
           <div className="md:hidden absolute top-4 left-4 right-4 flex justify-between text-xs text-gray-400">
@@ -410,7 +410,7 @@ export default function StudyMode() {
               {currentWord.word.definitions.map((def, index) => (
                 <div key={index} className="text-left">
                   {def.partOfSpeech && (
-                    <span className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-sm mr-2">
+                    <span className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full mr-2">
                       {def.partOfSpeech}
                     </span>
                   )}
@@ -426,7 +426,7 @@ export default function StudyMode() {
           {!showAnswer ? (
             <button
               onClick={handleShowAnswer}
-              className="px-8 py-3 bg-gray-800 text-white rounded-sm hover:bg-gray-700"
+              className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
             >
               Show Answer
             </button>
@@ -434,13 +434,13 @@ export default function StudyMode() {
             <>
               <button
                 onClick={() => handleAnswer(false)}
-                className="px-6 py-3 bg-red-500 text-white rounded-sm hover:bg-red-600"
+                className="px-6 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600"
               >
                 Incorrect
               </button>
               <button
                 onClick={() => handleAnswer(true)}
-                className="px-6 py-3 bg-green-500 text-white rounded-sm hover:bg-green-600"
+                className="px-6 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600"
               >
                 Correct
               </button>

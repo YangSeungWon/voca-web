@@ -1,7 +1,15 @@
 // API configuration for different environments
+
+interface CapacitorWindow extends Window {
+  Capacitor?: {
+    isNativePlatform?: () => boolean;
+    getPlatform?: () => string;
+  };
+}
+
 export function getApiUrl(): string {
   // Check if running in Capacitor (mobile app)
-  if (typeof window !== 'undefined' && (window as any).Capacitor) {
+  if (typeof window !== 'undefined' && (window as CapacitorWindow).Capacitor) {
     // Mobile app - use production API
     console.log('[API Config] Running in Capacitor - using production API');
     return 'https://voca.ysw.kr';

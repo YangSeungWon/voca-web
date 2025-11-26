@@ -19,10 +19,11 @@ export async function apiFetch(path: string, options?: RequestInit): Promise<Res
     return response;
   } catch (error) {
     console.error('[API Client] Request failed:', error);
+    const err = error as Error;
     console.error('[API Client] Error details:', {
-      message: (error as any)?.message,
-      stack: (error as any)?.stack,
-      type: (error as any)?.constructor?.name
+      message: err?.message,
+      stack: err?.stack,
+      type: err?.constructor?.name
     });
     throw error;
   }

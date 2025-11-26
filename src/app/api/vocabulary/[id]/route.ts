@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import type { User } from '@prisma/client';
 
 export async function DELETE(
   req: NextRequest,
@@ -9,7 +10,7 @@ export async function DELETE(
   try {
     const userId = req.headers.get('x-user-id') || 'default-user';
     
-    let user: any;
+    let user: User | null;
     if (userId.includes('-')) {
       user = await prisma.user.findUnique({
         where: { id: userId }
@@ -64,8 +65,8 @@ export async function PATCH(
   try {
     const userId = req.headers.get('x-user-id') || 'default-user';
     const body = await req.json();
-    
-    let user: any;
+
+    let user: User | null;
     if (userId.includes('-')) {
       user = await prisma.user.findUnique({
         where: { id: userId }

@@ -2,6 +2,20 @@ import { Preferences } from '@capacitor/preferences';
 
 const TOKEN_KEY = 'token';
 
+interface CapacitorWindow extends Window {
+  Capacitor?: {
+    isNativePlatform?: () => boolean;
+    getPlatform?: () => string;
+  };
+  webkit?: {
+    messageHandlers?: {
+      saveTokenToAppGroups?: {
+        postMessage: (message: string) => void;
+      };
+    };
+  };
+}
+
 /**
  * Save token to localStorage, Capacitor Preferences, and notify iOS for App Groups sync
  */
@@ -32,14 +46,15 @@ export async function saveToken(token: string): Promise<void> {
 function notifyIOSTokenUpdate(token: string): void {
   if (typeof window === 'undefined') return;
 
-  const isNative = (window as any).Capacitor?.isNativePlatform?.();
-  const isIOS = (window as any).Capacitor?.getPlatform?.() === 'ios';
+  const win = window as CapacitorWindow;
+  const isNative = win.Capacitor?.isNativePlatform?.();
+  const isIOS = win.Capacitor?.getPlatform?.() === 'ios';
 
   if (isNative && isIOS) {
     try {
       // Check if webkit message handler is available
-      if ((window as any).webkit?.messageHandlers?.saveTokenToAppGroups) {
-        (window as any).webkit.messageHandlers.saveTokenToAppGroups.postMessage(token);
+      if (win.webkit?.messageHandlers?.saveTokenToAppGroups) {
+        win.webkit.messageHandlers.saveTokenToAppGroups.postMessage(token);
         console.log('[TokenStorage] Token sync notification sent to iOS');
       } else {
         console.log('[TokenStorage] iOS message handler not ready yet');

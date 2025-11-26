@@ -102,8 +102,16 @@ export async function searchWord(word: string): Promise<DictionaryEntry | null> 
         const entry = data[0];
 
         // Transform API response to our format
-        const definitions = entry.meanings.flatMap((meaning: any) =>
-          meaning.definitions.map((def: any) => ({
+        interface APIMeaning {
+          partOfSpeech: string;
+          definitions: Array<{ definition: string; example?: string }>;
+        }
+        interface APIPhonetic {
+          text?: string;
+        }
+
+        const definitions = entry.meanings.flatMap((meaning: APIMeaning) =>
+          meaning.definitions.map((def) => ({
             partOfSpeech: meaning.partOfSpeech,
             meaning: def.definition,
             examples: def.example ? [def.example] : []
@@ -112,7 +120,7 @@ export async function searchWord(word: string): Promise<DictionaryEntry | null> 
 
         // Get pronunciation
         const pronunciation = entry.phonetic ||
-          entry.phonetics?.find((p: any) => p.text)?.text ||
+          entry.phonetics?.find((p: APIPhonetic) => p.text)?.text ||
           undefined;
 
         return {

@@ -45,6 +45,11 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
+  // Skip non-http(s) requests (e.g., chrome-extension://)
+  if (!url.protocol.startsWith('http')) {
+    return;
+  }
+
   // Handle API requests differently for offline support
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(handleApiRequest(request));
@@ -67,10 +72,16 @@ self.addEventListener('fetch', (event) => {
         // Clone the response
         const responseToCache = response.clone();
 
-        caches.open(CACHE_NAME)
-          .then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
+        // Only cache http(s) requests
+        if (event.request.url.startsWith('http')) {
+          caches.open(CACHE_NAME)
+            .then((cache) => {
+              cache.put(event.request, responseToCache);
+            })
+            .catch((err) => {
+              console.log('Cache put error:', err);
+            });
+        }
 
         return response;
       })

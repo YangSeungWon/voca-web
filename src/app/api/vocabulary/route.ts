@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
+import type { User } from '@prisma/client';
 import { verifyToken } from '@/lib/jwt';
 import type { DictionaryEntry } from '@/lib/dictionary';
 
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest) {
     const limit = searchParams.get('limit');
     const sort = searchParams.get('sort');
     
-    let user: any;
+    let user: User | null;
     if (userId.includes('-')) {
       // It's a user ID
       user = await prisma.user.findUnique({
@@ -41,12 +42,16 @@ export async function GET(req: NextRequest) {
       user = await prisma.user.findUnique({
         where: { email }
       });
-      
+
       if (!user) {
         user = await prisma.user.create({
           data: { email }
         });
       }
+    }
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const whereClause: Prisma.VocabularyWhereInput = { userId: user.id };
@@ -133,7 +138,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    let user: any;
+    let user: User | null;
     if (userId.includes('-')) {
       // It's a user ID
       user = await prisma.user.findUnique({
@@ -145,12 +150,16 @@ export async function POST(req: NextRequest) {
       user = await prisma.user.findUnique({
         where: { email }
       });
-      
+
       if (!user) {
         user = await prisma.user.create({
           data: { email }
         });
       }
+    }
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     let word = await prisma.word.findUnique({

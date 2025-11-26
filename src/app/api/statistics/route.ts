@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import type { User } from '@prisma/client';
 
 export async function GET(req: NextRequest) {
   try {
@@ -9,7 +10,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Find or create user
-    let user: any;
+    let user: User | null;
     if (userId.includes('-')) {
       // It's a user ID
       user = await prisma.user.findUnique({
@@ -27,6 +28,10 @@ export async function GET(req: NextRequest) {
           data: { email }
         });
       }
+    }
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Get all vocabulary for the user

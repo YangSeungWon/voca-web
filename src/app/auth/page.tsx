@@ -5,6 +5,10 @@ import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api-client';
 import { saveToken } from '@/lib/token-storage';
 
+interface CapacitorWindow extends Window {
+  Capacitor?: unknown;
+}
+
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
@@ -22,9 +26,7 @@ export default function AuthPage() {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
       const body = { email, password };
 
-      const isCapacitor = typeof window !== 'undefined' && (window as any).Capacitor;
-      const apiUrl = isCapacitor ? 'https://voca.ysw.kr' : '';
-      const fullUrl = `${apiUrl}${endpoint}`;
+      const isCapacitor = typeof window !== 'undefined' && (window as CapacitorWindow).Capacitor;
 
       console.log('[Auth] Attempting authentication:', {
         endpoint,

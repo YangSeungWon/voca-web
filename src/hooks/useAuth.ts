@@ -13,7 +13,7 @@ export function useAuth() {
     try {
       const token = await getToken();
       setIsAuthenticated(!!token);
-    } catch (error) {
+    } catch {
       setIsAuthenticated(false);
     } finally {
       setIsLoading(false);
