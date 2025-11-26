@@ -316,38 +316,23 @@ struct TodayWordView: View {
     var entry: WordProvider.Entry
     @Environment(\.widgetFamily) var family
 
+    // Check if device language is Korean
+    private var isKorean: Bool {
+        Locale.current.language.languageCode?.identifier == "ko"
+    }
+
     var body: some View {
         Link(destination: URL(string: "vocaweb://home")!) {
-            ZStack {
-                VStack(alignment: .leading, spacing: 3) {
-                    // Word
+            VStack(alignment: .leading, spacing: family == .systemSmall ? 2 : 4) {
+                // Word + Part of speech on same line for small widget
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text(entry.word)
-                        .font(family == .systemSmall ? .title3 : .title2)
+                        .font(family == .systemSmall ? .headline : .title2)
                         .fontWeight(.bold)
                         .foregroundColor(.white)
+                        .lineLimit(1)
 
-                    // IPA Pronunciation
-                    if !entry.pronunciation.isEmpty {
-                        Text(entry.pronunciation)
-                            .font(.caption)
-                            .foregroundColor(.blue.opacity(0.8))
-                    }
-
-                    // Hangul Pronunciation
-                    if !entry.pronunciationKr.isEmpty {
-                        Text(entry.pronunciationKr)
-                            .font(.caption)
-                            .foregroundColor(.green.opacity(0.8))
-                    }
-
-                    // Meaning
-                    Text(entry.meaning)
-                        .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.9))
-                        .lineLimit(family == .systemSmall ? 4 : 5)
-
-                    // Part of speech
-                    if !entry.partOfSpeech.isEmpty {
+                    if !entry.partOfSpeech.isEmpty && family != .systemSmall {
                         Text(entry.partOfSpeech)
                             .font(.caption2)
                             .foregroundColor(.white.opacity(0.6))
@@ -357,8 +342,40 @@ struct TodayWordView: View {
                             .cornerRadius(3)
                     }
                 }
-                .padding(6)
+
+                // Pronunciation line (IPA + Korean if applicable)
+                if !entry.pronunciation.isEmpty {
+                    HStack(spacing: 6) {
+                        Text(entry.pronunciation)
+                            .font(.caption)
+                            .foregroundColor(.blue.opacity(0.9))
+
+                        // Only show Korean pronunciation for Korean users
+                        if isKorean && !entry.pronunciationKr.isEmpty {
+                            Text(entry.pronunciationKr)
+                                .font(.caption)
+                                .foregroundColor(.green.opacity(0.9))
+                        }
+                    }
+                    .lineLimit(1)
+                }
+
+                // Meaning - allow more lines
+                Text(entry.meaning)
+                    .font(family == .systemSmall ? .caption : .subheadline)
+                    .foregroundColor(.white.opacity(0.9))
+                    .lineLimit(family == .systemSmall ? 3 : 6)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                // Part of speech for small widget at bottom
+                if !entry.partOfSpeech.isEmpty && family == .systemSmall {
+                    Text(entry.partOfSpeech)
+                        .font(.caption2)
+                        .foregroundColor(.white.opacity(0.5))
+                }
             }
+            .padding(family == .systemSmall ? 8 : 10)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
     }
 }
@@ -368,21 +385,28 @@ struct TodayWordView: View {
 struct LockScreenRectangularView: View {
     let entry: WordEntry
 
+    // Check if device language is Korean
+    private var isKorean: Bool {
+        Locale.current.language.languageCode?.identifier == "ko"
+    }
+
     var body: some View {
         Link(destination: URL(string: "vocaweb://home")!) {
             VStack(alignment: .leading, spacing: 1) {
-                HStack {
+                HStack(spacing: 4) {
                     Text(entry.word)
                         .font(.headline)
                         .fontWeight(.semibold)
-                    if entry.level > 0 {
-                        Text("Lv.\(entry.level)")
+
+                    if !entry.pronunciation.isEmpty {
+                        Text(entry.pronunciation)
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
                 }
 
-                if !entry.pronunciationKr.isEmpty {
+                // Only show Korean pronunciation for Korean users
+                if isKorean && !entry.pronunciationKr.isEmpty {
                     Text(entry.pronunciationKr)
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -390,7 +414,7 @@ struct LockScreenRectangularView: View {
 
                 Text(entry.meaning)
                     .font(.caption)
-                    .lineLimit(3)
+                    .lineLimit(2)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -402,8 +426,7 @@ struct LockScreenInlineView: View {
 
     var body: some View {
         Link(destination: URL(string: "vocaweb://home")!) {
-            Text("\(entry.word) - \(entry.meaning)")
-                .font(.caption)
+            Text("\(entry.word): \(entry.meaning)")
                 .lineLimit(1)
         }
     }

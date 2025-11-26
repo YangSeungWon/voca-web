@@ -42,16 +42,32 @@ class TodayWordWidget : AppWidgetProvider() {
 
     companion object {
         private const val API_URL = "https://voca.ysw.kr/api/widget/today-word"
+        private const val CAPACITOR_STORAGE = "CapacitorStorage"
+        private const val TOKEN_KEY = "token"
+
+        /**
+         * Get auth token from Capacitor SharedPreferences
+         */
+        private fun getToken(context: Context): String? {
+            return try {
+                val prefs = context.getSharedPreferences(CAPACITOR_STORAGE, Context.MODE_PRIVATE)
+                prefs.getString(TOKEN_KEY, null)
+            } catch (e: Exception) {
+                null
+            }
+        }
 
         fun updateAppWidget(
             context: Context,
             appWidgetManager: AppWidgetManager,
             appWidgetId: Int
         ) {
+            val token = getToken(context)
+
             // Fetch data from API
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    val wordData = fetchTodayWord()
+                    val wordData = fetchTodayWord(token)
                     withContext(Dispatchers.Main) {
                         updateWidget(context, appWidgetManager, appWidgetId, wordData)
                     }
@@ -63,12 +79,19 @@ class TodayWordWidget : AppWidgetProvider() {
             }
         }
 
-        private fun fetchTodayWord(): WordData? {
+        private fun fetchTodayWord(token: String?): WordData? {
             return try {
                 val url = URL(API_URL)
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
-                connection.setRequestProperty("x-user-id", "default-user")
+
+                // Use token if available, otherwise fallback to default-user
+                if (token != null) {
+                    connection.setRequestProperty("Authorization", "Bearer $token")
+                } else {
+                    connection.setRequestProperty("x-user-id", "default-user")
+                }
+
                 connection.connectTimeout = 5000
                 connection.readTimeout = 5000
 
