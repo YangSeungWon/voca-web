@@ -14,7 +14,7 @@
     "cap:open:ios": "cap open ios",
     "cap:open:android": "cap open android",
     "build:ios": "bash scripts/build-ios.sh",
-    "build:ios:ipa": "bash scripts/build-ios.sh --export-ipa",
+    "build:ios:appstore": "bash scripts/build-ios.sh --appstore",
     "build:android": "bash scripts/build-android.sh",
     "build:android:copy": "bash scripts/build-android.sh --copy-outputs",
     "build:all": "bash scripts/build-all.sh",

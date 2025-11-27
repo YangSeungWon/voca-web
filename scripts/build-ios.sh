@@ -105,7 +105,7 @@ echo -e "${YELLOW}📤 Step 5/6: Exporting IPA...${NC}"
 
 if [ "$EXPORT_TYPE" == "appstore" ]; then
     EXPORT_PATH="build-appstore"
-    EXPORT_OPTIONS="ExportOptionsAppStore.plist"
+    EXPORT_OPTIONS="ExportOptions-appstore.plist"
     echo "  Export type: App Store"
 else
     EXPORT_PATH="build-dev"
