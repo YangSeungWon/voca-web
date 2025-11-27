@@ -1,5 +1,6 @@
 import WidgetKit
 import SwiftUI
+import AppIntents
 
 // MARK: - Data Models
 
@@ -29,6 +30,16 @@ struct VocaAppEntry: TimelineEntry {
     let totalWords: Int
     let studySessions: Int
     let wordsStudied: Int
+}
+
+struct QuizEntry: TimelineEntry {
+    let date: Date
+    let word: String
+    let pronunciation: String
+    let pronunciationKr: String
+    let meaning: String
+    let showAnswer: Bool
+    let wordId: String
 }
 
 // MARK: - Timeline Provider for Word Widget
@@ -310,71 +321,189 @@ struct VocaAppProvider: TimelineProvider {
     }
 }
 
+// MARK: - Quiz Widget Provider and Intent
+
+@available(iOS 17.0, *)
+struct ToggleAnswerIntent: AppIntent {
+    static var title: LocalizedStringResource = "Toggle Answer"
+    static var description = IntentDescription("Shows or hides the meaning")
+
+    @Parameter(title: "Word ID")
+    var wordId: String
+
+    @Parameter(title: "Show Answer")
+    var showAnswer: Bool
+
+    init() {
+        self.wordId = ""
+        self.showAnswer = false
+    }
+
+    init(wordId: String, showAnswer: Bool) {
+        self.wordId = wordId
+        self.showAnswer = showAnswer
+    }
+
+    func perform() async throws -> some IntentResult {
+        let defaults = UserDefaults(suiteName: "group.kr.ysw.voca")
+        defaults?.set(showAnswer, forKey: "quiz_show_answer_\(wordId)")
+        return .result()
+    }
+}
+
+struct QuizProvider: TimelineProvider {
+    func placeholder(in context: Context) -> QuizEntry {
+        QuizEntry(
+            date: Date(),
+            word: "vocabulary",
+            pronunciation: "/vəˈkæbjʊləri/",
+            pronunciationKr: "버캐뷸러리",
+            meaning: "단어, 어휘",
+            showAnswer: false,
+            wordId: "placeholder"
+        )
+    }
+
+    func getSnapshot(in context: Context, completion: @escaping (QuizEntry) -> ()) {
+        let entry = QuizEntry(
+            date: Date(),
+            word: "serendipity",
+            pronunciation: "/ˌsɛrənˈdɪpɪti/",
+            pronunciationKr: "세런디피티",
+            meaning: "행운, 뜻밖의 발견",
+            showAnswer: false,
+            wordId: "snapshot"
+        )
+        completion(entry)
+    }
+
+    func getTimeline(in context: Context, completion: @escaping (Timeline<QuizEntry>) -> ()) {
+        fetchQuizWord { wordData in
+            let currentDate = Date()
+            let defaults = UserDefaults(suiteName: "group.kr.ysw.voca")
+
+            let entry: QuizEntry
+            if let wordData = wordData {
+                let showAnswer = defaults?.bool(forKey: "quiz_show_answer_\(wordData.wordId)") ?? false
+                entry = QuizEntry(
+                    date: currentDate,
+                    word: wordData.word,
+                    pronunciation: wordData.pronunciation,
+                    pronunciationKr: wordData.pronunciationKr,
+                    meaning: wordData.meaning,
+                    showAnswer: showAnswer,
+                    wordId: wordData.wordId
+                )
+            } else {
+                entry = QuizEntry(
+                    date: currentDate,
+                    word: "Loading...",
+                    pronunciation: "",
+                    pronunciationKr: "",
+                    meaning: "Add words to see them here",
+                    showAnswer: true,
+                    wordId: "empty"
+                )
+            }
+
+            // Refresh every 30 minutes or when user interacts
+            let nextUpdate = Calendar.current.date(byAdding: .minute, value: 30, to: currentDate)!
+            let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+            completion(timeline)
+        }
+    }
+
+    private struct QuizWordData {
+        let word: String
+        let pronunciation: String
+        let pronunciationKr: String
+        let meaning: String
+        let wordId: String
+    }
+
+    private func fetchQuizWord(completion: @escaping (QuizWordData?) -> Void) {
+        guard let url = URL(string: "https://voca.ysw.kr/api/widget/today-word") else {
+            completion(nil)
+            return
+        }
+
+        let appGroup = "group.kr.ysw.voca"
+        let sharedDefaults = UserDefaults(suiteName: appGroup)
+        let token = sharedDefaults?.string(forKey: "token")
+
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 10
+
+        if let token = token {
+            request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            request.addValue("default-user", forHTTPHeaderField: "x-user-id")
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data,
+                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let wordData = json["word"] as? [String: Any] else {
+                completion(nil)
+                return
+            }
+
+            let word = QuizWordData(
+                word: wordData["text"] as? String ?? "",
+                pronunciation: wordData["pronunciation"] as? String ?? "",
+                pronunciationKr: wordData["pronunciationKr"] as? String ?? "",
+                meaning: wordData["meaning"] as? String ?? "",
+                wordId: wordData["id"] as? String ?? UUID().uuidString
+            )
+
+            completion(word)
+        }.resume()
+    }
+}
+
 // MARK: - Widget Views
 
 struct TodayWordView: View {
     var entry: WordProvider.Entry
     @Environment(\.widgetFamily) var family
 
-    // Check if device language is Korean
-    private var isKorean: Bool {
-        Locale.current.language.languageCode?.identifier == "ko"
-    }
-
     var body: some View {
         Link(destination: URL(string: "vocaweb://home")!) {
             VStack(alignment: .leading, spacing: family == .systemSmall ? 2 : 4) {
-                // Word + Part of speech on same line for small widget
-                HStack(alignment: .firstTextBaseline, spacing: 4) {
-                    Text(entry.word)
-                        .font(family == .systemSmall ? .headline : .title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .lineLimit(1)
+                // Word with auto-scaling for long words
+                Text(entry.word)
+                    .font(family == .systemSmall ? .headline : .title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .minimumScaleFactor(0.6)
+                    .lineLimit(1)
 
-                    if !entry.partOfSpeech.isEmpty && family != .systemSmall {
-                        Text(entry.partOfSpeech)
-                            .font(.caption2)
-                            .foregroundColor(.white.opacity(0.6))
-                            .padding(.horizontal, 4)
-                            .padding(.vertical, 1)
-                            .background(Color.white.opacity(0.1))
-                            .cornerRadius(3)
-                    }
-                }
-
-                // Pronunciation line (IPA + Korean if applicable)
-                if !entry.pronunciation.isEmpty {
-                    HStack(spacing: 6) {
-                        Text(entry.pronunciation)
-                            .font(.caption)
-                            .foregroundColor(.blue.opacity(0.9))
-
-                        // Only show Korean pronunciation for Korean users
-                        if isKorean && !entry.pronunciationKr.isEmpty {
+                // Pronunciation line (IPA + Korean)
+                if !entry.pronunciation.isEmpty || !entry.pronunciationKr.isEmpty {
+                    HStack(spacing: 4) {
+                        if !entry.pronunciation.isEmpty {
+                            Text(entry.pronunciation)
+                                .font(.caption2)
+                                .foregroundColor(.blue.opacity(0.9))
+                        }
+                        if !entry.pronunciationKr.isEmpty {
                             Text(entry.pronunciationKr)
-                                .font(.caption)
+                                .font(.caption2)
                                 .foregroundColor(.green.opacity(0.9))
                         }
                     }
                     .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                 }
 
-                // Meaning - allow more lines
+                // Meaning - maximize space
                 Text(entry.meaning)
                     .font(family == .systemSmall ? .caption : .subheadline)
                     .foregroundColor(.white.opacity(0.9))
-                    .lineLimit(family == .systemSmall ? 3 : 6)
+                    .lineLimit(family == .systemSmall ? 4 : 6)
                     .fixedSize(horizontal: false, vertical: true)
-
-                // Part of speech for small widget at bottom
-                if !entry.partOfSpeech.isEmpty && family == .systemSmall {
-                    Text(entry.partOfSpeech)
-                        .font(.caption2)
-                        .foregroundColor(.white.opacity(0.5))
-                }
             }
-            .padding(family == .systemSmall ? 8 : 10)
+            .padding(family == .systemSmall ? 4 : 8)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
     }
@@ -385,31 +514,30 @@ struct TodayWordView: View {
 struct LockScreenRectangularView: View {
     let entry: WordEntry
 
-    // Check if device language is Korean
-    private var isKorean: Bool {
-        Locale.current.language.languageCode?.identifier == "ko"
-    }
-
     var body: some View {
         Link(destination: URL(string: "vocaweb://home")!) {
             VStack(alignment: .leading, spacing: 1) {
-                HStack(spacing: 4) {
-                    Text(entry.word)
-                        .font(.headline)
-                        .fontWeight(.semibold)
+                Text(entry.word)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .minimumScaleFactor(0.7)
+                    .lineLimit(1)
 
-                    if !entry.pronunciation.isEmpty {
-                        Text(entry.pronunciation)
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
+                // Pronunciation (IPA + Korean)
+                if !entry.pronunciation.isEmpty || !entry.pronunciationKr.isEmpty {
+                    HStack(spacing: 4) {
+                        if !entry.pronunciation.isEmpty {
+                            Text(entry.pronunciation)
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                        if !entry.pronunciationKr.isEmpty {
+                            Text(entry.pronunciationKr)
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
                     }
-                }
-
-                // Only show Korean pronunciation for Korean users
-                if isKorean && !entry.pronunciationKr.isEmpty {
-                    Text(entry.pronunciationKr)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    .lineLimit(1)
                 }
 
                 Text(entry.meaning)
@@ -429,6 +557,114 @@ struct LockScreenInlineView: View {
             Text("\(entry.word): \(entry.meaning)")
                 .lineLimit(1)
         }
+    }
+}
+
+// MARK: - Quiz Widget View
+
+@available(iOS 17.0, *)
+struct QuizWidgetView: View {
+    let entry: QuizEntry
+    @Environment(\.widgetFamily) var family
+
+    var body: some View {
+        if entry.showAnswer {
+            // Back side - show meaning
+            answerView
+        } else {
+            // Front side - show word only
+            questionView
+        }
+    }
+
+    var questionView: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            // Word
+            Text(entry.word)
+                .font(family == .systemSmall ? .title3 : .title2)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+                .minimumScaleFactor(0.5)
+                .lineLimit(1)
+
+            // Pronunciation
+            if !entry.pronunciation.isEmpty || !entry.pronunciationKr.isEmpty {
+                HStack(spacing: 4) {
+                    if !entry.pronunciation.isEmpty {
+                        Text(entry.pronunciation)
+                            .font(.caption)
+                            .foregroundColor(.blue.opacity(0.9))
+                    }
+                    if !entry.pronunciationKr.isEmpty {
+                        Text(entry.pronunciationKr)
+                            .font(.caption)
+                            .foregroundColor(.green.opacity(0.9))
+                    }
+                }
+                .lineLimit(1)
+            }
+
+            Spacer()
+
+            // Show answer button
+            Button(intent: ToggleAnswerIntent(wordId: entry.wordId, showAnswer: true)) {
+                HStack {
+                    Image(systemName: "eye.fill")
+                        .font(.caption)
+                    Text("Show Answer")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color.blue.opacity(0.6))
+                .cornerRadius(8)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(family == .systemSmall ? 6 : 10)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    var answerView: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            // Word (smaller)
+            Text(entry.word)
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundColor(.white.opacity(0.7))
+                .minimumScaleFactor(0.7)
+                .lineLimit(1)
+
+            // Meaning (prominent)
+            Text(entry.meaning)
+                .font(family == .systemSmall ? .callout : .body)
+                .foregroundColor(.white)
+                .lineLimit(family == .systemSmall ? 4 : 6)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Spacer()
+
+            // Next word button
+            Button(intent: ToggleAnswerIntent(wordId: entry.wordId, showAnswer: false)) {
+                HStack {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.caption)
+                    Text("Next Word")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color.green.opacity(0.6))
+                .cornerRadius(8)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(family == .systemSmall ? 6 : 10)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 }
 
@@ -567,11 +803,44 @@ struct VocaAppWidget: Widget {
     }
 }
 
+// MARK: - Quiz Widget Configuration (iOS 17+)
+
+@available(iOS 17.0, *)
+struct QuizWidget: Widget {
+    let kind: String = "QuizWidget"
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: QuizProvider()) { entry in
+            QuizWidgetView(entry: entry)
+                .containerBackground(for: .widget) {
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color(red: 0.18, green: 0.12, blue: 0.28),
+                            Color(red: 0.28, green: 0.18, blue: 0.38)
+                        ]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                }
+        }
+        .configurationDisplayName("Word Quiz")
+        .description("Test your vocabulary - tap to reveal the meaning")
+        .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+
+// MARK: - Widget Bundle
+
+// For iOS 17+, use bundle with QuizWidget
+// For older iOS, use bundle without QuizWidget
 @main
 struct VocaWidgetBundle: WidgetBundle {
     var body: some Widget {
         VocaAppWidget()
         TodayWordWidget()
+        if #available(iOS 17.0, *) {
+            QuizWidget()
+        }
     }
 }
 

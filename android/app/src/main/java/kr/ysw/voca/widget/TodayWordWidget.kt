@@ -103,8 +103,8 @@ class TodayWordWidget : AppWidgetProvider() {
                     WordData(
                         word = word.getString("text"),
                         pronunciation = word.optString("pronunciation", ""),
+                        pronunciationKr = word.optString("pronunciationKr", ""),
                         meaning = word.getString("meaning"),
-                        partOfSpeech = word.optString("partOfSpeech", ""),
                         level = word.getInt("level")
                     )
                 } else {
@@ -128,16 +128,14 @@ class TodayWordWidget : AppWidgetProvider() {
                 // Update widget with actual data
                 views.setTextViewText(R.id.widget_word, wordData.word)
                 views.setTextViewText(R.id.widget_pronunciation, wordData.pronunciation)
+                views.setTextViewText(R.id.widget_pronunciation_kr, wordData.pronunciationKr)
                 views.setTextViewText(R.id.widget_meaning, wordData.meaning)
-                views.setTextViewText(R.id.widget_part_of_speech, wordData.partOfSpeech)
-                views.setTextViewText(R.id.widget_level, "Lv.${wordData.level}")
             } else {
                 // Placeholder data
                 views.setTextViewText(R.id.widget_word, "Loading...")
                 views.setTextViewText(R.id.widget_pronunciation, "")
+                views.setTextViewText(R.id.widget_pronunciation_kr, "")
                 views.setTextViewText(R.id.widget_meaning, "Add words to see them here")
-                views.setTextViewText(R.id.widget_part_of_speech, "")
-                views.setTextViewText(R.id.widget_level, "")
             }
 
             // Create intent to open app when widget is clicked
@@ -158,8 +156,8 @@ class TodayWordWidget : AppWidgetProvider() {
     data class WordData(
         val word: String,
         val pronunciation: String,
+        val pronunciationKr: String,
         val meaning: String,
-        val partOfSpeech: String,
         val level: Int
     )
 }
