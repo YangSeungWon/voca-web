@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import SearchBar from '@/components/SearchBar';
+import { useState, useEffect, useRef } from 'react';
+import SearchBar, { SearchBarRef } from '@/components/SearchBar';
 import WordDisplay from '@/components/WordDisplay';
 import VocabularyTable from '@/components/VocabularyTable';
 import Navigation from '@/components/Navigation';
@@ -44,6 +44,7 @@ const viewToHash: Record<ViewType, string> = {
 
 export default function Home() {
   const [currentWord, setCurrentWord] = useState<DictionaryEntry | null>(null);
+  const searchBarRef = useRef<SearchBarRef>(null);
   const [activeView, setActiveView] = useState<ViewType>('home');
   const [refreshVocab, setRefreshVocab] = useState(0);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
@@ -122,8 +123,14 @@ export default function Home() {
   };
 
 
+  // Hide overflow on mobile for certain views
+  const hideOverflow = isMobile && (
+    (activeView === 'home' && !currentWord) ||
+    activeView === 'study'
+  );
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+    <div className={`bg-gray-50 dark:bg-gray-900 transition-colors ${hideOverflow ? 'h-screen overflow-hidden' : 'min-h-screen'}`}>
       {/* Desktop-only header */}
       {!isMobile && (
         <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
@@ -146,15 +153,18 @@ export default function Home() {
         </header>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className={hideOverflow ? '' : 'max-w-7xl mx-auto px-4 py-4'}>
 
         <main
           className={isMobile ? '' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm mt-2 transition-colors'}
         >
           {activeView === 'home' && (
-            <div className={isMobile ? 'flex flex-col justify-center px-6' : 'p-1'} style={isMobile ? { minHeight: 'calc(100vh - 140px)' } : undefined}>
+            <div
+              className={isMobile ? (currentWord ? 'px-4 py-4' : 'flex flex-col items-center justify-center px-4 h-[calc(100vh-80px)] pb-40 cursor-text') : 'p-1'}
+              onClick={() => !currentWord && isMobile && searchBarRef.current?.focus()}
+            >
               {!currentWord && isMobile ? (
-                <div className="space-y-8">
+                <div className="space-y-8 w-full max-w-md">
                   <div className="flex flex-col items-center text-center mb-6">
                     <div className="text-gray-400 dark:text-gray-600 mb-4">
                       <svg className="w-20 h-20 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -164,7 +174,7 @@ export default function Home() {
                     <p className="text-2xl text-gray-600 dark:text-gray-400 font-semibold mb-2">Search for a word</p>
                     <p className="text-base text-gray-500 dark:text-gray-500">Type and press enter to look up</p>
                   </div>
-                  <SearchBar onWordFound={handleWordFound} />
+                  <SearchBar ref={searchBarRef} onWordFound={handleWordFound} autoFocus />
                 </div>
               ) : (
                 <>
@@ -197,6 +207,7 @@ export default function Home() {
                   <VocabularyTable
                     key={`${refreshVocab}-${selectedGroup}`}
                     selectedGroup={selectedGroup}
+                    onAddWord={() => handleViewChange('home')}
                   />
                 </div>
               </div>

@@ -216,7 +216,7 @@ export default function StudyMode() {
 
   if (words.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center px-6" style={{ minHeight: 'calc(100vh - 200px)' }}>
+      <div className="flex flex-col items-center justify-center px-6 h-[calc(100vh-80px)] pb-24">
         <div className="text-center">
           <div className="text-gray-500 dark:text-gray-400 text-lg font-medium mb-2">No words to study</div>
           <div className="text-sm text-gray-400 dark:text-gray-500">Add some words to your vocabulary first!</div>
@@ -227,7 +227,7 @@ export default function StudyMode() {
 
   if (studyState === 'ready') {
     return (
-      <div className="flex flex-col items-center justify-center px-6" style={{ minHeight: 'calc(100vh - 200px)' }}>
+      <div className="flex flex-col items-center justify-center px-6 h-[calc(100vh-80px)] pb-24">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Ready to Study?</h2>
           <div className="text-base text-gray-600 dark:text-gray-400">
@@ -250,7 +250,7 @@ export default function StudyMode() {
       : 0;
 
     return (
-      <div className="flex flex-col items-center justify-center px-6" style={{ minHeight: 'calc(100vh - 200px)' }}>
+      <div className="flex flex-col items-center justify-center px-6 h-[calc(100vh-80px)] pb-24">
         <div className="text-center w-full max-w-md">
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6">Session Complete!</h2>
 

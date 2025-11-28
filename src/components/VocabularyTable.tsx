@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Trash2, Filter, ChevronUp, ChevronDown, Volume2, ChevronRight } from 'lucide-react';
+import { Trash2, Filter, ChevronUp, ChevronDown, Volume2, ChevronRight, Search, Plus, X } from 'lucide-react';
 import { getUserId } from '@/lib/auth';
 import { speak } from '@/lib/speech';
 import ExampleSentences from './ExampleSentences';
@@ -36,11 +36,13 @@ type SortOrder = 'asc' | 'desc';
 
 interface VocabularyTableProps {
   selectedGroup: string | null;
+  onAddWord?: () => void;
 }
 
-export default function VocabularyTable({ selectedGroup }: VocabularyTableProps) {
+export default function VocabularyTable({ selectedGroup, onAddWord }: VocabularyTableProps) {
   const [words, setWords] = useState<VocabularyWord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showFilter, setShowFilter] = useState(false);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
@@ -357,44 +359,88 @@ export default function VocabularyTable({ selectedGroup }: VocabularyTableProps)
       </div>
       
       {/* Mobile Card View */}
-      <div className="md:hidden h-full">
+      <div className="md:hidden h-full relative">
         <PullToRefresh onRefresh={fetchVocabulary}>
-          {filteredWords.length === 0 ? (
-            <div className="flex flex-col items-center justify-center px-6" style={{ minHeight: 'calc(100vh - 200px)' }}>
+          {/* Header */}
+          <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 z-10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">📚</span>
+                <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                  {words.length} words
+                </span>
+              </div>
+              {words.length > 0 && (
+                <button
+                  onClick={() => setShowFilter(!showFilter)}
+                  className={`p-2 rounded-lg transition-colors ${showFilter ? 'bg-blue-100 dark:bg-blue-900 text-blue-600' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                >
+                  {showFilter ? <X size={20} /> : <Search size={20} />}
+                </button>
+              )}
+            </div>
+            {/* Expandable Filter */}
+            {showFilter && (
+              <div className="mt-3">
+                <input
+                  type="text"
+                  placeholder="Search in my words..."
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  className="w-full px-4 py-2 text-base border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+                  autoFocus
+                />
+              </div>
+            )}
+          </div>
+
+          {words.length === 0 ? (
+            <div className="flex flex-col items-center justify-center px-6 h-[calc(100vh-160px)] pb-24">
               <div className="text-center">
                 <div className="text-gray-400 dark:text-gray-500 text-lg font-medium mb-2">
-                  No words in your vocabulary yet
+                  No words yet
                 </div>
-                <p className="text-sm text-gray-400 dark:text-gray-500">
-                  Add words from search or import from More section
+                <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">
+                  Add your first word!
                 </p>
+                {onAddWord && (
+                  <button
+                    onClick={onAddWord}
+                    className="px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    Add Word
+                  </button>
+                )}
+              </div>
+            </div>
+          ) : filteredWords.length === 0 ? (
+            <div className="flex flex-col items-center justify-center px-6 py-16">
+              <div className="text-gray-400 dark:text-gray-500">
+                No matching words
               </div>
             </div>
           ) : (
-            <>
-              <div className="p-4 pb-24">
-                {filteredWords.map((item) => (
-                  <VocabularyCard
-                    key={item.id}
-                    item={item}
-                    onDelete={handleDelete}
-                  />
-                ))}
-              </div>
-
-              {/* Fixed Bottom Search Bar */}
-              <div className="fixed bottom-16 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 shadow-lg z-10">
-                <input
-                  type="text"
-                  placeholder="Search words..."
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
-                  className="w-full px-4 py-3 text-base border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+            <div className="p-4 pb-24">
+              {filteredWords.map((item) => (
+                <VocabularyCard
+                  key={item.id}
+                  item={item}
+                  onDelete={handleDelete}
                 />
-              </div>
-            </>
+              ))}
+            </div>
           )}
         </PullToRefresh>
+
+        {/* FAB - Add Word */}
+        {onAddWord && (
+          <button
+            onClick={onAddWord}
+            className="fixed bottom-20 right-4 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-colors z-20"
+          >
+            <Plus size={24} />
+          </button>
+        )}
       </div>
     </div>
   );

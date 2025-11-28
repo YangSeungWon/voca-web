@@ -1,16 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Search } from 'lucide-react';
 import { DictionaryEntry, searchWord } from '@/lib/dictionary';
 
 interface SearchBarProps {
   onWordFound: (word: DictionaryEntry) => void;
+  autoFocus?: boolean;
 }
 
-export default function SearchBar({ onWordFound }: SearchBarProps) {
+export interface SearchBarRef {
+  focus: () => void;
+}
+
+const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(({ onWordFound, autoFocus }, ref) => {
   const [query, setQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    focus: () => inputRef.current?.focus()
+  }));
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +47,7 @@ export default function SearchBar({ onWordFound }: SearchBarProps) {
           size={20}
         />
         <input
+          ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -48,6 +59,7 @@ export default function SearchBar({ onWordFound }: SearchBarProps) {
           autoComplete="off"
           spellCheck="false"
           enterKeyHint="search"
+          autoFocus={autoFocus}
         />
         {isSearching && (
           <div className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -57,4 +69,8 @@ export default function SearchBar({ onWordFound }: SearchBarProps) {
       </div>
     </form>
   );
-}
+});
+
+SearchBar.displayName = 'SearchBar';
+
+export default SearchBar;
