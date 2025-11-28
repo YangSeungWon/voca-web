@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Trash2, Volume2, ChevronRight } from 'lucide-react';
 import { speak } from '@/lib/speech';
 import ExampleSentences from './ExampleSentences';
-import { formatPronunciation } from '@/lib/ipa-to-korean';
+import { formatPronunciation, isKoreanUser } from '@/lib/ipa-to-korean';
 
 interface VocabularyWord {
   id: string;
@@ -50,11 +50,20 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
               <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 truncate">
                 {item.word.word}
               </h3>
-              {korean && (
-                <span
-                  className="text-base font-medium text-blue-500 dark:text-blue-400 shrink-0"
-                  dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
-                />
+              {ipa && (
+                <span className="text-sm text-gray-500 dark:text-gray-400 shrink-0">
+                  {isKoreanUser() && korean ? (
+                    <>
+                      <span
+                        className="font-medium text-blue-500 dark:text-blue-400"
+                        dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
+                      />
+                      <span className="ml-1">{ipa}</span>
+                    </>
+                  ) : (
+                    ipa
+                  )}
+                </span>
               )}
             </div>
 
@@ -89,11 +98,9 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
       
       {isExpanded && (
         <div className="border-t border-gray-200 dark:border-gray-700 px-4 py-3">
-          {/* IPA & Actions */}
+          {/* Actions */}
           <div className="flex items-center justify-between mb-3">
-            {ipa && (
-              <span className="text-sm text-gray-500 dark:text-gray-400">{ipa}</span>
-            )}
+            <div className="text-xs text-gray-400">Level {item.level}</div>
             <div className="flex items-center gap-2">
               <button
                 onClick={(e) => {
@@ -114,11 +121,6 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
                 <Trash2 size={18} />
               </button>
             </div>
-          </div>
-
-          {/* Level indicator */}
-          <div className="text-xs text-gray-400 mb-3">
-            Level {item.level}
           </div>
 
           {item.word.definitions.length > 1 && (

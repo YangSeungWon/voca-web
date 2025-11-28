@@ -6,6 +6,14 @@
 import { ipaToHangul } from 'ipa-hangul';
 
 /**
+ * Check if user's browser language is Korean
+ */
+export function isKoreanUser(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return navigator.language.startsWith('ko');
+}
+
+/**
  * Format pronunciation for display
  * Returns both Korean Hangul (with styled stress markers) and original IPA
  */
