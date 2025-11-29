@@ -1,30 +1,27 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 import { getUserId } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
 
 const CACHE_KEY = 'vocabulary_words';
 
-export function useVocabularyCache() {
-  const [words, setWords] = useState<Set<string>>(new Set());
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  // Load from localStorage on mount
-  useEffect(() => {
+// Get cached words from localStorage
+function getCachedWords(): Set<string> {
+  try {
     const cached = localStorage.getItem(CACHE_KEY);
     if (cached) {
-      try {
-        setWords(new Set(JSON.parse(cached)));
-      } catch {
-        // Invalid cache, will refresh from server
-      }
+      return new Set(JSON.parse(cached));
     }
-    setIsLoaded(true);
-  }, []);
+  } catch {
+    // Invalid cache
+  }
+  return new Set();
+}
 
+export function useVocabularyCache() {
   // Refresh cache from server
   const refresh = useCallback(async () => {
     try {
-      const response = await apiFetch('/api/vocabulary?fields=word', {
+      const response = await apiFetch('/api/vocabulary', {
         headers: {
           'x-user-id': getUserId()
         }
@@ -34,7 +31,6 @@ export function useVocabularyCache() {
         const wordList = data.map((v: { word: { word: string } }) =>
           v.word.word.toLowerCase()
         );
-        setWords(new Set(wordList));
         localStorage.setItem(CACHE_KEY, JSON.stringify(wordList));
       }
     } catch (error) {
@@ -42,20 +38,18 @@ export function useVocabularyCache() {
     }
   }, []);
 
-  // Check if word exists
+  // Check if word exists (reads from localStorage directly)
   const hasWord = useCallback((word: string) => {
+    const words = getCachedWords();
     return words.has(word.toLowerCase());
-  }, [words]);
-
-  // Add word to cache (call after successful save)
-  const addWord = useCallback((word: string) => {
-    setWords(prev => {
-      const next = new Set(prev);
-      next.add(word.toLowerCase());
-      localStorage.setItem(CACHE_KEY, JSON.stringify([...next]));
-      return next;
-    });
   }, []);
 
-  return { hasWord, addWord, refresh, isLoaded, wordCount: words.size };
+  // Add word to cache
+  const addWord = useCallback((word: string) => {
+    const words = getCachedWords();
+    words.add(word.toLowerCase());
+    localStorage.setItem(CACHE_KEY, JSON.stringify([...words]));
+  }, []);
+
+  return { hasWord, addWord, refresh };
 }
