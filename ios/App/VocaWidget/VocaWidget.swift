@@ -700,40 +700,43 @@ struct VocaAppWidgetView: View {
         }
     }
 
-    // Small Widget: App Summary
+    // Small Widget: App Summary - opens to vocabulary
     var smallWidgetView: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("📚 Voca")
-                .font(.caption)
-                .foregroundColor(.white.opacity(0.7))
+        Link(destination: URL(string: "vocaweb://vocabulary")!) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("📚 Voca")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.7))
 
-            Spacer()
+                Spacer()
 
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(alignment: .firstTextBaseline, spacing: 3) {
-                    Text("\(entry.totalWords)")
-                        .font(.system(size: 32))
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                    Text("words")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.7))
-                }
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(alignment: .firstTextBaseline, spacing: 3) {
+                        Text("\(entry.totalWords)")
+                            .font(.system(size: 32))
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                        Text("words")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.7))
+                    }
 
-                if entry.todayWords > 0 {
-                    Text("+\(entry.todayWords) today")
-                        .font(.caption)
-                        .foregroundColor(.green.opacity(0.9))
-                }
+                    if entry.todayWords > 0 {
+                        Text("+\(entry.todayWords) today")
+                            .font(.caption)
+                            .foregroundColor(.green.opacity(0.9))
+                    }
 
-                if entry.studySessions > 0 {
-                    Text("\(entry.studySessions) study sessions")
-                        .font(.caption)
-                        .foregroundColor(.blue.opacity(0.9))
+                    if entry.studySessions > 0 {
+                        Text("\(entry.studySessions) study sessions")
+                            .font(.caption)
+                            .foregroundColor(.blue.opacity(0.9))
+                    }
                 }
             }
+            .padding(6)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
-        .padding(6)
     }
 
     // Medium Widget: Search + Quick Actions
@@ -758,9 +761,9 @@ struct VocaAppWidgetView: View {
             // Bottom: 4 Quick Action Buttons
             HStack(spacing: 6) {
                 quickActionButton(icon: "textformat.abc", label: "IPA", url: "vocaweb://phonetics")
-                quickActionButton(icon: "folder.fill", label: "Words", url: "vocaweb://vocabulary")
                 quickActionButton(icon: "book.fill", label: "Study", url: "vocaweb://study")
                 quickActionButton(icon: "chart.bar.fill", label: "Stats", url: "vocaweb://statistics")
+                quickActionButton(icon: "folder.fill", label: "Words", url: "vocaweb://vocabulary")
             }
             .padding(.horizontal, 6)
             .padding(.bottom, 6)

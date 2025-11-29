@@ -46,8 +46,8 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
       >
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-0.5">
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 truncate">
+            <div className="flex items-start gap-2 mb-0.5">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 break-all">
                 {item.word.word}
               </h3>
               {ipa && (

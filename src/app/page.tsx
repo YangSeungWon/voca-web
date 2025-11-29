@@ -20,6 +20,7 @@ import { DictionaryEntry } from '@/lib/dictionary';
 import { useAuth } from '@/hooks/useAuth';
 import { useBackButton } from '@/hooks/useBackButton';
 import { useVocabularyCache } from '@/hooks/useVocabularyCache';
+import { useKeyboardVisible } from '@/hooks/useKeyboardVisible';
 
 type ViewType = 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics' | 'more';
 
@@ -52,6 +53,7 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
   const { refresh: refreshVocabCache } = useVocabularyCache();
+  const isKeyboardVisible = useKeyboardVisible();
 
   // Handle Android back button
   useBackButton({
@@ -169,7 +171,8 @@ export default function Home() {
         >
           {activeView === 'home' && (
             <div
-              className={isMobile ? (currentWord ? 'px-4 py-4' : 'flex flex-col items-center justify-center px-4 h-[calc(100vh-80px)] pb-40 cursor-text') : 'p-1'}
+              className={isMobile ? (currentWord ? 'px-4 pb-4' : 'flex flex-col items-center justify-center px-4 h-[calc(100vh-80px)] pb-40 cursor-text') : 'p-1'}
+              style={isMobile && currentWord ? { paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' } : undefined}
               onClick={() => !currentWord && isMobile && searchBarRef.current?.focus()}
             >
               {!currentWord && isMobile ? (
@@ -224,39 +227,47 @@ export default function Home() {
           )}
 
           {activeView === 'study' && (
-            !isAuthenticated && !isLoading ? (
-              <LoginPrompt message="Sign in to start studying your words" />
-            ) : (
-              <StudyMode />
-            )
+            <div style={isMobile ? { paddingTop: 'env(safe-area-inset-top, 0px)' } : undefined}>
+              {!isAuthenticated && !isLoading ? (
+                <LoginPrompt message="Sign in to start studying your words" />
+              ) : (
+                <StudyMode />
+              )}
+            </div>
           )}
 
           {activeView === 'statistics' && (
-            !isAuthenticated && !isLoading ? (
-              <LoginPrompt message="Sign in to view your learning statistics" />
-            ) : (
-              <Statistics />
-            )
+            <div className={isMobile ? 'px-4 pb-4' : ''} style={isMobile ? { paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' } : undefined}>
+              {!isAuthenticated && !isLoading ? (
+                <LoginPrompt message="Sign in to view your learning statistics" />
+              ) : (
+                <Statistics />
+              )}
+            </div>
           )}
 
           {activeView === 'phonetics' && (
-            <PhoneticsReference />
+            <div className={isMobile ? 'px-4 pb-4' : ''} style={isMobile ? { paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' } : undefined}>
+              <PhoneticsReference />
+            </div>
           )}
 
           {activeView === 'more' && (
-            !isAuthenticated && !isLoading ? (
-              <LoginPrompt message="Sign in to access settings and manage your data" />
-            ) : (
-              <MoreView />
-            )
+            <div className={isMobile ? 'px-4 pb-4' : ''} style={isMobile ? { paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' } : undefined}>
+              {!isAuthenticated && !isLoading ? (
+                <LoginPrompt message="Sign in to access settings and manage your data" />
+              ) : (
+                <MoreView />
+              )}
+            </div>
           )}
         </main>
       </div>
       
-      {isMobile && <MobileNav activeView={activeView} onViewChange={handleViewChange} />}
+      {isMobile && !isKeyboardVisible && <MobileNav activeView={activeView} onViewChange={handleViewChange} />}
 
       {/* Add padding at bottom for mobile nav */}
-      {isMobile && <div className="h-16" />}
+      {isMobile && !isKeyboardVisible && <div className="h-16" />}
       
       {/* Chrome Extension Banner */}
       <ExtensionBanner />

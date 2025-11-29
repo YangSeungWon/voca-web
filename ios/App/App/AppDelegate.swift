@@ -133,11 +133,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WKScriptMessageHandler {
 
         // Map URL host to hash routes
         let hashMap: [String: String] = [
-            "home": "#home",
-            "search": "#home", // Opens home page with search focus
+            "home": "#vocabulary",  // Default to vocabulary when opening from widget
+            "search": "#home",      // Opens home page with search focus
             "study": "#study",
             "vocabulary": "#vocabulary",
-            "statistics": "#statistics"
+            "statistics": "#statistics",
+            "phonetics": "#ipa"
         ]
 
         if let host = url.host, let hash = hashMap[host] {

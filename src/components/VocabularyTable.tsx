@@ -361,8 +361,8 @@ export default function VocabularyTable({ selectedGroup, onAddWord }: Vocabulary
       {/* Mobile Card View */}
       <div className="md:hidden h-full relative">
         <PullToRefresh onRefresh={fetchVocabulary}>
-          {/* Header */}
-          <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 z-10">
+          {/* Header with safe area for iOS notch */}
+          <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 pb-3 z-10" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 12px)' }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-lg">📚</span>

@@ -86,7 +86,7 @@ export default function Statistics() {
   ];
 
   return (
-    <div className="px-4 py-6 space-y-6 pb-24">
+    <div className="space-y-6">
       {/* Hero Card - Total & Progress */}
       <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
         <div className="flex items-center justify-between">

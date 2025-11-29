@@ -37,12 +37,8 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
           padding-right: var(--safe-area-right);
         }
 
-        /* Main content with proper spacing */
+        /* Main content - no padding, let children handle safe area */
         .capacitor-app main {
-          padding-top: calc(var(--safe-area-top) + 64px);
-          padding-bottom: calc(var(--safe-area-bottom) + 80px);
-          padding-left: var(--safe-area-left);
-          padding-right: var(--safe-area-right);
           min-height: 100vh;
         }
 
