@@ -1,10 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import type { User } from '@prisma/client';
+import { verifyToken } from '@/lib/jwt';
 
 export async function GET(req: NextRequest) {
   try {
-    const userId = req.headers.get('x-user-id');
+    // Support both header-based and JWT auth
+    const authHeader = req.headers.get('authorization');
+    let userId = req.headers.get('x-user-id');
+
+    // Check JWT token if provided
+    if (authHeader?.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      try {
+        const payload = verifyToken(token);
+        userId = payload.userId;
+      } catch {
+        return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+      }
+    }
+
     if (!userId) {
       return NextResponse.json({ error: 'User not authenticated' }, { status: 401 });
     }

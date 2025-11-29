@@ -67,7 +67,7 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
               )}
             </div>
 
-            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-1">
+            <p className={`text-sm text-gray-600 dark:text-gray-300 ${isExpanded ? '' : 'line-clamp-1'}`}>
               {item.word.definitions[0]?.meaning || '-'}
             </p>
 

@@ -9,6 +9,7 @@ import { speak } from '@/lib/speech';
 import { apiFetch } from '@/lib/api-client';
 import { formatPronunciation } from '@/lib/ipa-to-korean';
 import { useAuth } from '@/hooks/useAuth';
+import { useVocabularyCache } from '@/hooks/useVocabularyCache';
 
 interface WordDisplayProps {
   word: DictionaryEntry;
@@ -24,15 +25,23 @@ interface Group {
 export default function WordDisplay({ word, onSave }: WordDisplayProps) {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+  const { hasWord, addWord } = useVocabularyCache();
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [groups, setGroups] = useState<Group[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [showGroupSelector, setShowGroupSelector] = useState(false);
 
+  const alreadyInList = hasWord(word.word);
+
   useEffect(() => {
     fetchGroups();
   }, []);
+
+  // Reset saved state when word changes
+  useEffect(() => {
+    setIsSaved(false);
+  }, [word.word]);
 
   const fetchGroups = async () => {
     try {
@@ -73,8 +82,8 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
 
       if (response.ok) {
         setIsSaved(true);
+        addWord(word.word); // Add to local cache
         onSave?.();
-        setTimeout(() => setIsSaved(false), 2000);
       }
     } catch (error) {
       console.error('Failed to save word:', error);
@@ -198,21 +207,21 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
         )}
         <button
           onClick={handleSave}
-          disabled={isSaving || isSaved}
+          disabled={isSaving || isSaved || alreadyInList}
           className={`
             px-6 py-3 rounded-xl font-medium text-base flex items-center gap-2 transition-all shadow-lg
-            ${isSaved
+            ${isSaved || alreadyInList
               ? 'bg-green-500 text-white'
               : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
             }
             ${groups.length === 0 ? 'flex-1' : ''}
-            disabled:opacity-50 disabled:cursor-not-allowed
+            disabled:cursor-not-allowed
           `}
         >
-          {isSaved ? (
+          {isSaved || alreadyInList ? (
             <>
               <Check size={20} />
-              <span>Saved</span>
+              <span>{alreadyInList ? 'In List' : 'Saved'}</span>
             </>
           ) : (
             <>

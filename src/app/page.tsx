@@ -19,6 +19,7 @@ import LoginPrompt from '@/components/LoginPrompt';
 import { DictionaryEntry } from '@/lib/dictionary';
 import { useAuth } from '@/hooks/useAuth';
 import { useBackButton } from '@/hooks/useBackButton';
+import { useVocabularyCache } from '@/hooks/useVocabularyCache';
 
 type ViewType = 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics' | 'more';
 
@@ -50,6 +51,7 @@ export default function Home() {
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
+  const { refresh: refreshVocabCache } = useVocabularyCache();
 
   // Handle Android back button
   useBackButton({
@@ -75,6 +77,13 @@ export default function Home() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Refresh vocabulary cache when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      refreshVocabCache();
+    }
+  }, [isAuthenticated, refreshVocabCache]);
 
   // Handle initial hash and hash changes
   useEffect(() => {
@@ -153,7 +162,7 @@ export default function Home() {
         </header>
       )}
 
-      <div className={hideOverflow ? '' : 'max-w-7xl mx-auto px-4 py-4'}>
+      <div className={hideOverflow ? '' : `max-w-7xl mx-auto ${isMobile ? 'px-4 pb-20' : 'px-4 py-4'}`}>
 
         <main
           className={isMobile ? '' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm mt-2 transition-colors'}

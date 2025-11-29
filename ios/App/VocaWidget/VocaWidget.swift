@@ -347,6 +347,10 @@ struct ToggleAnswerIntent: AppIntent {
     func perform() async throws -> some IntentResult {
         let defaults = UserDefaults(suiteName: "group.kr.ysw.voca")
         defaults?.set(showAnswer, forKey: "quiz_show_answer_\(wordId)")
+
+        // Reload widget to show updated state
+        WidgetCenter.shared.reloadTimelines(ofKind: "QuizWidget")
+
         return .result()
     }
 }

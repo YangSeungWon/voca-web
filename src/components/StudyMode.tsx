@@ -289,11 +289,11 @@ export default function StudyMode() {
   const progress = ((currentIndex + 1) / words.length) * 100;
 
   return (
-    <div className="p-6">
+    <div className="flex flex-col h-[calc(100vh-80px)] p-4 pb-24">
       {/* Keyboard Shortcuts Help */}
       <button
         onClick={() => setShowShortcuts(!showShortcuts)}
-        className="fixed bottom-4 right-4 p-3 bg-gray-800 dark:bg-gray-700 text-white rounded-full shadow-lg hover:bg-gray-700 dark:hover:bg-gray-600 z-50 md:hidden"
+        className="fixed bottom-24 right-4 p-3 bg-gray-800 dark:bg-gray-700 text-white rounded-full shadow-lg hover:bg-gray-700 dark:hover:bg-gray-600 z-50 md:hidden"
         title="Keyboard shortcuts"
       >
         <Info size={20} />
@@ -350,13 +350,13 @@ export default function StudyMode() {
       </div>
 
       {/* Flashcard */}
-      <div className="max-w-2xl mx-auto">
-        <div 
+      <div className="flex-1 flex flex-col max-w-2xl mx-auto w-full min-h-0">
+        <div
           ref={cardRef}
-          className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-8 min-h-[300px] flex flex-col justify-center relative"
+          className="flex-1 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-6 flex flex-col relative overflow-hidden"
         >
           {/* Swipe Hints for Mobile */}
-          <div className="md:hidden absolute top-4 left-4 right-4 flex justify-between text-xs text-gray-400">
+          <div className="md:hidden flex justify-between text-xs text-gray-400 mb-4">
             <span className="flex items-center gap-1">
               <ChevronLeft size={14} />
               Wrong
@@ -367,17 +367,18 @@ export default function StudyMode() {
               <ChevronRight size={14} />
             </span>
           </div>
+
           {/* Word Level Badge */}
-          <div className="mb-4 flex justify-center">
+          <div className="mb-3 flex justify-center">
             <span className={`px-3 py-1 text-xs font-medium rounded-full ${getLevelColor(currentWord.level)}`}>
               {getLevelText(currentWord.level)}
             </span>
           </div>
 
           {/* Question Side */}
-          <div className="text-center mb-6">
+          <div className="text-center mb-4">
             <div className="flex items-center justify-center gap-3">
-              <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
+              <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
                 {currentWord.word.word}
               </h3>
               <button
@@ -391,38 +392,40 @@ export default function StudyMode() {
             {currentWord.word.pronunciation && (() => {
               const { korean, ipa } = formatPronunciation(currentWord.word.pronunciation);
               return (
-                <div className="flex items-center justify-center gap-3 mt-2">
+                <div className="flex items-center justify-center gap-2 mt-2">
                   {korean && (
                     <span
-                      className="text-2xl font-medium text-blue-500 dark:text-blue-500"
+                      className="text-xl font-medium text-blue-500 dark:text-blue-500"
                       dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
                     />
                   )}
-                  <span className="text-2xl text-gray-500">{ipa}</span>
+                  <span className="text-xl text-gray-500">{ipa}</span>
                 </div>
               );
             })()}
           </div>
 
-          {/* Answer Side */}
+          {/* Answer Side - Scrollable */}
           {showAnswer && (
-            <div className="border-t pt-6 space-y-3 animate-fadeIn">
-              {currentWord.word.definitions.map((def, index) => (
-                <div key={index} className="text-left">
-                  {def.partOfSpeech && (
-                    <span className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full mr-2">
-                      {def.partOfSpeech}
-                    </span>
-                  )}
-                  <span className="text-gray-700 dark:text-gray-300">{def.meaning}</span>
-                </div>
-              ))}
+            <div className="flex-1 border-t pt-4 overflow-y-auto min-h-0 animate-fadeIn">
+              <div className="space-y-2">
+                {currentWord.word.definitions.map((def, index) => (
+                  <div key={index} className="text-left">
+                    {def.partOfSpeech && (
+                      <span className="inline-block px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full mr-2">
+                        {def.partOfSpeech}
+                      </span>
+                    )}
+                    <span className="text-gray-700 dark:text-gray-300 text-sm">{def.meaning}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="mt-6 flex justify-center gap-4">
+        {/* Action Buttons - Fixed at bottom */}
+        <div className="mt-4 flex justify-center gap-4 shrink-0">
           {!showAnswer ? (
             <button
               onClick={handleShowAnswer}
@@ -434,13 +437,13 @@ export default function StudyMode() {
             <>
               <button
                 onClick={() => handleAnswer(false)}
-                className="px-6 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600"
+                className="flex-1 max-w-[150px] py-3 bg-red-500 text-white rounded-xl hover:bg-red-600"
               >
                 Incorrect
               </button>
               <button
                 onClick={() => handleAnswer(true)}
-                className="px-6 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600"
+                className="flex-1 max-w-[150px] py-3 bg-green-500 text-white rounded-xl hover:bg-green-600"
               >
                 Correct
               </button>
