@@ -43,6 +43,13 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+# Step 0: Update version (only for appstore builds)
+if [ "$EXPORT_TYPE" == "appstore" ]; then
+    echo -e "${YELLOW}📱 Step 0: Updating build version...${NC}"
+    node scripts/update-build-version.js
+    echo -e "${GREEN}  ✅ Version updated${NC}"
+fi
+
 # Step 1: Build Next.js static export
 if [ "$SKIP_BUILD" = false ]; then
     echo -e "${YELLOW}📦 Step 1/6: Building Next.js static export...${NC}"

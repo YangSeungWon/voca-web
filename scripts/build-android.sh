@@ -27,6 +27,11 @@ if [ -f "voca.png" ]; then
     echo -e "${GREEN}✅ Android icons generated and app icon copied to public folder${NC}"
 fi
 
+# Step 0.5: Update version
+echo -e "${YELLOW}📱 Updating build version...${NC}"
+node scripts/update-build-version.js
+echo -e "${GREEN}✅ Version updated${NC}"
+
 # Step 1: Build Next.js project
 echo -e "${YELLOW}🔨 Building Next.js project...${NC}"
 npm run build
