@@ -40,6 +40,8 @@ struct QuizEntry: TimelineEntry {
     let meaning: String
     let showAnswer: Bool
     let wordId: String
+    let wordIndex: Int
+    let totalWords: Int
 }
 
 // MARK: - Timeline Provider for Word Widget
@@ -321,36 +323,36 @@ struct VocaAppProvider: TimelineProvider {
     }
 }
 
-// MARK: - Quiz Widget Provider and Intent
+// MARK: - Quiz Widget Provider and Intents
 
 @available(iOS 17.0, *)
-struct ToggleAnswerIntent: AppIntent {
-    static var title: LocalizedStringResource = "Toggle Answer"
-    static var description = IntentDescription("Shows or hides the meaning")
+struct ShowAnswerIntent: AppIntent {
+    static var title: LocalizedStringResource = "Show Answer"
+    static var description = IntentDescription("Shows the meaning")
 
-    @Parameter(title: "Word ID")
-    var wordId: String
-
-    @Parameter(title: "Show Answer")
-    var showAnswer: Bool
-
-    init() {
-        self.wordId = ""
-        self.showAnswer = false
-    }
-
-    init(wordId: String, showAnswer: Bool) {
-        self.wordId = wordId
-        self.showAnswer = showAnswer
-    }
+    init() {}
 
     func perform() async throws -> some IntentResult {
         let defaults = UserDefaults(suiteName: "group.kr.ysw.voca")
-        defaults?.set(showAnswer, forKey: "quiz_show_answer_\(wordId)")
-
-        // Reload widget to show updated state
+        defaults?.set(true, forKey: "quiz_show_answer")
         WidgetCenter.shared.reloadTimelines(ofKind: "QuizWidget")
+        return .result()
+    }
+}
 
+@available(iOS 17.0, *)
+struct NextWordIntent: AppIntent {
+    static var title: LocalizedStringResource = "Next Word"
+    static var description = IntentDescription("Shows the next word")
+
+    init() {}
+
+    func perform() async throws -> some IntentResult {
+        let defaults = UserDefaults(suiteName: "group.kr.ysw.voca")
+        let currentIndex = defaults?.integer(forKey: "quiz_word_index") ?? 0
+        defaults?.set(currentIndex + 1, forKey: "quiz_word_index")
+        defaults?.set(false, forKey: "quiz_show_answer")
+        WidgetCenter.shared.reloadTimelines(ofKind: "QuizWidget")
         return .result()
     }
 }
@@ -364,7 +366,9 @@ struct QuizProvider: TimelineProvider {
             pronunciationKr: "버캐뷸러리",
             meaning: "단어, 어휘",
             showAnswer: false,
-            wordId: "placeholder"
+            wordId: "placeholder",
+            wordIndex: 0,
+            totalWords: 1
         )
     }
 
@@ -376,19 +380,23 @@ struct QuizProvider: TimelineProvider {
             pronunciationKr: "세런디피티",
             meaning: "행운, 뜻밖의 발견",
             showAnswer: false,
-            wordId: "snapshot"
+            wordId: "snapshot",
+            wordIndex: 0,
+            totalWords: 1
         )
         completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<QuizEntry>) -> ()) {
-        fetchQuizWord { wordData in
+        let defaults = UserDefaults(suiteName: "group.kr.ysw.voca")
+        let wordIndex = defaults?.integer(forKey: "quiz_word_index") ?? 0
+        let showAnswer = defaults?.bool(forKey: "quiz_show_answer") ?? false
+
+        fetchQuizWord(index: wordIndex) { wordData in
             let currentDate = Date()
-            let defaults = UserDefaults(suiteName: "group.kr.ysw.voca")
 
             let entry: QuizEntry
             if let wordData = wordData {
-                let showAnswer = defaults?.bool(forKey: "quiz_show_answer_\(wordData.wordId)") ?? false
                 entry = QuizEntry(
                     date: currentDate,
                     word: wordData.word,
@@ -396,7 +404,9 @@ struct QuizProvider: TimelineProvider {
                     pronunciationKr: wordData.pronunciationKr,
                     meaning: wordData.meaning,
                     showAnswer: showAnswer,
-                    wordId: wordData.wordId
+                    wordId: wordData.wordId,
+                    wordIndex: wordData.index,
+                    totalWords: wordData.total
                 )
             } else {
                 entry = QuizEntry(
@@ -406,7 +416,9 @@ struct QuizProvider: TimelineProvider {
                     pronunciationKr: "",
                     meaning: "Add words to see them here",
                     showAnswer: true,
-                    wordId: "empty"
+                    wordId: "empty",
+                    wordIndex: 0,
+                    totalWords: 0
                 )
             }
 
@@ -423,10 +435,12 @@ struct QuizProvider: TimelineProvider {
         let pronunciationKr: String
         let meaning: String
         let wordId: String
+        let index: Int
+        let total: Int
     }
 
-    private func fetchQuizWord(completion: @escaping (QuizWordData?) -> Void) {
-        guard let url = URL(string: "https://voca.ysw.kr/api/widget/today-word") else {
+    private func fetchQuizWord(index: Int, completion: @escaping (QuizWordData?) -> Void) {
+        guard let url = URL(string: "https://voca.ysw.kr/api/widget/today-word?index=\(index)") else {
             completion(nil)
             return
         }
@@ -457,7 +471,9 @@ struct QuizProvider: TimelineProvider {
                 pronunciation: wordData["pronunciation"] as? String ?? "",
                 pronunciationKr: wordData["pronunciationKr"] as? String ?? "",
                 meaning: wordData["meaning"] as? String ?? "",
-                wordId: wordData["id"] as? String ?? UUID().uuidString
+                wordId: wordData["id"] as? String ?? UUID().uuidString,
+                index: json["index"] as? Int ?? 0,
+                total: json["total"] as? Int ?? 1
             )
 
             completion(word)
@@ -611,7 +627,7 @@ struct QuizWidgetView: View {
             Spacer()
 
             // Show answer button
-            Button(intent: ToggleAnswerIntent(wordId: entry.wordId, showAnswer: true)) {
+            Button(intent: ShowAnswerIntent()) {
                 HStack {
                     Image(systemName: "eye.fill")
                         .font(.caption)
@@ -651,7 +667,7 @@ struct QuizWidgetView: View {
             Spacer()
 
             // Next word button
-            Button(intent: ToggleAnswerIntent(wordId: entry.wordId, showAnswer: false)) {
+            Button(intent: NextWordIntent()) {
                 HStack {
                     Image(systemName: "arrow.clockwise")
                         .font(.caption)

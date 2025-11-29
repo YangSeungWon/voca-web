@@ -81,11 +81,16 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Get a random word using time-based seed
-    // Changes every time the widget is opened
-    const now = new Date();
-    const seed = Math.floor(now.getTime() / 1000); // Unix timestamp in seconds
-    const randomIndex = seed % totalWords;
+    // Get word by index (from query param) or random
+    const indexParam = req.nextUrl.searchParams.get('index');
+    let wordIndex: number;
+
+    if (indexParam !== null) {
+      wordIndex = parseInt(indexParam) % totalWords;
+    } else {
+      // Random word for initial load
+      wordIndex = Math.floor(Math.random() * totalWords);
+    }
 
     const randomWord = await prisma.vocabulary.findMany({
       where: { userId: user.id },
@@ -96,7 +101,7 @@ export async function GET(req: NextRequest) {
           }
         }
       },
-      skip: randomIndex,
+      skip: wordIndex,
       take: 1
     });
 
@@ -118,6 +123,7 @@ export async function GET(req: NextRequest) {
     // Return simplified data for widget
     return NextResponse.json({
       word: {
+        id: wordData.id,
         text: wordInfo.word,
         pronunciation: ipaText,
         pronunciationKr: hangulPronunciation,
@@ -125,7 +131,9 @@ export async function GET(req: NextRequest) {
         partOfSpeech: wordInfo.definitions?.[0]?.partOfSpeech || '',
         level: wordData.level
       },
-      date: now.toISOString().split('T')[0]
+      index: wordIndex,
+      total: totalWords,
+      date: new Date().toISOString().split('T')[0]
     });
 
   } catch (error) {
