@@ -8,6 +8,9 @@ const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 // Rate limit configuration per endpoint type
 const RATE_LIMITS = {
   auth: { maxRequests: 5, windowMs: 60 * 1000 }, // 5 requests per minute for login/signup
+  vocabulary: { maxRequests: 30, windowMs: 60 * 1000 }, // 30 word additions per minute
+  import: { maxRequests: 3, windowMs: 60 * 1000 }, // 3 imports per minute
+  feedback: { maxRequests: 3, windowMs: 60 * 1000 }, // 3 feedback per minute
   api: { maxRequests: 100, windowMs: 60 * 1000 }, // 100 requests per minute for general API
 };
 
@@ -181,6 +184,66 @@ export async function middleware(request: NextRequest) {
         userAgent,
       }));
       return new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json', 'Retry-After': '60' }
+      });
+    }
+  }
+
+  // Rate limiting for vocabulary POST (word additions)
+  if (path === '/api/vocabulary' && request.method === 'POST') {
+    const rateLimit = checkRateLimit(ip, 'vocabulary', RATE_LIMITS.vocabulary);
+
+    if (!rateLimit.allowed) {
+      console.warn(JSON.stringify({
+        level: 'SECURITY',
+        type: 'RATE_LIMIT_EXCEEDED',
+        endpoint: 'vocabulary',
+        timestamp: new Date().toISOString(),
+        ip,
+        userAgent,
+      }));
+      return new Response(JSON.stringify({ error: 'Too many word additions. Please slow down.' }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json', 'Retry-After': '60' }
+      });
+    }
+  }
+
+  // Rate limiting for import endpoint
+  if (path === '/api/vocabulary/import' && request.method === 'POST') {
+    const rateLimit = checkRateLimit(ip, 'import', RATE_LIMITS.import);
+
+    if (!rateLimit.allowed) {
+      console.warn(JSON.stringify({
+        level: 'SECURITY',
+        type: 'RATE_LIMIT_EXCEEDED',
+        endpoint: 'import',
+        timestamp: new Date().toISOString(),
+        ip,
+        userAgent,
+      }));
+      return new Response(JSON.stringify({ error: 'Too many import requests. Please wait.' }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json', 'Retry-After': '60' }
+      });
+    }
+  }
+
+  // Rate limiting for feedback endpoint
+  if (path === '/api/feedback' && request.method === 'POST') {
+    const rateLimit = checkRateLimit(ip, 'feedback', RATE_LIMITS.feedback);
+
+    if (!rateLimit.allowed) {
+      console.warn(JSON.stringify({
+        level: 'SECURITY',
+        type: 'RATE_LIMIT_EXCEEDED',
+        endpoint: 'feedback',
+        timestamp: new Date().toISOString(),
+        ip,
+        userAgent,
+      }));
+      return new Response(JSON.stringify({ error: 'Too many feedback submissions. Please wait.' }), {
         status: 429,
         headers: { 'Content-Type': 'application/json', 'Retry-After': '60' }
       });

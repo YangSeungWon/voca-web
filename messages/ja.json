@@ -1,0 +1,133 @@
+{
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "search": "検索",
+    "confirm": "確認",
+    "back": "戻る",
+    "next": "次へ",
+    "close": "閉じる"
+  },
+  "nav": {
+    "home": "ホーム",
+    "vocabulary": "単語帳",
+    "study": "学習",
+    "statistics": "統計",
+    "more": "その他"
+  },
+  "home": {
+    "title": "Voca",
+    "searchPlaceholder": "単語を検索...",
+    "addToVocabulary": "単語帳に追加",
+    "alreadyInVocabulary": "すでに追加済み",
+    "wordAdded": "単語を追加しました！",
+    "noDefinition": "定義が見つかりません"
+  },
+  "vocabulary": {
+    "title": "単語帳",
+    "empty": "単語がありません",
+    "emptyDescription": "単語を検索して単語帳に追加しましょう",
+    "wordCount": "{count}単語",
+    "level": "レベル {level}",
+    "allGroups": "すべてのグループ",
+    "noGroup": "グループなし",
+    "deleteConfirm": "この単語を削除しますか？"
+  },
+  "study": {
+    "title": "学習",
+    "start": "学習開始",
+    "flashcards": "フラッシュカード",
+    "quiz": "クイズ",
+    "review": "復習",
+    "noWords": "まず単語帳に単語を追加してください",
+    "correct": "正解！",
+    "incorrect": "不正解",
+    "showAnswer": "答えを見る",
+    "nextWord": "次の単語",
+    "complete": "学習完了！",
+    "score": "スコア: {correct}/{total}",
+    "studyAgain": "もう一度学習"
+  },
+  "statistics": {
+    "title": "統計",
+    "totalWords": "総単語数",
+    "studySessions": "学習セッション",
+    "accuracy": "正確率",
+    "streak": "連続学習日数",
+    "levelDistribution": "レベル分布",
+    "recentActivity": "最近のアクティビティ"
+  },
+  "more": {
+    "title": "その他",
+    "importExport": "インポート＆エクスポート",
+    "importCSV": "CSVインポート",
+    "exportCSV": "CSVエクスポート",
+    "template": "テンプレート",
+    "phonetics": "IPA発音記号",
+    "phoneticsDescription": "発音記号を学ぶ",
+    "groups": "グループ管理",
+    "groupsDescription": "単語帳を整理",
+    "darkMode": "ダークモード",
+    "darkModeDescription": "ダーク/ライトテーマ切替",
+    "sync": "同期状態",
+    "syncDescription": "デバイス間同期",
+    "account": "アカウント",
+    "accountDescription": "ログインとアカウント設定",
+    "feedback": "フィードバック",
+    "feedbackDescription": "バグ報告や機能提案",
+    "developer": "開発者設定",
+    "developerDescription": "デバッグとテスト機能",
+    "language": "言語",
+    "languageDescription": "表示言語を変更",
+    "version": "Voca Web v1.0.0",
+    "madeWith": "言語学習者のために作りました"
+  },
+  "feedback": {
+    "title": "フィードバック",
+    "type": "フィードバックの種類",
+    "bug": "バグ報告",
+    "suggestion": "提案",
+    "other": "その他",
+    "message": "メッセージ",
+    "messagePlaceholder": {
+      "bug": "バグの内容、再現手順、期待される動作を説明してください...",
+      "suggestion": "改善のアイデアを共有してください...",
+      "other": "何を伝えたいですか？"
+    },
+    "email": "メール（任意）",
+    "emailPlaceholder": "your@email.com",
+    "emailHint": "返信が必要な場合のみ",
+    "send": "フィードバックを送信",
+    "sending": "送信中...",
+    "success": "ありがとうございます！",
+    "successMessage": "フィードバックが正常に送信されました。",
+    "sendAnother": "別のフィードバックを送信",
+    "minLength": "10文字以上入力してください",
+    "maxLength": "メッセージが長すぎます（最大2000文字）"
+  },
+  "auth": {
+    "login": "ログイン",
+    "signup": "新規登録",
+    "logout": "ログアウト",
+    "email": "メール",
+    "password": "パスワード",
+    "forgotPassword": "パスワードを忘れた？",
+    "noAccount": "アカウントをお持ちでないですか？",
+    "hasAccount": "すでにアカウントをお持ちですか？",
+    "loginSuccess": "ログイン成功",
+    "logoutSuccess": "ログアウトしました",
+    "invalidCredentials": "メールまたはパスワードが正しくありません"
+  },
+  "groups": {
+    "title": "グループ",
+    "create": "グループを作成",
+    "name": "グループ名",
+    "color": "色",
+    "noGroups": "グループがありません",
+    "deleteConfirm": "このグループを削除しますか？"
+  }
+}

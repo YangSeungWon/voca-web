@@ -4,6 +4,8 @@ import './globals.css';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import MobileLayout from '@/components/MobileLayout';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,20 +24,25 @@ export const viewport: Viewport = {
   themeColor: '#1f2937',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body className={inter.className}>
-        <ThemeProvider>
-          <ServiceWorkerRegistration />
-          <MobileLayout>
-            {children}
-          </MobileLayout>
-        </ThemeProvider>
+        <NextIntlClientProvider messages={messages}>
+          <ThemeProvider>
+            <ServiceWorkerRegistration />
+            <MobileLayout>
+              {children}
+            </MobileLayout>
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

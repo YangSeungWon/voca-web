@@ -1,0 +1,133 @@
+{
+  "common": {
+    "loading": "로딩 중...",
+    "error": "오류",
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "edit": "수정",
+    "search": "검색",
+    "confirm": "확인",
+    "back": "뒤로",
+    "next": "다음",
+    "close": "닫기"
+  },
+  "nav": {
+    "home": "홈",
+    "vocabulary": "단어장",
+    "study": "학습",
+    "statistics": "통계",
+    "more": "더보기"
+  },
+  "home": {
+    "title": "Voca",
+    "searchPlaceholder": "단어를 검색하세요...",
+    "addToVocabulary": "단어장에 추가",
+    "alreadyInVocabulary": "이미 추가된 단어입니다",
+    "wordAdded": "단어가 추가되었습니다!",
+    "noDefinition": "정의를 찾을 수 없습니다"
+  },
+  "vocabulary": {
+    "title": "단어장",
+    "empty": "단어가 없습니다",
+    "emptyDescription": "단어를 검색하고 단어장에 추가해보세요",
+    "wordCount": "{count}개 단어",
+    "level": "레벨 {level}",
+    "allGroups": "전체 그룹",
+    "noGroup": "그룹 없음",
+    "deleteConfirm": "이 단어를 삭제할까요?"
+  },
+  "study": {
+    "title": "학습",
+    "start": "학습 시작",
+    "flashcards": "플래시카드",
+    "quiz": "퀴즈",
+    "review": "복습",
+    "noWords": "먼저 단어장에 단어를 추가하세요",
+    "correct": "정답!",
+    "incorrect": "오답",
+    "showAnswer": "정답 보기",
+    "nextWord": "다음 단어",
+    "complete": "학습 완료!",
+    "score": "점수: {correct}/{total}",
+    "studyAgain": "다시 학습"
+  },
+  "statistics": {
+    "title": "통계",
+    "totalWords": "총 단어 수",
+    "studySessions": "학습 세션",
+    "accuracy": "정확도",
+    "streak": "연속 학습",
+    "levelDistribution": "레벨 분포",
+    "recentActivity": "최근 활동"
+  },
+  "more": {
+    "title": "더보기",
+    "importExport": "가져오기 & 내보내기",
+    "importCSV": "CSV 가져오기",
+    "exportCSV": "CSV 내보내기",
+    "template": "템플릿",
+    "phonetics": "IPA 발음 기호",
+    "phoneticsDescription": "발음 기호 배우기",
+    "groups": "그룹 관리",
+    "groupsDescription": "단어장 정리하기",
+    "darkMode": "다크 모드",
+    "darkModeDescription": "다크/라이트 테마 전환",
+    "sync": "동기화 상태",
+    "syncDescription": "기기 간 동기화",
+    "account": "계정",
+    "accountDescription": "로그인 및 계정 설정",
+    "feedback": "피드백 보내기",
+    "feedbackDescription": "버그 신고 또는 기능 제안",
+    "developer": "개발자 설정",
+    "developerDescription": "디버그 및 테스트 기능",
+    "language": "언어",
+    "languageDescription": "표시 언어 변경",
+    "version": "Voca Web v1.0.0",
+    "madeWith": "언어 학습자를 위해 만들었습니다"
+  },
+  "feedback": {
+    "title": "피드백",
+    "type": "피드백 유형",
+    "bug": "버그 신고",
+    "suggestion": "제안",
+    "other": "기타",
+    "message": "메시지",
+    "messagePlaceholder": {
+      "bug": "버그 내용, 재현 방법, 예상 동작을 설명해주세요...",
+      "suggestion": "개선 아이디어를 공유해주세요...",
+      "other": "무엇을 전달하고 싶으신가요?"
+    },
+    "email": "이메일 (선택사항)",
+    "emailPlaceholder": "your@email.com",
+    "emailHint": "답변이 필요한 경우에만",
+    "send": "피드백 보내기",
+    "sending": "보내는 중...",
+    "success": "감사합니다!",
+    "successMessage": "피드백이 성공적으로 전송되었습니다.",
+    "sendAnother": "다른 피드백 보내기",
+    "minLength": "최소 10자 이상 입력해주세요",
+    "maxLength": "메시지가 너무 깁니다 (최대 2000자)"
+  },
+  "auth": {
+    "login": "로그인",
+    "signup": "회원가입",
+    "logout": "로그아웃",
+    "email": "이메일",
+    "password": "비밀번호",
+    "forgotPassword": "비밀번호 찾기",
+    "noAccount": "계정이 없으신가요?",
+    "hasAccount": "이미 계정이 있으신가요?",
+    "loginSuccess": "로그인 성공",
+    "logoutSuccess": "로그아웃 완료",
+    "invalidCredentials": "이메일 또는 비밀번호가 잘못되었습니다"
+  },
+  "groups": {
+    "title": "그룹",
+    "create": "그룹 만들기",
+    "name": "그룹 이름",
+    "color": "색상",
+    "noGroups": "그룹이 없습니다",
+    "deleteConfirm": "이 그룹을 삭제할까요?"
+  }
+}

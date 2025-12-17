@@ -9,47 +9,32 @@ export async function GET(req: NextRequest) {
 
   try {
     const searchParams = req.nextUrl.searchParams;
+    const type = searchParams.get('type');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
-    const search = searchParams.get('search');
 
-    const where = search
-      ? { email: { contains: search, mode: 'insensitive' as const } }
-      : {};
+    const where = type ? { type } : {};
 
-    const [users, total] = await Promise.all([
-      prisma.user.findMany({
+    const [feedbacks, total] = await Promise.all([
+      prisma.feedback.findMany({
         where,
-        select: {
-          id: true,
-          email: true,
-          createdAt: true,
-          _count: {
-            select: { vocabularies: true }
-          }
-        },
         orderBy: { createdAt: 'desc' },
         take: limit,
         skip: offset,
       }),
-      prisma.user.count({ where }),
+      prisma.feedback.count({ where }),
     ]);
 
     return NextResponse.json({
-      users: users.map(u => ({
-        id: u.id,
-        email: u.email,
-        createdAt: u.createdAt,
-        wordCount: u._count.vocabularies,
-      })),
+      feedbacks,
       total,
       limit,
       offset,
     });
   } catch (error) {
-    console.error('Admin users fetch error:', error);
+    console.error('Admin feedback fetch error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch users' },
+      { error: 'Failed to fetch feedbacks' },
       { status: 500 }
     );
   }
@@ -67,15 +52,15 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'ID is required' }, { status: 400 });
     }
 
-    await prisma.user.delete({
+    await prisma.feedback.delete({
       where: { id },
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Admin user delete error:', error);
+    console.error('Admin feedback delete error:', error);
     return NextResponse.json(
-      { error: 'Failed to delete user' },
+      { error: 'Failed to delete feedback' },
       { status: 500 }
     );
   }

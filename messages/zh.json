@@ -1,0 +1,133 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "search": "搜索",
+    "confirm": "确认",
+    "back": "返回",
+    "next": "下一个",
+    "close": "关闭"
+  },
+  "nav": {
+    "home": "首页",
+    "vocabulary": "词汇",
+    "study": "学习",
+    "statistics": "统计",
+    "more": "更多"
+  },
+  "home": {
+    "title": "Voca",
+    "searchPlaceholder": "搜索单词...",
+    "addToVocabulary": "添加到词汇表",
+    "alreadyInVocabulary": "已添加到词汇表",
+    "wordAdded": "单词已添加！",
+    "noDefinition": "未找到定义"
+  },
+  "vocabulary": {
+    "title": "词汇表",
+    "empty": "暂无单词",
+    "emptyDescription": "搜索单词并添加到词汇表",
+    "wordCount": "{count}个单词",
+    "level": "等级 {level}",
+    "allGroups": "所有分组",
+    "noGroup": "无分组",
+    "deleteConfirm": "删除这个单词？"
+  },
+  "study": {
+    "title": "学习",
+    "start": "开始学习",
+    "flashcards": "闪卡",
+    "quiz": "测验",
+    "review": "复习",
+    "noWords": "请先添加单词到词汇表",
+    "correct": "正确！",
+    "incorrect": "错误",
+    "showAnswer": "显示答案",
+    "nextWord": "下一个单词",
+    "complete": "学习完成！",
+    "score": "得分: {correct}/{total}",
+    "studyAgain": "再次学习"
+  },
+  "statistics": {
+    "title": "统计",
+    "totalWords": "总单词数",
+    "studySessions": "学习次数",
+    "accuracy": "正确率",
+    "streak": "连续天数",
+    "levelDistribution": "等级分布",
+    "recentActivity": "最近活动"
+  },
+  "more": {
+    "title": "更多",
+    "importExport": "导入与导出",
+    "importCSV": "导入CSV",
+    "exportCSV": "导出CSV",
+    "template": "模板",
+    "phonetics": "IPA音标参考",
+    "phoneticsDescription": "学习发音符号",
+    "groups": "分组管理",
+    "groupsDescription": "整理词汇表",
+    "darkMode": "深色模式",
+    "darkModeDescription": "切换深色/浅色主题",
+    "sync": "同步状态",
+    "syncDescription": "跨设备同步",
+    "account": "账户",
+    "accountDescription": "登录和账户设置",
+    "feedback": "发送反馈",
+    "feedbackDescription": "报告错误或提出建议",
+    "developer": "开发者设置",
+    "developerDescription": "调试和测试功能",
+    "language": "语言",
+    "languageDescription": "更改显示语言",
+    "version": "Voca Web v1.0.0",
+    "madeWith": "为语言学习者而制作"
+  },
+  "feedback": {
+    "title": "反馈",
+    "type": "反馈类型",
+    "bug": "错误报告",
+    "suggestion": "建议",
+    "other": "其他",
+    "message": "内容",
+    "messagePlaceholder": {
+      "bug": "请描述错误、重现步骤和预期行为...",
+      "suggestion": "分享您的改进想法...",
+      "other": "您想告诉我们什么？"
+    },
+    "email": "邮箱（可选）",
+    "emailPlaceholder": "your@email.com",
+    "emailHint": "仅在需要回复时填写",
+    "send": "发送反馈",
+    "sending": "发送中...",
+    "success": "谢谢！",
+    "successMessage": "您的反馈已成功提交。",
+    "sendAnother": "发送另一条反馈",
+    "minLength": "请输入至少10个字符",
+    "maxLength": "内容过长（最多2000字符）"
+  },
+  "auth": {
+    "login": "登录",
+    "signup": "注册",
+    "logout": "退出",
+    "email": "邮箱",
+    "password": "密码",
+    "forgotPassword": "忘记密码？",
+    "noAccount": "没有账户？",
+    "hasAccount": "已有账户？",
+    "loginSuccess": "登录成功",
+    "logoutSuccess": "已退出",
+    "invalidCredentials": "邮箱或密码错误"
+  },
+  "groups": {
+    "title": "分组",
+    "create": "创建分组",
+    "name": "分组名称",
+    "color": "颜色",
+    "noGroups": "暂无分组",
+    "deleteConfirm": "删除这个分组？"
+  }
+}

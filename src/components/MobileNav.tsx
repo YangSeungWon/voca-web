@@ -1,6 +1,7 @@
 'use client';
 
 import { Search, FolderOpen, BookOpen, BarChart3, MoreHorizontal } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface MobileNavProps {
   activeView: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics' | 'more';
@@ -8,12 +9,14 @@ interface MobileNavProps {
 }
 
 export default function MobileNav({ activeView, onViewChange }: MobileNavProps) {
+  const t = useTranslations('nav');
+
   const tabs = [
-    { id: 'home' as const, label: 'Search', icon: Search },
-    { id: 'vocabulary' as const, label: 'Words', icon: FolderOpen },
-    { id: 'study' as const, label: 'Study', icon: BookOpen },
-    { id: 'statistics' as const, label: 'Stats', icon: BarChart3 },
-    { id: 'more' as const, label: 'More', icon: MoreHorizontal },
+    { id: 'home' as const, label: t('home'), icon: Search },
+    { id: 'vocabulary' as const, label: t('vocabulary'), icon: FolderOpen },
+    { id: 'study' as const, label: t('study'), icon: BookOpen },
+    { id: 'statistics' as const, label: t('statistics'), icon: BarChart3 },
+    { id: 'more' as const, label: t('more'), icon: MoreHorizontal },
   ];
 
   return (

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, Save, Volume2, Folder } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { DictionaryEntry } from '@/lib/dictionary';
 import { getUserId } from '@/lib/auth';
 import { speak } from '@/lib/speech';
@@ -23,6 +24,8 @@ interface Group {
 }
 
 export default function WordDisplay({ word, onSave }: WordDisplayProps) {
+  const t = useTranslations('home');
+  const tVocab = useTranslations('vocabulary');
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { hasWord, addWord } = useVocabularyCache();
@@ -171,7 +174,7 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
                   <span className="font-medium">{groups.find(g => g.id === selectedGroup)?.name}</span>
                 </div>
               ) : (
-                <span className="font-medium">Select Group</span>
+                <span className="font-medium">{tVocab('noGroup')}</span>
               )}
             </button>
             {showGroupSelector && (
@@ -183,7 +186,7 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
                   }}
                   className="w-full text-left px-4 py-3 text-base hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
-                  <span className="font-medium">No Group</span>
+                  <span className="font-medium">{tVocab('noGroup')}</span>
                 </button>
                 {groups.map(group => (
                   <button
@@ -221,12 +224,12 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
           {isSaved || alreadyInList ? (
             <>
               <Check size={20} />
-              <span>{alreadyInList ? 'In List' : 'Saved'}</span>
+              <span>{alreadyInList ? t('alreadyInVocabulary') : t('wordAdded')}</span>
             </>
           ) : (
             <>
               <Save size={20} />
-              <span>Add to List</span>
+              <span>{t('addToVocabulary')}</span>
             </>
           )}
         </button>

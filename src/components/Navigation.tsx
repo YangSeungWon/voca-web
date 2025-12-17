@@ -1,15 +1,20 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+
 interface NavigationProps {
   activeView: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics' | 'more';
   onViewChange: (view: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics' | 'more') => void;
 }
 
 export default function Navigation({ activeView, onViewChange }: NavigationProps) {
+  const t = useTranslations('nav');
+
   const tabs = [
-    { id: 'home' as const, label: 'Search' },
-    { id: 'vocabulary' as const, label: 'Words' },
-    { id: 'study' as const, label: 'Review' },
-    { id: 'statistics' as const, label: 'Statistics' },
-    { id: 'phonetics' as const, label: 'IPA' },
+    { id: 'home' as const, label: t('home') },
+    { id: 'vocabulary' as const, label: t('vocabulary') },
+    { id: 'study' as const, label: t('study') },
+    { id: 'statistics' as const, label: t('statistics') },
   ];
 
   return (

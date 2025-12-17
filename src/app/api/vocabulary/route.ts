@@ -132,12 +132,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Word length limit
+    const MAX_WORD_LENGTH = 100;
+    if (typeof wordText !== 'string' || wordText.length > MAX_WORD_LENGTH) {
+      return NextResponse.json(
+        { error: `Word too long. Maximum ${MAX_WORD_LENGTH} characters.` },
+        { status: 400 }
+      );
+    }
+
     const user = await prisma.user.findUnique({
       where: { id: userId }
     });
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Check user's word count limit
+    const MAX_WORDS_PER_USER = 5000;
+    const currentWordCount = await prisma.vocabulary.count({
+      where: { userId: user.id }
+    });
+
+    if (currentWordCount >= MAX_WORDS_PER_USER) {
+      return NextResponse.json(
+        { error: `Word limit reached. Maximum ${MAX_WORDS_PER_USER} words per account.` },
+        { status: 400 }
+      );
     }
 
     let word = await prisma.word.findUnique({

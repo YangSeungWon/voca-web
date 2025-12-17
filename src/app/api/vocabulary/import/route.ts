@@ -38,10 +38,36 @@ export async function POST(req: NextRequest) {
     }
 
     const { words } = await req.json();
-    
+
     if (!words || !Array.isArray(words)) {
       return NextResponse.json({ error: 'Invalid data format' }, { status: 400 });
     }
+
+    // Limit: max 100 words per import
+    const MAX_IMPORT_SIZE = 100;
+    if (words.length > MAX_IMPORT_SIZE) {
+      return NextResponse.json(
+        { error: `Too many words. Maximum ${MAX_IMPORT_SIZE} words per import.` },
+        { status: 400 }
+      );
+    }
+
+    // Check user's current word count
+    const MAX_WORDS_PER_USER = 5000;
+    const currentWordCount = await prisma.vocabulary.count({
+      where: { userId }
+    });
+
+    if (currentWordCount >= MAX_WORDS_PER_USER) {
+      return NextResponse.json(
+        { error: `Word limit reached. Maximum ${MAX_WORDS_PER_USER} words per account.` },
+        { status: 400 }
+      );
+    }
+
+    // Limit import to not exceed max words
+    const remainingSlots = MAX_WORDS_PER_USER - currentWordCount;
+    const wordsToProcess = words.slice(0, Math.min(words.length, remainingSlots));
 
     const results = {
       imported: 0,
@@ -50,7 +76,16 @@ export async function POST(req: NextRequest) {
       errors: [] as string[]
     };
 
-    for (const wordData of words) {
+    // Word length limit
+    const MAX_WORD_LENGTH = 100;
+
+    for (const wordData of wordsToProcess) {
+      // Validate word length
+      if (!wordData.word || typeof wordData.word !== 'string' || wordData.word.length > MAX_WORD_LENGTH) {
+        results.errors.push(`Invalid word length: ${wordData.word?.substring(0, 20)}...`);
+        results.failed++;
+        continue;
+      }
       try {
         // Check if word already exists for this user
         const existing = await prisma.vocabulary.findFirst({

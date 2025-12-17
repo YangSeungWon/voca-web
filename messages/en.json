@@ -1,0 +1,133 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close"
+  },
+  "nav": {
+    "home": "Home",
+    "vocabulary": "Vocabulary",
+    "study": "Study",
+    "statistics": "Statistics",
+    "more": "More"
+  },
+  "home": {
+    "title": "Voca",
+    "searchPlaceholder": "Search for a word...",
+    "addToVocabulary": "Add to Vocabulary",
+    "alreadyInVocabulary": "Already in vocabulary",
+    "wordAdded": "Word added!",
+    "noDefinition": "No definition found"
+  },
+  "vocabulary": {
+    "title": "Vocabulary",
+    "empty": "No words yet",
+    "emptyDescription": "Search for words and add them to your vocabulary",
+    "wordCount": "{count} words",
+    "level": "Level {level}",
+    "allGroups": "All Groups",
+    "noGroup": "No Group",
+    "deleteConfirm": "Delete this word?"
+  },
+  "study": {
+    "title": "Study",
+    "start": "Start Study",
+    "flashcards": "Flashcards",
+    "quiz": "Quiz",
+    "review": "Review",
+    "noWords": "Add words to your vocabulary first",
+    "correct": "Correct!",
+    "incorrect": "Incorrect",
+    "showAnswer": "Show Answer",
+    "nextWord": "Next Word",
+    "complete": "Study Complete!",
+    "score": "Score: {correct}/{total}",
+    "studyAgain": "Study Again"
+  },
+  "statistics": {
+    "title": "Statistics",
+    "totalWords": "Total Words",
+    "studySessions": "Study Sessions",
+    "accuracy": "Accuracy",
+    "streak": "Day Streak",
+    "levelDistribution": "Level Distribution",
+    "recentActivity": "Recent Activity"
+  },
+  "more": {
+    "title": "More",
+    "importExport": "Import & Export",
+    "importCSV": "Import CSV",
+    "exportCSV": "Export CSV",
+    "template": "Template",
+    "phonetics": "IPA Phonetics Reference",
+    "phoneticsDescription": "Learn pronunciation symbols",
+    "groups": "Manage Groups",
+    "groupsDescription": "Organize your vocabulary",
+    "darkMode": "Dark Mode",
+    "darkModeDescription": "Toggle dark/light theme",
+    "sync": "Sync Status",
+    "syncDescription": "Cross-device synchronization",
+    "account": "Account",
+    "accountDescription": "Login and account settings",
+    "feedback": "Send Feedback",
+    "feedbackDescription": "Report bugs or suggest features",
+    "developer": "Developer Settings",
+    "developerDescription": "Debug and test features",
+    "language": "Language",
+    "languageDescription": "Change display language",
+    "version": "Voca Web v1.0.0",
+    "madeWith": "Made with love for language learners"
+  },
+  "feedback": {
+    "title": "Feedback",
+    "type": "Feedback Type",
+    "bug": "Bug Report",
+    "suggestion": "Suggestion",
+    "other": "Other",
+    "message": "Message",
+    "messagePlaceholder": {
+      "bug": "Please describe the bug, steps to reproduce, and expected behavior...",
+      "suggestion": "Share your ideas for improvement...",
+      "other": "What would you like to tell us?"
+    },
+    "email": "Email (optional)",
+    "emailPlaceholder": "your@email.com",
+    "emailHint": "Only if you want us to follow up",
+    "send": "Send Feedback",
+    "sending": "Sending...",
+    "success": "Thank you!",
+    "successMessage": "Your feedback has been submitted successfully.",
+    "sendAnother": "Send another feedback",
+    "minLength": "Please enter at least 10 characters",
+    "maxLength": "Message is too long (max 2000 characters)"
+  },
+  "auth": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "loginSuccess": "Login successful",
+    "logoutSuccess": "Logged out",
+    "invalidCredentials": "Invalid email or password"
+  },
+  "groups": {
+    "title": "Groups",
+    "create": "Create Group",
+    "name": "Group Name",
+    "color": "Color",
+    "noGroups": "No groups yet",
+    "deleteConfirm": "Delete this group?"
+  }
+}

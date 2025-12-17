@@ -1,20 +1,25 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { ChevronRight, Sun, User, RefreshCw, FolderOpen, BookOpen, Download, Upload, Code } from 'lucide-react';
+import { ChevronRight, Sun, User, RefreshCw, FolderOpen, BookOpen, Download, Upload, Code, MessageSquare, Globe } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import AuthStatus from './AuthStatus';
 import SyncStatus from './SyncStatus';
 import GroupManager from './GroupManager';
 import PhoneticsReference from './PhoneticsReference';
 import DeveloperSettings from './DeveloperSettings';
+import FeedbackForm from './FeedbackForm';
+import LanguageSelector from './LanguageSelector';
+import { useTranslations } from 'next-intl';
 import { parseCSV, generateCSV, downloadCSV, getCSVTemplate } from '@/lib/csv';
 import { getUserId } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
 
 export default function MoreView() {
+  const t = useTranslations('more');
   const [showPhonetics, setShowPhonetics] = useState(false);
   const [showGroups, setShowGroups] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
   const [showDeveloper, setShowDeveloper] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -86,7 +91,7 @@ export default function MoreView() {
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-        More
+        {t('title')}
       </h1>
 
       {/* Settings Sections */}
@@ -94,7 +99,7 @@ export default function MoreView() {
         {/* Import/Export Section */}
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
           <div className="mb-4">
-            <h3 className="font-medium text-gray-900 dark:text-white mb-1">Import & Export</h3>
+            <h3 className="font-medium text-gray-900 dark:text-white mb-1">{t('importExport')}</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">Manage your vocabulary data</p>
           </div>
           <input
@@ -111,7 +116,7 @@ export default function MoreView() {
               className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Upload size={18} />
-              <span className="font-medium">{isImporting ? 'Importing...' : 'Import CSV'}</span>
+              <span className="font-medium">{t('importCSV')}</span>
             </button>
             <button
               onClick={handleExport}
@@ -119,15 +124,35 @@ export default function MoreView() {
               className="flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download size={18} />
-              <span className="font-medium">{isExporting ? 'Exporting...' : 'Export CSV'}</span>
+              <span className="font-medium">{t('exportCSV')}</span>
             </button>
             <button
               onClick={() => downloadCSV(getCSVTemplate(), 'vocabulary_template.csv')}
               className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
             >
               <Download size={18} />
-              <span className="font-medium">Template</span>
+              <span className="font-medium">{t('template')}</span>
             </button>
+          </div>
+        </div>
+
+        {/* Language Selector */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                <Globe className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              </div>
+              <div className="text-left">
+                <div className="font-medium text-gray-900 dark:text-white">
+                  {t('language')}
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  {t('languageDescription')}
+                </div>
+              </div>
+            </div>
+            <LanguageSelector />
           </div>
         </div>
 
@@ -142,10 +167,10 @@ export default function MoreView() {
             </div>
             <div className="text-left">
               <div className="font-medium text-gray-900 dark:text-white">
-                IPA Phonetics Reference
+                {t('phonetics')}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">
-                Learn pronunciation symbols
+                {t('phoneticsDescription')}
               </div>
             </div>
           </div>
@@ -169,10 +194,10 @@ export default function MoreView() {
             </div>
             <div className="text-left">
               <div className="font-medium text-gray-900 dark:text-white">
-                Manage Groups
+                {t('groups')}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">
-                Organize your vocabulary
+                {t('groupsDescription')}
               </div>
             </div>
           </div>
@@ -194,10 +219,10 @@ export default function MoreView() {
               </div>
               <div className="text-left">
                 <div className="font-medium text-gray-900 dark:text-white">
-                  Dark Mode
+                  {t('darkMode')}
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Toggle dark/light theme
+                  {t('darkModeDescription')}
                 </div>
               </div>
             </div>
@@ -214,10 +239,10 @@ export default function MoreView() {
               </div>
               <div className="text-left">
                 <div className="font-medium text-gray-900 dark:text-white">
-                  Sync Status
+                  {t('sync')}
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Cross-device synchronization
+                  {t('syncDescription')}
                 </div>
               </div>
             </div>
@@ -234,16 +259,43 @@ export default function MoreView() {
               </div>
               <div className="text-left">
                 <div className="font-medium text-gray-900 dark:text-white">
-                  Account
+                  {t('account')}
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Login and account settings
+                  {t('accountDescription')}
                 </div>
               </div>
             </div>
             <AuthStatus />
           </div>
         </div>
+
+        {/* Feedback */}
+        <button
+          onClick={() => setShowFeedback(!showFeedback)}
+          className="w-full bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
+              <MessageSquare className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+            </div>
+            <div className="text-left">
+              <div className="font-medium text-gray-900 dark:text-white">
+                {t('feedback')}
+              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                {t('feedbackDescription')}
+              </div>
+            </div>
+          </div>
+          <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${showFeedback ? 'rotate-90' : ''}`} />
+        </button>
+
+        {showFeedback && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <FeedbackForm />
+          </div>
+        )}
 
         {/* Developer Settings */}
         <button
@@ -256,10 +308,10 @@ export default function MoreView() {
             </div>
             <div className="text-left">
               <div className="font-medium text-gray-900 dark:text-white">
-                Developer Settings
+                {t('developer')}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">
-                Debug and test features
+                {t('developerDescription')}
               </div>
             </div>
           </div>
@@ -275,8 +327,8 @@ export default function MoreView() {
 
       {/* App Info */}
       <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-        <p>Voca Web v1.0.0</p>
-        <p className="mt-1">Made with ❤️ for language learners</p>
+        <p>{t('version')}</p>
+        <p className="mt-1">{t('madeWith')}</p>
       </div>
     </div>
   );

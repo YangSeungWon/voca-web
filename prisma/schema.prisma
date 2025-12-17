@@ -99,16 +99,31 @@ model Group {
   id            String        @id @default(cuid())
   userId        String
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   name          String
   description   String?
   color         String        @default("#6B7280")
   icon          String?
-  
+
   vocabulary    Vocabulary[]
-  
+
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-  
+
   @@index([userId])
+}
+
+model Feedback {
+  id            String        @id @default(cuid())
+  userId        String?       // Optional - can be anonymous
+  email         String?       // Optional contact email
+  type          String        // "bug", "suggestion", "other"
+  message       String
+  userAgent     String?
+  ip            String?
+
+  createdAt     DateTime      @default(now())
+
+  @@index([createdAt])
+  @@index([type])
 }
