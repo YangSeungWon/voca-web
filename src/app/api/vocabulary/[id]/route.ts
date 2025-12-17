@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import type { User } from '@prisma/client';
+import { verifyToken } from '@/lib/jwt';
 
 export async function DELETE(
   req: NextRequest,
@@ -8,19 +8,32 @@ export async function DELETE(
 ) {
   const { id } = await params;
   try {
-    const userId = req.headers.get('x-user-id') || 'default-user';
-    
-    let user: User | null;
-    if (userId.includes('-')) {
-      user = await prisma.user.findUnique({
-        where: { id: userId }
-      });
-    } else {
-      const email = userId.includes('@') ? userId : `${userId}@temp.email`;
-      user = await prisma.user.findUnique({
-        where: { email }
-      });
+    // JWT authentication required
+    const authHeader = req.headers.get('authorization');
+
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
     }
+
+    const token = authHeader.substring(7);
+    let userId: string;
+
+    try {
+      const payload = verifyToken(token);
+      userId = payload.userId;
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid token' },
+        { status: 401 }
+      );
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
 
     if (!user) {
       return NextResponse.json(
@@ -63,20 +76,34 @@ export async function PATCH(
 ) {
   const { id } = await params;
   try {
-    const userId = req.headers.get('x-user-id') || 'default-user';
+    // JWT authentication required
+    const authHeader = req.headers.get('authorization');
+
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.substring(7);
+    let userId: string;
+
+    try {
+      const payload = verifyToken(token);
+      userId = payload.userId;
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid token' },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
 
-    let user: User | null;
-    if (userId.includes('-')) {
-      user = await prisma.user.findUnique({
-        where: { id: userId }
-      });
-    } else {
-      const email = userId.includes('@') ? userId : `${userId}@temp.email`;
-      user = await prisma.user.findUnique({
-        where: { email }
-      });
-    }
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
 
     if (!user) {
       return NextResponse.json(

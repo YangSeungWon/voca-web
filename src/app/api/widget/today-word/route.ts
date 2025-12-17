@@ -10,64 +10,39 @@ import { ipaToHangul } from 'ipa-hangul';
  */
 export async function GET(req: NextRequest) {
   try {
-    // Support both header-based and JWT auth
+    // JWT authentication required
     const authHeader = req.headers.get('authorization');
-    let userId = req.headers.get('x-user-id') || 'default-user';
 
-    console.log('[Widget API] Request received');
-    console.log('[Widget API] Authorization header:', authHeader ? `Bearer ${authHeader.substring(7, 27)}...` : 'none');
-
-    // Check JWT token if provided
-    if (authHeader?.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
-      try {
-        const payload = verifyToken(token);
-        userId = payload.userId;
-        console.log('[Widget API] JWT verified, userId:', userId);
-      } catch (error) {
-        console.error('[Widget API] JWT verification failed:', error);
-        return NextResponse.json(
-          { error: 'Invalid token' },
-          { status: 401 }
-        );
-      }
-    } else {
-      console.log('[Widget API] Using fallback userId:', userId);
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
     }
 
-    // Find or create user
-    let user: User | null;
-    console.log('[Widget API] Looking up user with userId:', userId);
+    const token = authHeader.substring(7);
+    let userId: string;
 
-    if (userId.includes('-')) {
-      console.log('[Widget API] Searching by ID');
-      user = await prisma.user.findUnique({
-        where: { id: userId }
-      });
-    } else {
-      const email = userId.includes('@') ? userId : `${userId}@temp.email`;
-      console.log('[Widget API] Searching by email:', email);
-      user = await prisma.user.findUnique({
-        where: { email }
-      });
-
-      if (!user) {
-        console.log('[Widget API] User not found, creating new user');
-        user = await prisma.user.create({
-          data: { email }
-        });
-      }
+    try {
+      const payload = verifyToken(token);
+      userId = payload.userId;
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid token' },
+        { status: 401 }
+      );
     }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
 
     if (!user) {
-      console.error('[Widget API] User not found after lookup');
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
       );
     }
-
-    console.log('[Widget API] User found:', user.id);
 
     // Get total count of user's words
     const totalWords = await prisma.vocabulary.count({

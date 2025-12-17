@@ -8,43 +8,32 @@ import { verifyToken } from '@/lib/jwt';
  */
 export async function GET(req: NextRequest) {
   try {
-    // Support both header-based and JWT auth
+    // JWT authentication required
     const authHeader = req.headers.get('authorization');
-    let userId = req.headers.get('x-user-id') || 'default-user';
 
-    // Check JWT token if provided
-    if (authHeader?.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
-      try {
-        const payload = verifyToken(token);
-        userId = payload.userId;
-      } catch (error) {
-        console.error('[Widget Study Stats] JWT verification failed:', error);
-        return NextResponse.json(
-          { error: 'Invalid token' },
-          { status: 401 }
-        );
-      }
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
     }
 
-    // Find or create user
-    let user;
-    if (userId.includes('-')) {
-      user = await prisma.user.findUnique({
-        where: { id: userId }
-      });
-    } else {
-      const email = userId.includes('@') ? userId : `${userId}@temp.email`;
-      user = await prisma.user.findUnique({
-        where: { email }
-      });
+    const token = authHeader.substring(7);
+    let userId: string;
 
-      if (!user) {
-        user = await prisma.user.create({
-          data: { email }
-        });
-      }
+    try {
+      const payload = verifyToken(token);
+      userId = payload.userId;
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid token' },
+        { status: 401 }
+      );
     }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
 
     if (!user) {
       return NextResponse.json(

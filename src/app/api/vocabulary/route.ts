@@ -7,48 +7,37 @@ import type { DictionaryEntry } from '@/lib/dictionary';
 
 export async function GET(req: NextRequest) {
   try {
-    // Support both header-based and JWT auth
+    // JWT authentication required
     const authHeader = req.headers.get('authorization');
-    let userId = req.headers.get('x-user-id') || 'default-user';
-    
-    // Check JWT token if provided
-    if (authHeader?.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
-      try {
-        const payload = verifyToken(token);
-        userId = payload.userId;
-      } catch {
-        return NextResponse.json(
-          { error: 'Invalid token' },
-          { status: 401 }
-        );
-      }
+
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
     }
-    
+
+    const token = authHeader.substring(7);
+    let userId: string;
+
+    try {
+      const payload = verifyToken(token);
+      userId = payload.userId;
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid token' },
+        { status: 401 }
+      );
+    }
+
     const searchParams = req.nextUrl.searchParams;
     const groupId = searchParams.get('groupId');
     const limit = searchParams.get('limit');
     const sort = searchParams.get('sort');
-    
-    let user: User | null;
-    if (userId.includes('-')) {
-      // It's a user ID
-      user = await prisma.user.findUnique({
-        where: { id: userId }
-      });
-    } else {
-      // It's an email or legacy username
-      const email = userId.includes('@') ? userId : `${userId}@temp.email`;
-      user = await prisma.user.findUnique({
-        where: { email }
-      });
 
-      if (!user) {
-        user = await prisma.user.create({
-          data: { email }
-        });
-      }
-    }
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -111,24 +100,29 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    // Support both header-based and JWT auth
+    // JWT authentication required
     const authHeader = req.headers.get('authorization');
-    let userId = req.headers.get('x-user-id') || 'default-user';
-    
-    // Check JWT token if provided
-    if (authHeader?.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
-      try {
-        const payload = verifyToken(token);
-        userId = payload.userId;
-      } catch {
-        return NextResponse.json(
-          { error: 'Invalid token' },
-          { status: 401 }
-        );
-      }
+
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
     }
-    
+
+    const token = authHeader.substring(7);
+    let userId: string;
+
+    try {
+      const payload = verifyToken(token);
+      userId = payload.userId;
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid token' },
+        { status: 401 }
+      );
+    }
+
     const { word: wordText, wordData, groupId } = await req.json();
 
     if (!wordText) {
@@ -138,25 +132,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    let user: User | null;
-    if (userId.includes('-')) {
-      // It's a user ID
-      user = await prisma.user.findUnique({
-        where: { id: userId }
-      });
-    } else {
-      // It's an email or legacy username
-      const email = userId.includes('@') ? userId : `${userId}@temp.email`;
-      user = await prisma.user.findUnique({
-        where: { email }
-      });
-
-      if (!user) {
-        user = await prisma.user.create({
-          data: { email }
-        });
-      }
-    }
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
