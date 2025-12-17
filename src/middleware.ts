@@ -1,6 +1,48 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// Rate limiting storage (in-memory, resets on server restart)
+// For production, consider using Redis or similar
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+
+// Rate limit configuration per endpoint type
+const RATE_LIMITS = {
+  auth: { maxRequests: 5, windowMs: 60 * 1000 }, // 5 requests per minute for login/signup
+  api: { maxRequests: 100, windowMs: 60 * 1000 }, // 100 requests per minute for general API
+};
+
+function getRateLimitKey(ip: string, endpoint: string): string {
+  return `${ip}:${endpoint}`;
+}
+
+function checkRateLimit(ip: string, endpoint: string, config: { maxRequests: number; windowMs: number }): { allowed: boolean; remaining: number } {
+  const key = getRateLimitKey(ip, endpoint);
+  const now = Date.now();
+  const record = rateLimitStore.get(key);
+
+  if (!record || now > record.resetTime) {
+    rateLimitStore.set(key, { count: 1, resetTime: now + config.windowMs });
+    return { allowed: true, remaining: config.maxRequests - 1 };
+  }
+
+  if (record.count >= config.maxRequests) {
+    return { allowed: false, remaining: 0 };
+  }
+
+  record.count++;
+  return { allowed: true, remaining: config.maxRequests - record.count };
+}
+
+// Clean up old entries periodically (every 5 minutes)
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, value] of rateLimitStore.entries()) {
+    if (now > value.resetTime) {
+      rateLimitStore.delete(key);
+    }
+  }
+}, 5 * 60 * 1000);
+
 // Suspicious patterns for security monitoring
 const SUSPICIOUS_PATTERNS = [
   '__proto__',
@@ -122,6 +164,27 @@ export async function middleware(request: NextRequest) {
       userAgent,
     }));
     return new Response('Forbidden', { status: 403 });
+  }
+
+  // Rate limiting for auth endpoints
+  const isAuthEndpoint = path === '/api/auth/login' || path === '/api/auth/signup';
+  if (isAuthEndpoint && request.method === 'POST') {
+    const rateLimit = checkRateLimit(ip, 'auth', RATE_LIMITS.auth);
+
+    if (!rateLimit.allowed) {
+      console.warn(JSON.stringify({
+        level: 'SECURITY',
+        type: 'RATE_LIMIT_EXCEEDED',
+        timestamp: new Date().toISOString(),
+        ip,
+        path,
+        userAgent,
+      }));
+      return new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json', 'Retry-After': '60' }
+      });
+    }
   }
 
   // Handle CORS for API routes
