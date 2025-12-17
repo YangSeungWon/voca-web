@@ -4,31 +4,19 @@ import { verifyToken } from '@/lib/jwt';
 
 export async function GET(req: NextRequest) {
   try {
-    // Get Authorization header
+    // JWT authentication required
     const authHeader = req.headers.get('authorization');
-    const userId = req.headers.get('x-user-id');
-    
-    let authenticatedUserId = userId;
-    
-    // Check JWT token if provided
-    if (authHeader?.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
-      try {
-        const payload = verifyToken(token);
-        authenticatedUserId = payload.userId;
-      } catch {
-        return NextResponse.json(
-          { error: 'Invalid token' },
-          { status: 401 }
-        );
-      }
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
-    
-    if (!authenticatedUserId) {
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
-      );
+
+    const token = authHeader.substring(7);
+    let authenticatedUserId: string;
+    try {
+      const payload = verifyToken(token);
+      authenticatedUserId = payload.userId;
+    } catch {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
     // Get total word count

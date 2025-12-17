@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { verifyToken } from '@/lib/jwt';
 
 export async function PUT(
   req: NextRequest,
@@ -7,9 +8,20 @@ export async function PUT(
 ) {
   try {
     const { exampleId } = await params;
-    const userId = req.headers.get('x-user-id');
-    if (!userId) {
-      return NextResponse.json({ error: 'User not authenticated' }, { status: 401 });
+
+    // JWT authentication required
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    const token = authHeader.substring(7);
+    let userId: string;
+    try {
+      const payload = verifyToken(token);
+      userId = payload.userId;
+    } catch {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
     const { sentence, translation } = await req.json();
@@ -42,9 +54,20 @@ export async function DELETE(
 ) {
   try {
     const { exampleId } = await params;
-    const userId = req.headers.get('x-user-id');
-    if (!userId) {
-      return NextResponse.json({ error: 'User not authenticated' }, { status: 401 });
+
+    // JWT authentication required
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    const token = authHeader.substring(7);
+    let userId: string;
+    try {
+      const payload = verifyToken(token);
+      userId = payload.userId;
+    } catch {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
     await prisma.example.delete({

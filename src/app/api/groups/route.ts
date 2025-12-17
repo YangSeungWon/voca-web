@@ -134,9 +134,22 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Group ID is required' }, { status: 400 });
     }
 
+    // Verify user owns this group
+    const group = await prisma.group.findUnique({
+      where: { id: groupId }
+    });
+
+    if (!group) {
+      return NextResponse.json({ error: 'Group not found' }, { status: 404 });
+    }
+
+    if (group.userId !== userId) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
+
     // First, unassign all vocabulary items from this group
     await prisma.vocabulary.updateMany({
-      where: { groupId },
+      where: { groupId, userId },
       data: { groupId: null }
     });
 
