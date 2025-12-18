@@ -134,11 +134,12 @@ export default function Home() {
   };
 
 
-  // Hide overflow on mobile for certain views
+  // Hide overflow on mobile only for certain views
   const hideOverflow = isMobile && (
     (activeView === 'home' && !currentWord) ||
     activeView === 'study'
   );
+
 
   return (
     <div className={`bg-gray-50 dark:bg-gray-900 transition-colors ${hideOverflow ? 'h-screen overflow-hidden' : 'min-h-screen'}`}>
@@ -208,7 +209,7 @@ export default function Home() {
             !isAuthenticated && !isLoading ? (
               <LoginPrompt message="Sign in to access your vocabulary list" />
             ) : (
-              <div className="flex h-full">
+              <div className={`flex ${isMobile ? 'h-full' : ''}`}>
                 <div className="hidden md:block w-64 border-r border-gray-200 dark:border-gray-700">
                   <GroupManager
                     selectedGroup={selectedGroup}

@@ -1,4 +1,5 @@
 import { DictionaryEntry } from './dictionary';
+import { getIpaFromCmu } from './arpabet-to-ipa';
 
 interface APIPhonetic {
   text?: string;
@@ -45,10 +46,18 @@ export async function fetchFromDictionaryAPI(word: string): Promise<DictionaryEn
       }))
     );
 
-    // Get pronunciation
-    const pronunciation = entry.phonetic || 
-      entry.phonetics?.find((p) => p.text)?.text || 
+    // Get pronunciation from API
+    let pronunciation = entry.phonetic ||
+      entry.phonetics?.find((p) => p.text)?.text ||
       undefined;
+
+    // Fallback to CMU dictionary if no pronunciation from API
+    if (!pronunciation) {
+      const cmuPronunciation = await getIpaFromCmu(entry.word);
+      if (cmuPronunciation) {
+        pronunciation = `/${cmuPronunciation}/`;
+      }
+    }
 
     return {
       word: entry.word,

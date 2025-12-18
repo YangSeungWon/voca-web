@@ -1,14 +1,20 @@
-# Vocabulary Manager
+# Voca Web
 
-A professional vocabulary learning application with Excel-like interface.
+A vocabulary learning application with flashcard study mode and cross-platform support.
 
 ## Features
 
 - 📚 Word dictionary with definitions from Free Dictionary API
+- 🗣️ IPA pronunciation with CMU Dictionary fallback (134,000+ words)
 - 📊 Excel-style table view for vocabulary management
-- 💾 CSV export functionality
-- 🔍 Search and filter capabilities
-- 📱 Responsive design for professional use
+- 🎴 Flashcard study mode with spaced repetition
+- 📈 Learning statistics and progress tracking
+- 📁 Word grouping and organization
+- 🌐 Multi-language UI (Korean, English, Japanese, Chinese)
+- 💾 CSV import/export
+- 📱 iOS & Android apps via Capacitor
+- 🔐 JWT authentication with secure API
+- 🌙 Dark mode support
 
 ## Quick Start with Docker
 
@@ -19,86 +25,80 @@ A professional vocabulary learning application with Excel-like interface.
 ### Production Deployment
 
 ```bash
-# Build and run with Docker Compose
-docker-compose up -d
+# Copy environment file and configure
+cp .env.example .env
+# Edit .env with your settings (DATABASE_URL, JWT_SECRET, ADMIN_PASSWORD)
+
+# Build and run
+docker compose up -d
 
 # The app will be available at http://localhost:7024
 ```
 
-### Development with Docker
+### Environment Variables
 
-```bash
-# Run development environment
-docker-compose -f docker-compose.dev.yml up
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `DATABASE_URL` | PostgreSQL connection string | Yes |
+| `JWT_SECRET` | Secret for JWT signing | Yes |
+| `ADMIN_PASSWORD` | Admin dashboard password | Yes |
+| `NODE_ENV` | Environment (development/production) | No |
 
-# The app will be available at http://localhost:7024
-# Changes will be reflected automatically
-```
-
-### Docker Commands
-
-```bash
-# Build the image
-docker-compose build
-
-# Start containers
-docker-compose up -d
-
-# Stop containers
-docker-compose down
-
-# View logs
-docker-compose logs -f
-
-# Reset database
-docker-compose down -v
-docker-compose up -d
-```
-
-## Local Development (without Docker)
+## Local Development
 
 ### Prerequisites
 - Node.js 20+
 - PostgreSQL
-- npm or yarn
+- npm
 
 ### Setup
 
-1. Install dependencies:
 ```bash
+# Install dependencies
 npm install
-```
 
-2. Set up environment variables:
-```bash
+# Set up environment
 cp .env.example .env
 # Edit .env with your database credentials
-```
 
-3. Run database migrations:
-```bash
+# Run database migrations
 npx prisma migrate dev
-```
 
-4. Start development server:
-```bash
+# Start development server
 npm run dev
 ```
 
 The app will be available at http://localhost:7024
 
-## Environment Variables
+## Mobile Development (Capacitor)
 
-- `DATABASE_URL`: PostgreSQL connection string
-- `NODE_ENV`: Environment (development/production)
+```bash
+# Build for mobile
+npm run build:static
+
+# Sync to native projects
+npm run cap:sync
+
+# Open in Xcode/Android Studio
+npm run cap:open:ios
+npm run cap:open:android
+```
 
 ## Tech Stack
 
-- **Frontend**: Next.js 15, React 18, TypeScript
+- **Frontend**: Next.js 15, React 19, TypeScript
 - **Styling**: TailwindCSS
 - **Database**: PostgreSQL with Prisma ORM
-- **API**: Free Dictionary API for word definitions
+- **i18n**: next-intl
+- **API**: Free Dictionary API + CMU Pronouncing Dictionary
+- **Mobile**: Capacitor (iOS/Android)
 - **Deployment**: Docker & Docker Compose
+
+## Data Sources
+
+- **Word Definitions**: [Free Dictionary API](https://dictionaryapi.dev/)
+- **Pronunciations**: [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict) (134,000+ words)
+- **IPA Conversion**: Custom ARPAbet to IPA converter
 
 ## Project Structure
 
@@ -106,15 +106,27 @@ The app will be available at http://localhost:7024
 .
 ├── src/
 │   ├── app/              # Next.js app router pages
+│   │   ├── api/          # API routes
+│   │   └── admin/        # Admin dashboard
 │   ├── components/       # React components
-│   └── lib/             # Utilities and helpers
-├── prisma/              # Database schema
-├── public/              # Static assets
-├── docker-compose.yml   # Production Docker config
-├── docker-compose.dev.yml # Development Docker config
-├── Dockerfile           # Production Docker image
-└── Dockerfile.dev       # Development Docker image
+│   ├── hooks/            # Custom React hooks
+│   ├── lib/              # Utilities and helpers
+│   └── i18n/             # Internationalization config
+├── prisma/               # Database schema
+├── messages/             # i18n translation files
+├── ios/                  # iOS native project
+├── android/              # Android native project
+├── docker-compose.yml    # Docker config
+└── Dockerfile            # Docker image
 ```
+
+## Security Features
+
+- JWT-based authentication
+- Rate limiting on sensitive endpoints
+- XSS protection on user inputs
+- Docker container hardening (read-only filesystem, no-new-privileges)
+- Resource limits on containers
 
 ## License
 
