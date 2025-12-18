@@ -39,13 +39,23 @@
     @apply w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 transition-colors;
   }
 
-  /* IPA stress markers - darker when stressed in light mode, brighter when stressed in dark mode */
+  /* IPA stress markers - bold with dot above for emphasis */
   .stress-primary {
-    @apply text-blue-700 dark:text-blue-300 font-black text-[1.1em];
+    @apply font-bold relative;
+  }
+
+  .stress-primary::before {
+    content: '•';
+    @apply absolute -top-2 left-1/2 -translate-x-1/2 text-[0.5em] text-gray-800 dark:text-gray-200;
   }
 
   .stress-secondary {
-    @apply text-blue-600 dark:text-blue-400 font-bold text-[1.05em] not-italic;
+    @apply font-semibold not-italic relative;
+  }
+
+  .stress-secondary::before {
+    content: '·';
+    @apply absolute -top-1.5 left-1/2 -translate-x-1/2 text-[0.4em] text-gray-500 dark:text-gray-400;
   }
 }
 

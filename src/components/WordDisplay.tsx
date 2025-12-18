@@ -116,10 +116,10 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
               {word.pronunciation && (() => {
                 const { korean, ipa } = formatPronunciation(word.pronunciation);
                 return (
-                  <div className="mt-2 flex flex-col gap-1">
+                  <div className="mt-2 flex flex-col gap-1 pt-2">
                     {korean && (
                       <span
-                        className="text-xl sm:text-2xl font-medium text-blue-500 dark:text-blue-500"
+                        className="text-xl sm:text-2xl font-medium text-gray-600 dark:text-gray-300"
                         dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
                       />
                     )}

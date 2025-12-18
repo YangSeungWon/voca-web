@@ -114,10 +114,10 @@ export default function VocabularyList() {
                 {item.word.pronunciation && (() => {
                   const { korean, ipa } = formatPronunciation(item.word.pronunciation);
                   return (
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 pt-2">
                       {korean && (
                         <span
-                          className="text-2xl font-medium text-blue-500 dark:text-blue-500"
+                          className="text-2xl font-medium text-gray-600 dark:text-gray-300"
                           dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
                         />
                       )}

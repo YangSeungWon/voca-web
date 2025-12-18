@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Trash2, Volume2, ChevronRight } from 'lucide-react';
 import { speak } from '@/lib/speech';
 import ExampleSentences from './ExampleSentences';
+import ConfirmModal from './ConfirmModal';
 import { formatPronunciation, isKoreanUser } from '@/lib/ipa-to-korean';
 
 interface VocabularyWord {
@@ -33,6 +34,7 @@ interface VocabularyCardProps {
 
 export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const { korean, ipa } = item.word.pronunciation
     ? formatPronunciation(item.word.pronunciation)
@@ -51,11 +53,11 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
                 {item.word.word}
               </h3>
               {ipa && (
-                <span className="text-sm text-gray-500 dark:text-gray-400 shrink-0">
+                <span className="text-sm text-gray-500 dark:text-gray-400 shrink-0 pt-1">
                   {isKoreanUser() && korean ? (
                     <>
                       <span
-                        className="font-medium text-blue-500 dark:text-blue-400"
+                        className="font-medium"
                         dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
                       />
                       <span className="ml-1">{ipa}</span>
@@ -114,7 +116,7 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDelete(item.id);
+                  setShowDeleteConfirm(true);
                 }}
                 className="p-2 bg-red-500 text-white rounded-lg"
               >
@@ -144,6 +146,20 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
           <ExampleSentences wordId={item.id} wordText={item.word.word} />
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        title="Delete Word"
+        message={`Are you sure you want to delete "${item.word.word}" from your vocabulary?`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+        onConfirm={() => {
+          onDelete(item.id);
+          setShowDeleteConfirm(false);
+        }}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </div>
   );
 }

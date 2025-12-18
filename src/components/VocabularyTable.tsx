@@ -308,10 +308,10 @@ export default function VocabularyTable({ selectedGroup, onAddWord }: Vocabulary
                       {item.word.pronunciation ? (() => {
                         const { korean, ipa } = formatPronunciation(item.word.pronunciation);
                         return (
-                          <div className="flex flex-col gap-1">
+                          <div className="flex flex-col gap-1 pt-2">
                             {korean && (
                               <span
-                                className="font-medium text-blue-500 dark:text-blue-500 text-lg"
+                                className="font-medium text-gray-600 dark:text-gray-300 text-lg"
                                 dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
                               />
                             )}
