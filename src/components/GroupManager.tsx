@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Folder, Plus, X, Trash2 } from 'lucide-react';
-import { getUserId } from '@/lib/auth';
+import { getAuthToken } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
 
 interface Group {
@@ -38,9 +38,12 @@ export default function GroupManager({ selectedGroup, onGroupChange }: GroupMana
 
   const fetchGroups = async () => {
     try {
+      const token = getAuthToken();
+      if (!token) return;
+
       const response = await apiFetch('/api/groups', {
         headers: {
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {
@@ -58,10 +61,13 @@ export default function GroupManager({ selectedGroup, onGroupChange }: GroupMana
     }
 
     try {
+      const token = getAuthToken();
+      if (!token) return;
+
       const response = await apiFetch(`/api/groups?id=${groupId}`, {
         method: 'DELETE',
         headers: {
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         }
       });
 
@@ -79,13 +85,16 @@ export default function GroupManager({ selectedGroup, onGroupChange }: GroupMana
   const handleCreateGroup = async () => {
     if (!newGroupName.trim()) return;
 
+    const token = getAuthToken();
+    if (!token) return;
+
     setLoading(true);
     try {
       const response = await apiFetch('/api/groups', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           name: newGroupName,

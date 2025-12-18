@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { getUserId } from '@/lib/auth';
+import { getAuthToken } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
 
 const CACHE_KEY = 'vocabulary_words';
@@ -21,9 +21,12 @@ export function useVocabularyCache() {
   // Refresh cache from server
   const refresh = useCallback(async () => {
     try {
+      const token = getAuthToken();
+      if (!token) return;
+
       const response = await apiFetch('/api/vocabulary', {
         headers: {
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {

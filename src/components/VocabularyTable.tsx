@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Trash2, Filter, ChevronUp, ChevronDown, Volume2, ChevronRight, Search, Plus, X } from 'lucide-react';
-import { getUserId } from '@/lib/auth';
+import { getAuthToken } from '@/lib/auth';
 import { speak } from '@/lib/speech';
 import ExampleSentences from './ExampleSentences';
 import VocabularyCard from './VocabularyCard';
@@ -57,12 +57,18 @@ export default function VocabularyTable({ selectedGroup, onAddWord }: Vocabulary
 
   const fetchVocabulary = async () => {
     try {
-      const url = selectedGroup 
+      const token = getAuthToken();
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      const url = selectedGroup
         ? `/api/vocabulary?groupId=${selectedGroup}`
         : '/api/vocabulary';
       const response = await apiFetch(url, {
         headers: {
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {
@@ -78,10 +84,13 @@ export default function VocabularyTable({ selectedGroup, onAddWord }: Vocabulary
 
   const handleDelete = async (id: string) => {
     try {
+      const token = getAuthToken();
+      if (!token) return;
+
       const response = await apiFetch(`/api/vocabulary/${id}`, {
         method: 'DELETE',
         headers: {
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {

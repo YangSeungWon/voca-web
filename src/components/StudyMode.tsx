@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { getUserId } from '@/lib/auth';
+import { getAuthToken } from '@/lib/auth';
 import { speak } from '@/lib/speech';
 import { Volume2, ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
@@ -124,9 +124,15 @@ export default function StudyMode() {
 
   const loadStudyWords = async () => {
     try {
+      const token = getAuthToken();
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       const response = await apiFetch('/api/vocabulary', {
         headers: {
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         }
       });
       const data = await response.json();
@@ -170,11 +176,14 @@ export default function StudyMode() {
 
     // Update word level in database
     try {
+      const token = getAuthToken();
+      if (!token) return;
+
       await apiFetch(`/api/vocabulary/${currentWord.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           level: correct ? Math.min(currentWord.level + 1, 5) : Math.max(currentWord.level - 1, 0),

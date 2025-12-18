@@ -12,7 +12,7 @@ import FeedbackForm from './FeedbackForm';
 import LanguageSelector from './LanguageSelector';
 import { useTranslations } from 'next-intl';
 import { parseCSV, generateCSV, downloadCSV, getCSVTemplate } from '@/lib/csv';
-import { getUserId } from '@/lib/auth';
+import { getAuthToken } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
 
 export default function MoreView() {
@@ -39,11 +39,17 @@ export default function MoreView() {
         return;
       }
 
+      const token = getAuthToken();
+      if (!token) {
+        alert('Please log in to import words');
+        return;
+      }
+
       const response = await apiFetch('/api/vocabulary/import', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ words: parsedWords })
       });
@@ -68,9 +74,15 @@ export default function MoreView() {
   const handleExport = async () => {
     setIsExporting(true);
     try {
+      const token = getAuthToken();
+      if (!token) {
+        alert('Please log in to export words');
+        return;
+      }
+
       const response = await apiFetch('/api/vocabulary', {
         headers: {
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {

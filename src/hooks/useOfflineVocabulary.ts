@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import syncService from '@/lib/sync-service';
 import offlineDB from '@/lib/offline-db';
-import { getUserId } from '@/lib/auth';
+import { getAuthToken, getUserId } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
 
 interface VocabularyItem {
@@ -31,17 +31,18 @@ export function useOfflineVocabulary(groupId?: string | null) {
     setLoading(true);
     try {
       // Try to load from server first if online
-      if (navigator.onLine) {
+      const token = getAuthToken();
+      if (navigator.onLine && token) {
         const response = await apiFetch('/api/vocabulary' + (groupId ? `?groupId=${groupId}` : ''), {
           headers: {
-            'x-user-id': getUserId()
+            'Authorization': `Bearer ${token}`
           }
         });
-        
+
         if (response.ok) {
           const data = await response.json();
           setVocabulary(data);
-          
+
           // Cache in IndexedDB for offline use
           await offlineDB.mergeServerData(data);
           setIsOnline(true);

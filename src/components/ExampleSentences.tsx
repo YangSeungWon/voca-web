@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Plus, X, Check, BookOpen, Edit2 } from 'lucide-react';
-import { getUserId } from '@/lib/auth';
+import { getAuthToken } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
 
 interface Example {
@@ -33,9 +33,15 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
 
   const fetchExamples = async () => {
     try {
+      const token = getAuthToken();
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       const response = await apiFetch(`/api/vocabulary/${wordId}/examples`, {
         headers: {
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {
@@ -52,12 +58,15 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
   const handleAdd = async () => {
     if (!newSentence.trim()) return;
 
+    const token = getAuthToken();
+    if (!token) return;
+
     try {
       const response = await apiFetch(`/api/vocabulary/${wordId}/examples`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           sentence: newSentence,
@@ -78,12 +87,15 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
   };
 
   const handleUpdate = async (id: string) => {
+    const token = getAuthToken();
+    if (!token) return;
+
     try {
       const response = await apiFetch(`/api/vocabulary/${wordId}/examples/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           sentence: editSentence,
@@ -104,11 +116,14 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this example sentence?')) return;
 
+    const token = getAuthToken();
+    if (!token) return;
+
     try {
       const response = await apiFetch(`/api/vocabulary/${wordId}/examples/${id}`, {
         method: 'DELETE',
         headers: {
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         }
       });
 

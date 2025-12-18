@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Check, Save, Volume2, Folder } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { DictionaryEntry } from '@/lib/dictionary';
-import { getUserId } from '@/lib/auth';
+import { getAuthToken } from '@/lib/auth';
 import { speak } from '@/lib/speech';
 import { apiFetch } from '@/lib/api-client';
 import { formatPronunciation } from '@/lib/ipa-to-korean';
@@ -48,9 +48,12 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
 
   const fetchGroups = async () => {
     try {
+      const token = getAuthToken();
+      if (!token) return;
+
       const response = await apiFetch('/api/groups', {
         headers: {
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {
@@ -71,11 +74,17 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
 
     setIsSaving(true);
     try {
+      const token = getAuthToken();
+      if (!token) {
+        router.push('/auth');
+        return;
+      }
+
       const response = await apiFetch('/api/vocabulary', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           word: word.word,

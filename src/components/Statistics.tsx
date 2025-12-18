@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getUserId } from '@/lib/auth';
+import { getAuthToken } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
 
 interface Statistics {
@@ -38,9 +38,15 @@ export default function Statistics() {
 
   const fetchStatistics = async () => {
     try {
+      const token = getAuthToken();
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       const response = await apiFetch('/api/statistics', {
         headers: {
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {

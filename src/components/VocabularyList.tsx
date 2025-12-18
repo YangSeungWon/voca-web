@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Trash2, ChevronDown, ChevronUp } from 'lucide-react';
-import { getUserId } from '@/lib/auth';
+import { getAuthToken } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
 import { formatPronunciation } from '@/lib/ipa-to-korean';
 
@@ -32,9 +32,15 @@ export default function VocabularyList() {
 
   const fetchVocabulary = async () => {
     try {
+      const token = getAuthToken();
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       const response = await apiFetch('/api/vocabulary', {
         headers: {
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {
@@ -50,10 +56,13 @@ export default function VocabularyList() {
 
   const handleDelete = async (id: string) => {
     try {
+      const token = getAuthToken();
+      if (!token) return;
+
       const response = await apiFetch(`/api/vocabulary/${id}`, {
         method: 'DELETE',
         headers: {
-          'x-user-id': getUserId()
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {
