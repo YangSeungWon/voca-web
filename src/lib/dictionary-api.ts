@@ -46,17 +46,16 @@ export async function fetchFromDictionaryAPI(word: string): Promise<DictionaryEn
       }))
     );
 
-    // Get pronunciation from API
-    let pronunciation = entry.phonetic ||
-      entry.phonetics?.find((p) => p.text)?.text ||
-      undefined;
-
-    // Fallback to CMU dictionary if no pronunciation from API
-    if (!pronunciation) {
-      const cmuPronunciation = await getIpaFromCmu(entry.word);
-      if (cmuPronunciation) {
-        pronunciation = `/${cmuPronunciation}/`;
-      }
+    // Prefer CMU dictionary for American English pronunciation
+    let pronunciation: string | undefined;
+    const cmuPronunciation = await getIpaFromCmu(entry.word);
+    if (cmuPronunciation) {
+      pronunciation = `/${cmuPronunciation}/`;
+    } else {
+      // Fallback to Free Dictionary API if not in CMU
+      pronunciation = entry.phonetic ||
+        entry.phonetics?.find((p) => p.text)?.text ||
+        undefined;
     }
 
     return {
