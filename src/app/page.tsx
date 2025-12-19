@@ -47,7 +47,7 @@ const viewToHash: Record<ViewType, string> = {
 export default function Home() {
   const [currentWord, setCurrentWord] = useState<DictionaryEntry | null>(null);
   const searchBarRef = useRef<SearchBarRef>(null);
-  const [activeView, setActiveView] = useState<ViewType>('home');
+  const [activeView, setActiveView] = useState<ViewType>('vocabulary');
   const [refreshVocab, setRefreshVocab] = useState(0);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -106,8 +106,8 @@ export default function Home() {
       if (view) {
         setActiveView(view);
       } else if (!hash) {
-        // Default to home if no hash
-        window.location.hash = viewToHash['home'];
+        // Default to vocabulary if no hash
+        window.location.hash = viewToHash['vocabulary'];
       }
     };
 

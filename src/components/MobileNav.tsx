@@ -12,8 +12,8 @@ export default function MobileNav({ activeView, onViewChange }: MobileNavProps) 
   const t = useTranslations('nav');
 
   const tabs = [
-    { id: 'home' as const, label: t('home'), icon: Search },
     { id: 'vocabulary' as const, label: t('vocabulary'), icon: FolderOpen },
+    { id: 'home' as const, label: t('search'), icon: Search },
     { id: 'study' as const, label: t('study'), icon: BookOpen },
     { id: 'statistics' as const, label: t('statistics'), icon: BarChart3 },
     { id: 'more' as const, label: t('more'), icon: MoreHorizontal },
