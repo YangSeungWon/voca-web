@@ -238,7 +238,7 @@ async function addWordToVocabulary(word) {
 // Get vocabulary statistics
 async function getVocabularyStats() {
   try {
-    const response = await fetch(`${API_URL}/api/vocabulary`, {
+    const response = await fetch(`${API_URL}/api/vocabulary/stats`, {
       headers: {
         'Authorization': `Bearer ${authToken}`
       }
@@ -249,18 +249,12 @@ async function getVocabularyStats() {
     }
 
     const data = await response.json();
-    
-    // Calculate stats from vocabulary data
-    const today = new Date().toDateString();
-    const todayAdded = data.filter(item => 
-      new Date(item.createdAt).toDateString() === today
-    ).length;
-    
-    return { 
-      success: true, 
+
+    return {
+      success: true,
       stats: {
-        total: data.length,
-        todayAdded: todayAdded
+        total: data.total,
+        todayAdded: data.todayAdded
       }
     };
   } catch (error) {
@@ -308,9 +302,9 @@ async function updateBadge() {
   }
 }
 
-// Check and update badge periodically
+// Check and update badge periodically (every 5 minutes)
 setInterval(() => {
   if (authToken) {
     updateBadge();
   }
-}, 60000); // Update every minute
+}, 300000);
