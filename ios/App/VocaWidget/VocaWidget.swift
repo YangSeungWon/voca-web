@@ -536,29 +536,12 @@ struct LockScreenRectangularView: View {
 
     var body: some View {
         Link(destination: URL(string: "vocaweb://home")!) {
-            VStack(alignment: .leading, spacing: 1) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(entry.word)
                     .font(.headline)
-                    .fontWeight(.semibold)
+                    .fontWeight(.bold)
                     .minimumScaleFactor(0.7)
                     .lineLimit(1)
-
-                // Pronunciation (IPA + Korean)
-                if !entry.pronunciation.isEmpty || !entry.pronunciationKr.isEmpty {
-                    HStack(spacing: 4) {
-                        if !entry.pronunciation.isEmpty {
-                            Text(entry.pronunciation)
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                        }
-                        if !entry.pronunciationKr.isEmpty {
-                            Text(entry.pronunciationKr)
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .lineLimit(1)
-                }
 
                 Text(entry.meaning)
                     .font(.caption)
@@ -574,8 +557,7 @@ struct LockScreenInlineView: View {
 
     var body: some View {
         Link(destination: URL(string: "vocaweb://home")!) {
-            Text("\(entry.word): \(entry.meaning)")
-                .lineLimit(1)
+            Text(entry.word)
         }
     }
 }
@@ -626,24 +608,27 @@ struct QuizWidgetView: View {
 
             Spacer()
 
-            // Show answer button
-            Button(intent: ShowAnswerIntent()) {
-                HStack {
-                    Image(systemName: "eye.fill")
-                        .font(.caption)
-                    Text("Show Answer")
-                        .font(.caption)
-                        .fontWeight(.medium)
+            // Show answer button - right aligned, larger
+            HStack {
+                Spacer()
+                Button(intent: ShowAnswerIntent()) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "eye.fill")
+                            .font(.subheadline)
+                        Text("Show")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(Color.blue.opacity(0.7))
+                    .cornerRadius(12)
                 }
-                .foregroundColor(.white)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(Color.blue.opacity(0.6))
-                .cornerRadius(8)
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
         }
-        .padding(family == .systemSmall ? 6 : 10)
+        .padding(family == .systemSmall ? 8 : 12)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
@@ -657,33 +642,35 @@ struct QuizWidgetView: View {
                 .minimumScaleFactor(0.7)
                 .lineLimit(1)
 
-            // Meaning (prominent)
+            // Meaning
             Text(entry.meaning)
-                .font(family == .systemSmall ? .callout : .body)
+                .font(family == .systemSmall ? .caption : .callout)
                 .foregroundColor(.white)
-                .lineLimit(family == .systemSmall ? 4 : 6)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(family == .systemSmall ? 3 : 4)
+                .minimumScaleFactor(0.8)
+                .frame(maxHeight: .infinity, alignment: .top)
 
-            Spacer()
-
-            // Next word button
-            Button(intent: NextWordIntent()) {
-                HStack {
-                    Image(systemName: "arrow.clockwise")
-                        .font(.caption)
-                    Text("Next Word")
-                        .font(.caption)
-                        .fontWeight(.medium)
+            // Next word button - right aligned, larger
+            HStack {
+                Spacer()
+                Button(intent: NextWordIntent()) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "arrow.clockwise")
+                            .font(.subheadline)
+                        Text("Next")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(Color.green.opacity(0.7))
+                    .cornerRadius(12)
                 }
-                .foregroundColor(.white)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(Color.green.opacity(0.6))
-                .cornerRadius(8)
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
         }
-        .padding(family == .systemSmall ? 6 : 10)
+        .padding(family == .systemSmall ? 8 : 12)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 }

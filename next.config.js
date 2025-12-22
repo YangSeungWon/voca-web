@@ -11,12 +11,9 @@ const nextConfig = {
   images: {
     unoptimized: process.env.BUILD_MODE === 'static'
   },
-  // Skip API routes during static export
+  // Skip trailing slash redirect for static export
   ...(process.env.BUILD_MODE === 'static' && {
-    experimental: {
-      // Skip API routes in static export
-      skipTrailingSlashRedirect: true
-    }
+    skipTrailingSlashRedirect: true
   })
 }
 
