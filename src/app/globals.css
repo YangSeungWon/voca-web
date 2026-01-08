@@ -47,7 +47,7 @@
   .stress-primary::before {
     content: '•';
     position: absolute;
-    top: -0.6em;
+    top: -0.3em;
     left: 50%;
     transform: translateX(-50%);
     font-size: 0.5em;
@@ -62,7 +62,7 @@
   .stress-secondary::before {
     content: '·';
     position: absolute;
-    top: -0.4em;
+    top: -0.2em;
     left: 50%;
     transform: translateX(-50%);
     font-size: 0.4em;
