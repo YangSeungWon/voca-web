@@ -253,23 +253,34 @@ export async function middleware(request: NextRequest) {
   // Handle CORS for API routes
   if (request.nextUrl.pathname.startsWith('/api/')) {
     const response = NextResponse.next();
-    
-    // Allow Chrome extension origin
+
+    // Allow specific origins only
     const origin = request.headers.get('origin');
     const allowedOrigins = [
-      'chrome-extension://*',
+      // Chrome extension (production)
+      'chrome-extension://ajflgkmapedegaokdcmpdepepmchfbeo',
+      // Production domain
       'https://voca.ysw.kr',
+      // Development
       'http://localhost:3000',
       'http://localhost:7024',
+      // Capacitor mobile app
       'capacitor://localhost',
       'https://localhost'
     ];
 
-    if (origin && (origin.startsWith('chrome-extension://') || origin.startsWith('capacitor://') || allowedOrigins.includes(origin))) {
+    if (origin && allowedOrigins.includes(origin)) {
+      response.headers.set('Access-Control-Allow-Origin', origin);
+    } else if (origin && origin.startsWith('chrome-extension://') && process.env.NODE_ENV === 'development') {
+      // Allow any extension in development mode only
       response.headers.set('Access-Control-Allow-Origin', origin);
     } else if (!origin) {
-      // Allow requests without origin (e.g., from the extension background script)
-      response.headers.set('Access-Control-Allow-Origin', '*');
+      // Requests without origin (same-origin, server-side, or extension background scripts)
+      // Only allow for safe methods or authenticated requests
+      const authHeader = request.headers.get('authorization');
+      if (request.method === 'GET' || authHeader) {
+        response.headers.set('Access-Control-Allow-Origin', 'https://voca.ysw.kr');
+      }
     }
     
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');

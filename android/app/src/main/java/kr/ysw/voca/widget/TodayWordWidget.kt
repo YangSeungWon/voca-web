@@ -14,6 +14,7 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 import kr.ysw.voca.R
+import kr.ysw.voca.MainActivity
 
 /**
  * Today's Word Widget
@@ -139,7 +140,10 @@ class TodayWordWidget : AppWidgetProvider() {
             }
 
             // Create intent to open app when widget is clicked
-            val intent = Intent(context, context.packageManager.getLaunchIntentForPackage(context.packageName)?.component?.className?.let { Class.forName(it) })
+            val intent = Intent(context, MainActivity::class.java).apply {
+                action = Intent.ACTION_VIEW
+                data = android.net.Uri.parse("vocaweb://vocabulary")
+            }
             val pendingIntent = PendingIntent.getActivity(
                 context,
                 0,
