@@ -4,12 +4,16 @@ import { useEffect } from 'react';
 
 export default function MobileLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    // Check if running in Capacitor
-    if (typeof window !== 'undefined' && 'Capacitor' in window) {
+    // Check if running in Capacitor AND on mobile device
+    const isCapacitor = typeof window !== 'undefined' && 'Capacitor' in window;
+    const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
+
+    if (isCapacitor && isMobileDevice) {
       document.body.classList.add('capacitor-app');
 
       // Add mobile-specific styles
       const style = document.createElement('style');
+      style.id = 'capacitor-styles';
       style.innerHTML = `
         /* Root variables for safe area insets */
         :root {
@@ -23,18 +27,6 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
         .capacitor-app {
           min-height: 100vh;
           min-height: -webkit-fill-available;
-        }
-
-        /* Fixed header with safe area */
-        .capacitor-app header {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          z-index: 50;
-          padding-top: var(--safe-area-top);
-          padding-left: var(--safe-area-left);
-          padding-right: var(--safe-area-right);
         }
 
         /* Main content - no padding, let children handle safe area */
@@ -69,6 +61,8 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
         window.removeEventListener('resize', setVH);
         window.removeEventListener('orientationchange', setVH);
         document.body.classList.remove('capacitor-app');
+        const styleEl = document.getElementById('capacitor-styles');
+        if (styleEl) styleEl.remove();
       };
     }
   }, []);
