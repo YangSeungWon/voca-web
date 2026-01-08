@@ -167,8 +167,14 @@ class OfflineDB {
     data: Record<string, unknown>;
   }): Promise<void> {
     const db = await this.ensureDB();
+    // Use crypto for secure random ID
+    const randomBytes = new Uint8Array(8);
+    crypto.getRandomValues(randomBytes);
+    const randomStr = Array.from(randomBytes)
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
     const queueItem = {
-      id: `${Date.now()}_${Math.random()}`,
+      id: `${Date.now()}_${randomStr}`,
       ...item,
       timestamp: Date.now(),
       retries: 0

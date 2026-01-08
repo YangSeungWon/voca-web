@@ -11,7 +11,13 @@ export function getUserId(): string {
   // Fallback to anonymous user
   let userId = localStorage.getItem('userId');
   if (!userId) {
-    userId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // Use crypto for secure random ID generation
+    const randomBytes = new Uint8Array(12);
+    crypto.getRandomValues(randomBytes);
+    const randomStr = Array.from(randomBytes)
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+    userId = `user-${Date.now()}-${randomStr}`;
     localStorage.setItem('userId', userId);
   }
   return userId;

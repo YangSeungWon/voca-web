@@ -101,6 +101,26 @@ export async function PATCH(
 
     const body = await req.json();
 
+    // Validate level field (must be 0-5 integer)
+    if (body.level !== undefined) {
+      const level = Number(body.level);
+      if (!Number.isInteger(level) || level < 0 || level > 5) {
+        return NextResponse.json(
+          { error: 'Level must be an integer between 0 and 5' },
+          { status: 400 }
+        );
+      }
+      body.level = level;
+    }
+
+    // Validate notes length
+    if (body.notes !== undefined && typeof body.notes === 'string' && body.notes.length > 1000) {
+      return NextResponse.json(
+        { error: 'Notes must be 1000 characters or less' },
+        { status: 400 }
+      );
+    }
+
     const user = await prisma.user.findUnique({
       where: { id: userId }
     });

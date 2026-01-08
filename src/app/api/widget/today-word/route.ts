@@ -63,8 +63,10 @@ export async function GET(req: NextRequest) {
     if (indexParam !== null) {
       wordIndex = parseInt(indexParam) % totalWords;
     } else {
-      // Random word for initial load
-      wordIndex = Math.floor(Math.random() * totalWords);
+      // Random word for initial load using crypto
+      const randomArray = new Uint32Array(1);
+      crypto.getRandomValues(randomArray);
+      wordIndex = randomArray[0] % totalWords;
     }
 
     const randomWord = await prisma.vocabulary.findMany({

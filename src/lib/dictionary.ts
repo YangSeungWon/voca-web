@@ -138,6 +138,13 @@ export async function searchWord(word: string): Promise<DictionaryEntry | null> 
 }
 
 export function getRandomWords(count: number = 10): DictionaryEntry[] {
-  const shuffled = [...commonWords].sort(() => 0.5 - Math.random());
+  // Fisher-Yates shuffle with crypto random
+  const shuffled = [...commonWords];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const randomArray = new Uint32Array(1);
+    crypto.getRandomValues(randomArray);
+    const j = randomArray[0] % (i + 1);
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
   return shuffled.slice(0, Math.min(count, shuffled.length));
 }
