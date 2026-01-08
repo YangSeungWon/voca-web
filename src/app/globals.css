@@ -41,7 +41,7 @@
 
   /* IPA stress markers - bold with dot above for emphasis */
   .stress-primary {
-    @apply font-bold relative inline-block;
+    @apply font-black relative inline-block;
   }
 
   .stress-primary::before {
@@ -56,7 +56,7 @@
   }
 
   .stress-secondary {
-    @apply font-semibold not-italic relative inline-block;
+    @apply font-bold not-italic relative inline-block;
   }
 
   .stress-secondary::before {
