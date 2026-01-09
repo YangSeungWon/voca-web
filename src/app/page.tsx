@@ -51,7 +51,7 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
   const { refresh: refreshVocabCache } = useVocabularyCache();
-  const isKeyboardVisible = useKeyboardVisible();
+  const { isVisible: isKeyboardVisible, viewportHeight } = useKeyboardVisible();
 
   // Handle Android back button
   useBackButton({
@@ -170,8 +170,11 @@ export default function Home() {
         >
           {activeView === 'home' && (
             <div
-              className={isMobile ? (currentWord ? 'px-4 pb-4' : 'flex flex-col items-center justify-center px-4 h-[calc(100vh-80px)] pb-40 cursor-text') : 'p-1'}
-              style={isMobile && currentWord ? { paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' } : undefined}
+              className={isMobile ? (currentWord ? 'px-4 pb-4' : 'flex flex-col items-center justify-center px-4 cursor-text') : 'p-1'}
+              style={isMobile && !currentWord ? {
+                height: `${viewportHeight - 64}px`, // 64px for bottom nav
+                paddingBottom: isKeyboardVisible ? '16px' : '80px'
+              } : (isMobile && currentWord ? { paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' } : undefined)}
               onClick={() => !currentWord && isMobile && searchBarRef.current?.focus()}
             >
               {!currentWord && isMobile ? (
@@ -254,10 +257,10 @@ export default function Home() {
         </main>
       </div>
       
-      {isMobile && !isKeyboardVisible && <MobileNav activeView={activeView} onViewChange={handleViewChange} />}
+      {isMobile && <MobileNav activeView={activeView} onViewChange={handleViewChange} />}
 
       {/* Add padding at bottom for mobile nav */}
-      {isMobile && !isKeyboardVisible && <div className="h-16" />}
+      {isMobile && <div className="h-16" />}
       
       {/* Chrome Extension Banner */}
       <ExtensionBanner />

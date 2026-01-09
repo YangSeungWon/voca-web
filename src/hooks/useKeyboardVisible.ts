@@ -1,25 +1,36 @@
 import { useState, useEffect } from 'react';
 
-export function useKeyboardVisible() {
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+interface KeyboardState {
+  isVisible: boolean;
+  viewportHeight: number;
+}
+
+export function useKeyboardVisible(): KeyboardState {
+  const [state, setState] = useState<KeyboardState>({
+    isVisible: false,
+    viewportHeight: typeof window !== 'undefined' ? window.innerHeight : 0
+  });
 
   useEffect(() => {
-    // For iOS/Capacitor, detect keyboard by viewport resize
     const initialHeight = window.innerHeight;
 
-    const handleResize = () => {
-      // If height shrinks significantly (by more than 150px), keyboard is likely visible
-      const heightDiff = initialHeight - window.innerHeight;
-      setIsKeyboardVisible(heightDiff > 150);
+    const updateState = (isVisible: boolean, height?: number) => {
+      setState({
+        isVisible,
+        viewportHeight: height ?? (window.visualViewport?.height || window.innerHeight)
+      });
     };
 
-    // Also listen for focus/blur on input elements
+    const handleResize = () => {
+      const heightDiff = initialHeight - window.innerHeight;
+      updateState(heightDiff > 150);
+    };
+
     const handleFocusIn = (e: FocusEvent) => {
       const target = e.target as HTMLElement;
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-        // Small delay to let keyboard animation start
         setTimeout(() => {
-          setIsKeyboardVisible(true);
+          updateState(true, window.visualViewport?.height || window.innerHeight);
         }, 100);
       }
     };
@@ -27,11 +38,10 @@ export function useKeyboardVisible() {
     const handleFocusOut = (e: FocusEvent) => {
       const target = e.target as HTMLElement;
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-        // Small delay to check if focus moved to another input
         setTimeout(() => {
           const activeElement = document.activeElement;
           if (activeElement?.tagName !== 'INPUT' && activeElement?.tagName !== 'TEXTAREA') {
-            setIsKeyboardVisible(false);
+            updateState(false, window.innerHeight);
           }
         }, 100);
       }
@@ -41,11 +51,11 @@ export function useKeyboardVisible() {
     document.addEventListener('focusin', handleFocusIn);
     document.addEventListener('focusout', handleFocusOut);
 
-    // Also check with visualViewport API if available
     if (window.visualViewport) {
       const handleViewportResize = () => {
-        const heightDiff = window.innerHeight - (window.visualViewport?.height || window.innerHeight);
-        setIsKeyboardVisible(heightDiff > 150);
+        const viewportHeight = window.visualViewport?.height || window.innerHeight;
+        const heightDiff = window.innerHeight - viewportHeight;
+        updateState(heightDiff > 150, viewportHeight);
       };
       window.visualViewport.addEventListener('resize', handleViewportResize);
 
@@ -64,5 +74,5 @@ export function useKeyboardVisible() {
     };
   }, []);
 
-  return isKeyboardVisible;
+  return state;
 }
