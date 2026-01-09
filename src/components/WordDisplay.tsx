@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, Save, Volume2, Folder } from 'lucide-react';
+import { Check, Save, Volume2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { DictionaryEntry } from '@/lib/dictionary';
 import { getAuthToken } from '@/lib/auth';
@@ -17,53 +17,20 @@ interface WordDisplayProps {
   onSave?: () => void;
 }
 
-interface Group {
-  id: string;
-  name: string;
-  color: string;
-}
-
 export default function WordDisplay({ word, onSave }: WordDisplayProps) {
   const t = useTranslations('home');
-  const tVocab = useTranslations('vocabulary');
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { hasWord, addWord } = useVocabularyCache();
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
-  const [groups, setGroups] = useState<Group[]>([]);
-  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
-  const [showGroupSelector, setShowGroupSelector] = useState(false);
 
   const alreadyInList = hasWord(word.word);
-
-  useEffect(() => {
-    fetchGroups();
-  }, []);
 
   // Reset saved state when word changes
   useEffect(() => {
     setIsSaved(false);
   }, [word.word]);
-
-  const fetchGroups = async () => {
-    try {
-      const token = getAuthToken();
-      if (!token) return;
-
-      const response = await apiFetch('/api/groups', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setGroups(data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch groups:', error);
-    }
-  };
 
   const handleSave = async () => {
     // Check if user is authenticated
@@ -87,8 +54,7 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          word: word.word,
-          groupId: selectedGroup
+          word: word.word
         }),
       });
 
@@ -165,68 +131,17 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
         </div>
       </div>
 
-      {/* Floating action buttons */}
-      <div className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-white dark:from-gray-800 via-white dark:via-gray-800 to-transparent p-4 pt-8 flex items-center justify-between gap-3">
-        {groups.length > 0 && (
-          <div className="relative flex-1">
-            <button
-              onClick={() => setShowGroupSelector(!showGroupSelector)}
-              className="w-full px-4 py-3 text-base border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center gap-2 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
-            >
-              <Folder size={18} />
-              {selectedGroup ? (
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: groups.find(g => g.id === selectedGroup)?.color }}
-                  />
-                  <span className="font-medium">{groups.find(g => g.id === selectedGroup)?.name}</span>
-                </div>
-              ) : (
-                <span className="font-medium">{tVocab('noGroup')}</span>
-              )}
-            </button>
-            {showGroupSelector && (
-              <div className="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-10 max-h-48 overflow-y-auto">
-                <button
-                  onClick={() => {
-                    setSelectedGroup(null);
-                    setShowGroupSelector(false);
-                  }}
-                  className="w-full text-left px-4 py-3 text-base hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <span className="font-medium">{tVocab('noGroup')}</span>
-                </button>
-                {groups.map(group => (
-                  <button
-                    key={group.id}
-                    onClick={() => {
-                      setSelectedGroup(group.id);
-                      setShowGroupSelector(false);
-                    }}
-                    className="w-full text-left px-4 py-3 text-base hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
-                  >
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: group.color }}
-                    />
-                    <span className="font-medium">{group.name}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+      {/* Floating action button */}
+      <div className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-white dark:from-gray-800 via-white dark:via-gray-800 to-transparent p-4 pt-8">
         <button
           onClick={handleSave}
           disabled={isSaving || isSaved || alreadyInList}
           className={`
-            px-6 py-3 rounded-xl font-medium text-base flex items-center gap-2 transition-all shadow-lg
+            w-full px-6 py-3 rounded-xl font-medium text-base flex items-center justify-center gap-2 transition-all shadow-lg
             ${isSaved || alreadyInList
               ? 'bg-green-500 text-white'
               : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
             }
-            ${groups.length === 0 ? 'flex-1' : ''}
             disabled:cursor-not-allowed
           `}
         >

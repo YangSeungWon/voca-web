@@ -9,27 +9,24 @@ interface FilterOptions {
   level: number | null;
   dateFrom: string;
   dateTo: string;
-  groupId: string | null;
 }
 
 interface AdvancedSearchProps {
   onFilterChange: (filters: FilterOptions) => void;
-  groups: Array<{ id: string; name: string; color: string }>;
 }
 
-export default function AdvancedSearch({ onFilterChange, groups }: AdvancedSearchProps) {
+export default function AdvancedSearch({ onFilterChange }: AdvancedSearchProps) {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({
     searchTerm: '',
     partOfSpeech: '',
     level: null,
     dateFrom: '',
-    dateTo: '',
-    groupId: null
+    dateTo: ''
   });
 
   const partsOfSpeech = [
-    'noun', 'verb', 'adjective', 'adverb', 
+    'noun', 'verb', 'adjective', 'adverb',
     'pronoun', 'preposition', 'conjunction', 'interjection'
   ];
 
@@ -45,8 +42,7 @@ export default function AdvancedSearch({ onFilterChange, groups }: AdvancedSearc
       partOfSpeech: '',
       level: null,
       dateFrom: '',
-      dateTo: '',
-      groupId: null
+      dateTo: ''
     };
     setFilters(emptyFilters);
     onFilterChange(emptyFilters);
@@ -131,27 +127,6 @@ export default function AdvancedSearch({ onFilterChange, groups }: AdvancedSearc
               ))}
             </div>
           </div>
-
-          {/* Group Filter */}
-          {groups.length > 0 && (
-            <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Word Group
-              </label>
-              <select
-                value={filters.groupId || ''}
-                onChange={(e) => handleFilterChange('groupId', e.target.value || null)}
-                className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:border-blue-500"
-              >
-                <option value="">All Groups</option>
-                {groups.map(group => (
-                  <option key={group.id} value={group.id}>
-                    {group.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
 
           {/* Date Range */}
           <div className="grid grid-cols-2 gap-2">

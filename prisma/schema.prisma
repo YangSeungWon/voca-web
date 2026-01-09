@@ -14,10 +14,9 @@ model User {
   password      String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-  
+
   vocabularies  Vocabulary[]
   studySessions StudySession[]
-  groups        Group[]
 }
 
 model Word {
@@ -60,7 +59,7 @@ model Vocabulary {
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   wordId        String
   word          Word          @relation(fields: [wordId], references: [id], onDelete: Cascade)
-  
+
   level         Int           @default(0) // 0: new, 1-5: familiarity level
   reviewCount   Int           @default(0)
   correctCount  Int           @default(0)
@@ -68,17 +67,13 @@ model Vocabulary {
   nextReview    DateTime?
   notes         String?
   tags          String[]      @default([])
-  
-  groupId       String?
-  group         Group?        @relation(fields: [groupId], references: [id])
-  
+
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-  
+
   @@unique([userId, wordId])
   @@index([userId])
   @@index([nextReview])
-  @@index([groupId])
 }
 
 model StudySession {
@@ -95,23 +90,6 @@ model StudySession {
   @@index([userId])
 }
 
-model Group {
-  id            String        @id @default(cuid())
-  userId        String
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  name          String
-  description   String?
-  color         String        @default("#6B7280")
-  icon          String?
-
-  vocabulary    Vocabulary[]
-
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-
-  @@index([userId])
-}
 
 model Feedback {
   id            String        @id @default(cuid())

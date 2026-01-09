@@ -16,7 +16,6 @@ export interface VocabularyItem {
   createdAt: string;
   updatedAt: string;
   synced: boolean;
-  groupId?: string;
   notes?: string;
 }
 

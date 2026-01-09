@@ -19,10 +19,9 @@ interface VocabularyItem {
   correctCount: number;
   createdAt: string;
   notes?: string;
-  groupId?: string;
 }
 
-export function useOfflineVocabulary(groupId?: string | null) {
+export function useOfflineVocabulary() {
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(true);
@@ -33,7 +32,7 @@ export function useOfflineVocabulary(groupId?: string | null) {
       // Try to load from server first if online
       const token = getAuthToken();
       if (navigator.onLine && token) {
-        const response = await apiFetch('/api/vocabulary' + (groupId ? `?groupId=${groupId}` : ''), {
+        const response = await apiFetch('/api/vocabulary', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -50,28 +49,19 @@ export function useOfflineVocabulary(groupId?: string | null) {
           return;
         }
       }
-      
+
       // Fallback to offline data
       setIsOnline(false);
       const offlineData = await offlineDB.getVocabulary(getUserId());
-      
-      // Filter by group if needed
-      const filtered = groupId 
-        ? offlineData.filter(item => item.groupId === groupId)
-        : offlineData;
-      
-      setVocabulary(filtered);
+      setVocabulary(offlineData);
     } catch (error) {
       console.error('Failed to load vocabulary:', error);
-      
+
       // Try offline data as last resort
       try {
         setIsOnline(false);
         const offlineData = await offlineDB.getVocabulary(getUserId());
-        const filtered = groupId 
-          ? offlineData.filter(item => item.groupId === groupId)
-          : offlineData;
-        setVocabulary(filtered);
+        setVocabulary(offlineData);
       } catch (offlineError) {
         console.error('Failed to load offline data:', offlineError);
         setVocabulary([]);
@@ -83,42 +73,41 @@ export function useOfflineVocabulary(groupId?: string | null) {
 
   useEffect(() => {
     loadVocabulary();
-    
+
     // Listen for online/offline events
     const handleOnline = () => {
       setIsOnline(true);
       loadVocabulary();
     };
-    
+
     const handleOffline = () => {
       setIsOnline(false);
     };
-    
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [groupId]);
+  }, []);
 
   const addWord = async (word: string) => {
     try {
       // Add via sync service (handles offline)
       await syncService.addWord({
         id: `temp-${Date.now()}`,
-        word: { 
+        word: {
           word,
-          definitions: [] 
+          definitions: []
         },
         level: 0,
         reviewCount: 0,
         correctCount: 0,
         createdAt: new Date().toISOString()
       });
-      
+
       // Reload vocabulary
       await loadVocabulary();
     } catch (error) {
@@ -131,10 +120,10 @@ export function useOfflineVocabulary(groupId?: string | null) {
     try {
       // Update via sync service (handles offline)
       await syncService.updateWord(id, updates);
-      
+
       // Update local state immediately for better UX
-      setVocabulary(prev => 
-        prev.map(item => 
+      setVocabulary(prev =>
+        prev.map(item =>
           item.id === id ? { ...item, ...updates } : item
         )
       );
@@ -148,7 +137,7 @@ export function useOfflineVocabulary(groupId?: string | null) {
     try {
       // Delete via sync service (handles offline)
       await syncService.deleteWord(id);
-      
+
       // Update local state immediately
       setVocabulary(prev => prev.filter(item => item.id !== id));
     } catch (error) {

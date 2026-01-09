@@ -9,7 +9,6 @@ import AuthStatus from '@/components/AuthStatus';
 import StudyMode from '@/components/StudyMode';
 import Statistics from '@/components/Statistics';
 import PhoneticsReference from '@/components/PhoneticsReference';
-import GroupManager from '@/components/GroupManager';
 import ThemeToggle from '@/components/ThemeToggle';
 import MobileNav from '@/components/MobileNav';
 import SyncStatus from '@/components/SyncStatus';
@@ -49,7 +48,6 @@ export default function Home() {
   const searchBarRef = useRef<SearchBarRef>(null);
   const [activeView, setActiveView] = useState<ViewType>('vocabulary');
   const [refreshVocab, setRefreshVocab] = useState(0);
-  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
   const { refresh: refreshVocabCache } = useVocabularyCache();
@@ -209,20 +207,11 @@ export default function Home() {
             !isAuthenticated && !isLoading ? (
               <LoginPrompt message="Sign in to access your vocabulary list" />
             ) : (
-              <div className={`flex ${isMobile ? 'h-full' : ''}`}>
-                <div className="hidden md:block w-64 border-r border-gray-200 dark:border-gray-700">
-                  <GroupManager
-                    selectedGroup={selectedGroup}
-                    onGroupChange={setSelectedGroup}
-                  />
-                </div>
-                <div className="flex-1">
-                  <VocabularyTable
-                    key={`${refreshVocab}-${selectedGroup}`}
-                    selectedGroup={selectedGroup}
-                    onAddWord={() => handleViewChange('home')}
-                  />
-                </div>
+              <div className={isMobile ? 'h-full' : ''}>
+                <VocabularyTable
+                  key={refreshVocab}
+                  onAddWord={() => handleViewChange('home')}
+                />
               </div>
             )
           )}

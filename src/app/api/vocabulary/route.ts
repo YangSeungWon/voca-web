@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
-import type { User } from '@prisma/client';
 import { verifyToken } from '@/lib/jwt';
 import type { DictionaryEntry } from '@/lib/dictionary';
 
@@ -31,7 +29,6 @@ export async function GET(req: NextRequest) {
     }
 
     const searchParams = req.nextUrl.searchParams;
-    const groupId = searchParams.get('groupId');
     const limit = searchParams.get('limit');
     const sort = searchParams.get('sort');
 
@@ -43,23 +40,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const whereClause: Prisma.VocabularyWhereInput = { userId: user.id };
-    if (groupId) {
-      whereClause.groupId = groupId;
-    }
-
     const orderBy = sort === 'createdAt' ? { createdAt: 'desc' as const } : { createdAt: 'desc' as const };
-    
+
     const vocabulary = await prisma.vocabulary.findMany({
-      where: whereClause,
+      where: { userId: user.id },
       include: {
         word: {
           include: {
             definitions: true,
             examples: true
           }
-        },
-        group: true
+        }
       },
       orderBy,
       take: limit ? parseInt(limit) : undefined
@@ -79,13 +70,7 @@ export async function GET(req: NextRequest) {
       reviewCount: v.reviewCount,
       correctCount: v.correctCount,
       createdAt: v.createdAt,
-      notes: v.notes,
-      groupId: v.groupId,
-      group: v.group ? {
-        id: v.group.id,
-        name: v.group.name,
-        color: v.group.color
-      } : null
+      notes: v.notes
     }));
 
     return NextResponse.json(formatted);
@@ -123,7 +108,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { word: wordText, wordData, groupId } = await req.json();
+    const { word: wordText, wordData } = await req.json();
 
     if (!wordText) {
       return NextResponse.json(
@@ -224,8 +209,7 @@ export async function POST(req: NextRequest) {
     const vocabulary = await prisma.vocabulary.create({
       data: {
         userId: user.id,
-        wordId: word.id,
-        groupId: groupId || null
+        wordId: word.id
       }
     });
 

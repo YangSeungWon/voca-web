@@ -23,23 +23,16 @@ interface VocabularyWord {
   level: number;
   createdAt: string;
   notes?: string;
-  groupId?: string;
-  group?: {
-    id: string;
-    name: string;
-    color: string;
-  };
 }
 
 type SortField = 'word' | 'level' | 'createdAt';
 type SortOrder = 'asc' | 'desc';
 
 interface VocabularyTableProps {
-  selectedGroup: string | null;
   onAddWord?: () => void;
 }
 
-export default function VocabularyTable({ selectedGroup, onAddWord }: VocabularyTableProps) {
+export default function VocabularyTable({ onAddWord }: VocabularyTableProps) {
   const [words, setWords] = useState<VocabularyWord[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFilter, setShowFilter] = useState(false);
@@ -49,11 +42,9 @@ export default function VocabularyTable({ selectedGroup, onAddWord }: Vocabulary
   const [filter, setFilter] = useState('');
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
-
   useEffect(() => {
     fetchVocabulary();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedGroup]);
+  }, []);
 
   const fetchVocabulary = async () => {
     try {
@@ -63,10 +54,7 @@ export default function VocabularyTable({ selectedGroup, onAddWord }: Vocabulary
         return;
       }
 
-      const url = selectedGroup
-        ? `/api/vocabulary?groupId=${selectedGroup}`
-        : '/api/vocabulary';
-      const response = await apiFetch(url, {
+      const response = await apiFetch('/api/vocabulary', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -141,14 +129,14 @@ export default function VocabularyTable({ selectedGroup, onAddWord }: Vocabulary
   };
 
   const filteredWords = words
-    .filter(item => 
-      filter === '' || 
+    .filter(item =>
+      filter === '' ||
       item.word.word.toLowerCase().includes(filter.toLowerCase()) ||
       item.word.definitions.some(d => d.meaning.toLowerCase().includes(filter.toLowerCase()))
     )
     .sort((a, b) => {
       let aValue: string | number, bValue: string | number;
-      
+
       switch (sortField) {
         case 'word':
           aValue = a.word.word.toLowerCase();
@@ -201,7 +189,7 @@ export default function VocabularyTable({ selectedGroup, onAddWord }: Vocabulary
           </span>
         </div>
       </div>
-      
+
       {/* Desktop Table View */}
       <div className="hidden md:block overflow-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
         <table className="w-full text-xs">
@@ -229,7 +217,6 @@ export default function VocabularyTable({ selectedGroup, onAddWord }: Vocabulary
               <th className="p-2 text-left font-medium text-gray-700 dark:text-gray-300">Pronunciation</th>
               <th className="p-2 text-left font-medium text-gray-700 dark:text-gray-300">Definition</th>
               <th className="p-2 text-left font-medium text-gray-700 dark:text-gray-300">Type</th>
-              <th className="p-2 text-left font-medium text-gray-700 dark:text-gray-300">Group</th>
               <th className="p-2 text-center font-medium text-gray-700 dark:text-gray-300">
                 <button
                   onClick={() => handleSort('level')}
@@ -258,7 +245,7 @@ export default function VocabularyTable({ selectedGroup, onAddWord }: Vocabulary
           <tbody>
             {filteredWords.length === 0 ? (
               <tr>
-                <td colSpan={9} className="p-8 text-center text-gray-400">
+                <td colSpan={8} className="p-8 text-center text-gray-400">
                   No words in your vocabulary yet.
                 </td>
               </tr>
@@ -279,8 +266,8 @@ export default function VocabularyTable({ selectedGroup, onAddWord }: Vocabulary
                           onClick={() => toggleExpandRow(item.id)}
                           className="p-0.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
                         >
-                          <ChevronRight 
-                            size={12} 
+                          <ChevronRight
+                            size={12}
                             className={`transition-transform ${expandedRows.has(item.id) ? 'rotate-90' : ''}`}
                           />
                         </button>
@@ -324,19 +311,6 @@ export default function VocabularyTable({ selectedGroup, onAddWord }: Vocabulary
                     <td className="p-2 text-sm text-gray-500 dark:text-gray-400">
                       {item.word.definitions[0]?.partOfSpeech || '-'}
                     </td>
-                    <td className="p-2 text-sm text-gray-900 dark:text-gray-100">
-                      {item.group ? (
-                        <div className="flex items-center gap-1">
-                          <div
-                            className="w-2 h-2 rounded"
-                            style={{ backgroundColor: item.group.color }}
-                          />
-                          <span className="text-xs">{item.group.name}</span>
-                        </div>
-                      ) : (
-                        <span className="text-gray-400 text-xs">-</span>
-                      )}
-                    </td>
                     <td className="p-2 text-center text-gray-900 dark:text-gray-100">{item.level}</td>
                     <td className="p-2 text-gray-500 dark:text-gray-400">
                       {new Date(item.createdAt).toLocaleDateString()}
@@ -352,9 +326,9 @@ export default function VocabularyTable({ selectedGroup, onAddWord }: Vocabulary
                   </tr>
                   {expandedRows.has(item.id) && (
                     <tr key={`${item.id}-examples`}>
-                      <td colSpan={9} className="p-3 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                        <ExampleSentences 
-                          wordId={item.id} 
+                      <td colSpan={8} className="p-3 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                        <ExampleSentences
+                          wordId={item.id}
                           wordText={item.word.word}
                         />
                       </td>
@@ -366,7 +340,7 @@ export default function VocabularyTable({ selectedGroup, onAddWord }: Vocabulary
           </tbody>
         </table>
       </div>
-      
+
       {/* Mobile Card View */}
       <div className="md:hidden h-full relative">
         <PullToRefresh onRefresh={fetchVocabulary}>

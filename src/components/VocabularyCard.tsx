@@ -20,11 +20,6 @@ interface VocabularyWord {
   level: number;
   createdAt: string;
   notes?: string;
-  group?: {
-    id: string;
-    name: string;
-    color: string;
-  };
 }
 
 interface VocabularyCardProps {
@@ -73,22 +68,13 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
               {item.word.definitions[0]?.meaning || '-'}
             </p>
 
-            <div className="flex items-center gap-2 mt-1 text-xs text-gray-400 dark:text-gray-500">
-              {item.word.definitions[0]?.partOfSpeech && (
+            {item.word.definitions[0]?.partOfSpeech && (
+              <div className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                 <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">
                   {item.word.definitions[0].partOfSpeech}
                 </span>
-              )}
-              {item.group && (
-                <div className="flex items-center gap-1">
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: item.group.color }}
-                  />
-                  <span>{item.group.name}</span>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           <ChevronRight

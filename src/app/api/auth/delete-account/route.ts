@@ -51,10 +51,6 @@ export async function POST(request: NextRequest) {
       prisma.vocabulary.deleteMany({
         where: { userId: user.id }
       }),
-      // Delete all user's groups
-      prisma.group.deleteMany({
-        where: { userId: user.id }
-      }),
       // Finally delete the user
       prisma.user.delete({
         where: { id: user.id }
