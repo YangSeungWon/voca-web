@@ -10,8 +10,12 @@ export default function AuthStatus() {
   const router = useRouter();
 
   useEffect(() => {
-    setLoggedIn(isAuthenticated());
-    setUserEmail(localStorage.getItem('userEmail'));
+    const checkAuth = async () => {
+      const authenticated = await isAuthenticated();
+      setLoggedIn(authenticated);
+      setUserEmail(localStorage.getItem('userEmail'));
+    };
+    checkAuth();
   }, []);
 
   const handleLogout = () => {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
-import { generateToken } from '@/lib/jwt';
+import { generateToken, AUTH_COOKIE_NAME } from '@/lib/jwt';
 
 function getClientIp(req: NextRequest): string {
   return req.headers.get('x-forwarded-for')?.split(',')[0] ||
@@ -80,14 +80,25 @@ export async function POST(req: NextRequest) {
       email: user.email!
     });
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       user: {
         id: user.id,
         email: user.email
       },
       userId: user.id,
-      token
+      token // Keep for backwards compatibility with extensions
     });
+
+    // Set httpOnly cookie
+    response.cookies.set(AUTH_COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      path: '/',
+    });
+
+    return response;
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(

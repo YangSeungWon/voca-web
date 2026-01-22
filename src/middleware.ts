@@ -285,6 +285,7 @@ export async function middleware(request: NextRequest) {
     
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
     response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-User-Id');
+    response.headers.set('Access-Control-Allow-Credentials', 'true');
     response.headers.set('Access-Control-Max-Age', '86400');
     
     // Handle preflight requests

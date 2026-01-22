@@ -4,6 +4,7 @@ import { useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { DictionaryEntry, searchWord } from '@/lib/dictionary';
+import { getApiEndpoint } from '@/config/api';
 
 interface SearchBarProps {
   onWordFound: (word: DictionaryEntry) => void;
@@ -30,12 +31,30 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(({ onWordFound, autoF
 
     setIsSearching(true);
     try {
-      const result = await searchWord(query);
-      if (result) {
-        onWordFound(result);
+      // Try backend API first (has CMU dictionary for better pronunciation)
+      const response = await fetch(getApiEndpoint(`/api/dictionary/external?word=${encodeURIComponent(query.trim())}`));
+      if (response.ok) {
+        const result: DictionaryEntry = await response.json();
+        if (result) {
+          onWordFound(result);
+          return;
+        }
+      }
+      // Fallback to direct API call if backend fails
+      const fallbackResult = await searchWord(query);
+      if (fallbackResult) {
+        onWordFound(fallbackResult);
       }
     } catch (error) {
-      console.error('Search failed:', error);
+      // Fallback to direct API call on network error
+      try {
+        const fallbackResult = await searchWord(query);
+        if (fallbackResult) {
+          onWordFound(fallbackResult);
+        }
+      } catch (fallbackError) {
+        console.error('Search failed:', fallbackError);
+      }
     } finally {
       setIsSearching(false);
     }

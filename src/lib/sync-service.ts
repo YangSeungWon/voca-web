@@ -1,6 +1,7 @@
 import offlineDB, { type SyncQueueItem, type VocabularyItem } from './offline-db';
-import { getAuthToken, getUserId } from './auth';
-import { apiFetch } from '@/lib/api-client';
+import { getUserId } from './auth';
+import { getToken } from './token-storage';
+import { apiPost, apiPatch, apiDelete, apiGet } from '@/lib/api-client';
 
 interface SyncStatus {
   isSyncing: boolean;
@@ -86,7 +87,7 @@ class SyncService {
       return;
     }
 
-    const token = getAuthToken();
+    const token = await getToken();
     if (!token) {
       return;
     }
@@ -96,7 +97,7 @@ class SyncService {
 
     try {
       const syncQueue = await offlineDB.getSyncQueue();
-      
+
       console.log(`Syncing ${syncQueue.length} items...`);
 
       // Process sync queue
@@ -109,7 +110,7 @@ class SyncService {
         }
 
         try {
-          await this.processSyncItem(item, token);
+          await this.processSyncItem(item);
           await offlineDB.removeSyncQueueItem(item.id);
         } catch (error) {
           console.error('Sync item failed:', error);
@@ -118,8 +119,8 @@ class SyncService {
       }
 
       // Pull latest data from server
-      await this.pullServerData(token);
-      
+      await this.pullServerData();
+
       this.lastSyncTime = Date.now();
       console.log('Sync completed successfully');
     } catch (error) {
@@ -130,51 +131,30 @@ class SyncService {
     }
   }
 
-  private async processSyncItem(item: SyncQueueItem, token: string): Promise<void> {
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    };
-
+  private async processSyncItem(item: SyncQueueItem): Promise<void> {
     switch (item.entity) {
       case 'vocabulary':
         switch (item.action) {
           case 'add':
-            await apiFetch('/api/vocabulary', {
-              method: 'POST',
-              headers,
-              body: JSON.stringify(item.data)
-            });
+            await apiPost('/api/vocabulary', item.data);
             break;
 
           case 'update':
-            await apiFetch(`/api/vocabulary/${item.data.id}`, {
-              method: 'PATCH',
-              headers,
-              body: JSON.stringify(item.data)
-            });
+            await apiPatch(`/api/vocabulary/${item.data.id}`, item.data);
             break;
 
           case 'delete':
-            await apiFetch(`/api/vocabulary/${item.data.id}`, {
-              method: 'DELETE',
-              headers
-            });
+            await apiDelete(`/api/vocabulary/${item.data.id}`);
             break;
         }
         break;
-
     }
   }
 
-  private async pullServerData(token: string): Promise<void> {
+  private async pullServerData(): Promise<void> {
     try {
       // Fetch vocabulary from server
-      const response = await apiFetch('/api/vocabulary', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await apiGet('/api/vocabulary');
 
       if (response.ok) {
         const serverData = await response.json();
