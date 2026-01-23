@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyToken } from '@/lib/jwt';
+import { authenticateRequest } from '@/lib/jwt';
 
 export async function DELETE(
   req: NextRequest,
@@ -8,44 +8,19 @@ export async function DELETE(
 ) {
   const { id } = await params;
   try {
-    // JWT authentication required
-    const authHeader = req.headers.get('authorization');
-
-    if (!authHeader?.startsWith('Bearer ')) {
+    const payload = authenticateRequest(req);
+    if (!payload) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       );
     }
-
-    const token = authHeader.substring(7);
-    let userId: string;
-
-    try {
-      const payload = verifyToken(token);
-      userId = payload.userId;
-    } catch {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { id: userId }
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
+    const userId = payload.userId;
 
     const vocabulary = await prisma.vocabulary.findFirst({
       where: {
         id: id,
-        userId: user.id
+        userId
       }
     });
 
@@ -76,28 +51,14 @@ export async function PATCH(
 ) {
   const { id } = await params;
   try {
-    // JWT authentication required
-    const authHeader = req.headers.get('authorization');
-
-    if (!authHeader?.startsWith('Bearer ')) {
+    const payload = authenticateRequest(req);
+    if (!payload) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       );
     }
-
-    const token = authHeader.substring(7);
-    let userId: string;
-
-    try {
-      const payload = verifyToken(token);
-      userId = payload.userId;
-    } catch {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
+    const userId = payload.userId;
 
     const body = await req.json();
 
@@ -121,21 +82,10 @@ export async function PATCH(
       );
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId }
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
     const vocabulary = await prisma.vocabulary.findFirst({
       where: {
         id: id,
-        userId: user.id
+        userId
       }
     });
 

@@ -59,6 +59,8 @@ export default function Home() {
       // If viewing a word on home, clear it first
       if (activeView === 'home' && currentWord) {
         setCurrentWord(null);
+        currentWordRef.current = null;
+        window.location.hash = 'home';
         return true; // Handled
       }
       return false; // Use default behavior
@@ -85,36 +87,78 @@ export default function Home() {
     }
   }, [isAuthenticated, refreshVocabCache]);
 
+  // Track current word in ref for use in hash change handler
+  const currentWordRef = useRef<string | null>(null);
+
+  // Load word from URL parameter
+  const loadWordFromUrl = async (word: string) => {
+    if (currentWordRef.current === word) return;
+    try {
+      const { getApiEndpoint } = await import('@/config/api');
+      const response = await fetch(getApiEndpoint(`/api/dictionary/external?word=${encodeURIComponent(word)}`), {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const result: DictionaryEntry = await response.json();
+        if (result) {
+          setCurrentWord(result);
+          currentWordRef.current = result.word;
+          return;
+        }
+      }
+      // Fallback
+      const { searchWord } = await import('@/lib/dictionary');
+      const fallback = await searchWord(word);
+      if (fallback) {
+        setCurrentWord(fallback);
+        currentWordRef.current = fallback.word;
+      }
+    } catch (error) {
+      console.error('Failed to load word from URL:', error);
+    }
+  };
+
   // Handle initial hash and hash changes
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
-      
+
       // Check if token is passed from extension
       if (hash.startsWith('#token=')) {
         const token = decodeURIComponent(hash.substring(7));
         localStorage.setItem('token', token);
-        // Clear token from URL
         window.location.hash = '#home';
         window.location.reload();
         return;
       }
-      
-      const view = hashToView[hash];
+
+      // Parse hash and query params: #home?word=xxx
+      const [hashPart, queryPart] = hash.split('?');
+      const view = hashToView[hashPart];
       if (view) {
         setActiveView(view);
+
+        // Handle word parameter in URL
+        if (view === 'home' && queryPart) {
+          const params = new URLSearchParams(queryPart);
+          const word = params.get('word');
+          if (word) {
+            loadWordFromUrl(word);
+          }
+        } else if (view === 'home' && !queryPart) {
+          setCurrentWord(null);
+          currentWordRef.current = null;
+        }
       } else if (!hash) {
-        // Default to vocabulary if no hash
         window.location.hash = viewToHash['vocabulary'];
       }
     };
 
-    // Set initial view from hash
     handleHashChange();
 
-    // Listen for hash changes
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Update hash when view changes
@@ -125,6 +169,9 @@ export default function Home() {
 
   const handleWordFound = (word: DictionaryEntry) => {
     setCurrentWord(word);
+    currentWordRef.current = word.word;
+    // Update URL with word parameter
+    window.location.hash = `home?word=${encodeURIComponent(word.word)}`;
   };
 
   const handleWordSaved = () => {

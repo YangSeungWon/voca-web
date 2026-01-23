@@ -1,41 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { fetchFromDictionaryAPI } from '@/lib/dictionary-api';
-import { verifyToken } from '@/lib/jwt';
+import { authenticateRequest } from '@/lib/jwt';
 
 export async function POST(req: NextRequest) {
   try {
-    // JWT authentication required
-    const authHeader = req.headers.get('authorization');
-
-    if (!authHeader?.startsWith('Bearer ')) {
+    const payload = authenticateRequest(req);
+    if (!payload) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       );
     }
-
-    const token = authHeader.substring(7);
-    let userId: string;
-
-    try {
-      const payload = verifyToken(token);
-      userId = payload.userId;
-    } catch {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    // Verify user exists
-    const user = await prisma.user.findUnique({
-      where: { id: userId }
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
+    const userId = payload.userId;
 
     const { words } = await req.json();
 

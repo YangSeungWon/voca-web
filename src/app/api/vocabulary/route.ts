@@ -1,32 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyToken } from '@/lib/jwt';
+import { authenticateRequest } from '@/lib/jwt';
 import type { DictionaryEntry } from '@/lib/dictionary';
 
 export async function GET(req: NextRequest) {
   try {
-    // JWT authentication required
-    const authHeader = req.headers.get('authorization');
-
-    if (!authHeader?.startsWith('Bearer ')) {
+    const payload = authenticateRequest(req);
+    if (!payload) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       );
     }
-
-    const token = authHeader.substring(7);
-    let userId: string;
-
-    try {
-      const payload = verifyToken(token);
-      userId = payload.userId;
-    } catch {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
+    const userId = payload.userId;
 
     const searchParams = req.nextUrl.searchParams;
     const limit = searchParams.get('limit');
@@ -85,28 +71,14 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    // JWT authentication required
-    const authHeader = req.headers.get('authorization');
-
-    if (!authHeader?.startsWith('Bearer ')) {
+    const payload = authenticateRequest(req);
+    if (!payload) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       );
     }
-
-    const token = authHeader.substring(7);
-    let userId: string;
-
-    try {
-      const payload = verifyToken(token);
-      userId = payload.userId;
-    } catch {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
+    const userId = payload.userId;
 
     const { word: wordText, wordData } = await req.json();
 

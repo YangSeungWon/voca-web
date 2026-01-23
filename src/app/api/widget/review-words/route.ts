@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import type { Word, Definition } from '@prisma/client';
-import { verifyToken } from '@/lib/jwt';
+import { authenticateRequest } from '@/lib/jwt';
 
 /**
  * Widget API: Get words for review
@@ -9,28 +9,14 @@ import { verifyToken } from '@/lib/jwt';
  */
 export async function GET(req: NextRequest) {
   try {
-    // JWT authentication required
-    const authHeader = req.headers.get('authorization');
-
-    if (!authHeader?.startsWith('Bearer ')) {
+    const payload = authenticateRequest(req);
+    if (!payload) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       );
     }
-
-    const token = authHeader.substring(7);
-    let userId: string;
-
-    try {
-      const payload = verifyToken(token);
-      userId = payload.userId;
-    } catch {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
+    const userId = payload.userId;
 
     const limitParam = req.nextUrl.searchParams.get('limit');
     const limit = limitParam ? parseInt(limitParam) : 5;

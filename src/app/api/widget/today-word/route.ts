@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import type { User, Word, Definition } from '@prisma/client';
-import { verifyToken } from '@/lib/jwt';
+import type { Word, Definition } from '@prisma/client';
+import { authenticateRequest } from '@/lib/jwt';
 import { ipaToHangul } from 'ipa-hangul';
 
 /**
@@ -10,28 +10,14 @@ import { ipaToHangul } from 'ipa-hangul';
  */
 export async function GET(req: NextRequest) {
   try {
-    // JWT authentication required
-    const authHeader = req.headers.get('authorization');
-
-    if (!authHeader?.startsWith('Bearer ')) {
+    const payload = authenticateRequest(req);
+    if (!payload) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       );
     }
-
-    const token = authHeader.substring(7);
-    let userId: string;
-
-    try {
-      const payload = verifyToken(token);
-      userId = payload.userId;
-    } catch {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
+    const userId = payload.userId;
 
     const user = await prisma.user.findUnique({
       where: { id: userId }

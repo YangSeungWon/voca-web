@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyToken } from '@/lib/jwt';
+import { authenticateRequest } from '@/lib/jwt';
 
 // Sanitize input to prevent XSS
 function sanitizeInput(input: string): string {
@@ -89,15 +89,9 @@ export async function POST(req: NextRequest) {
 
     // Try to get user ID from token (optional)
     let userId: string | null = null;
-    const authHeader = req.headers.get('authorization');
-    if (authHeader?.startsWith('Bearer ')) {
-      try {
-        const token = authHeader.substring(7);
-        const payload = verifyToken(token);
-        userId = payload.userId;
-      } catch {
-        // Token invalid, continue as anonymous
-      }
+    const authPayload = authenticateRequest(req);
+    if (authPayload) {
+      userId = authPayload.userId;
     }
 
     // Sanitize message
