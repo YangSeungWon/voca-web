@@ -50,34 +50,19 @@ if [ "$EXPORT_TYPE" == "appstore" ]; then
     echo -e "${GREEN}  ✅ Version updated${NC}"
 fi
 
-# Step 1: Build Next.js static export
+# Step 1: Sync with Capacitor (no static build needed - using WebView)
 if [ "$SKIP_BUILD" = false ]; then
-    echo -e "${YELLOW}📦 Step 1/6: Building Next.js static export...${NC}"
+    echo -e "${YELLOW}📦 Step 1/6: Preparing for Capacitor sync...${NC}"
 
-    # Clean out directory for fresh build
-    if [ -d "out" ]; then
-        echo "  Removing old build artifacts..."
-        rm -rf out
+    # Create minimal out directory for Capacitor (required but not used)
+    if [ ! -d "out" ]; then
+        mkdir -p out
+        echo '<!DOCTYPE html><html><body>Loading...</body></html>' > out/index.html
     fi
 
-    # Temporarily move API folder to enable static export
-    if [ -d "src/app/api" ]; then
-        echo "  Moving API folder to /tmp for static export..."
-        mv src/app/api /tmp/voca-api-backup
-    fi
-
-    # Run Next.js static export build
-    npm run build:static
-
-    # Restore API folder
-    if [ -d "/tmp/voca-api-backup" ]; then
-        echo "  Restoring API folder..."
-        mv /tmp/voca-api-backup src/app/api
-    fi
-
-    echo -e "${GREEN}  ✅ Next.js build completed${NC}"
+    echo -e "${GREEN}  ✅ Preparation completed (WebView mode - no static build needed)${NC}"
 else
-    echo -e "${BLUE}  ⏭️  Skipping Next.js build${NC}"
+    echo -e "${BLUE}  ⏭️  Skipping preparation${NC}"
 fi
 
 # Step 2: Sync with Capacitor

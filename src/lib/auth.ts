@@ -1,17 +1,6 @@
 import { apiPost } from './api-client';
 import { removeToken, getToken } from './token-storage';
 
-interface CapacitorWindow extends Window {
-  Capacitor?: {
-    isNativePlatform?: () => boolean;
-  };
-}
-
-function isNativeApp(): boolean {
-  if (typeof window === 'undefined') return false;
-  return !!(window as CapacitorWindow).Capacitor?.isNativePlatform?.();
-}
-
 export function getUserId(): string {
   if (typeof window === 'undefined') return 'default-user';
 
@@ -41,12 +30,10 @@ export async function getAuthToken(): Promise<string | null> {
 }
 
 export async function isAuthenticated(): Promise<boolean> {
-  if (isNativeApp()) {
-    // Mobile: check token storage
-    const token = await getToken();
-    return !!token;
-  }
-  // Web: check userId (cookie is httpOnly, can't check directly)
+  // Check token storage (also synced to localStorage)
+  const token = await getToken();
+  if (token) return true;
+  // Fallback: check userId
   if (typeof window === 'undefined') return false;
   return !!localStorage.getItem('userId');
 }

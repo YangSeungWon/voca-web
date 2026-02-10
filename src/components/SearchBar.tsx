@@ -4,7 +4,6 @@ import { useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { DictionaryEntry, searchWord } from '@/lib/dictionary';
-import { getApiEndpoint } from '@/config/api';
 
 interface SearchBarProps {
   onWordFound: (word: DictionaryEntry) => void;
@@ -32,7 +31,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(({ onWordFound, autoF
     setIsSearching(true);
     try {
       // Try backend API first (has CMU dictionary for better pronunciation)
-      const response = await fetch(getApiEndpoint(`/api/dictionary/external?word=${encodeURIComponent(query.trim())}`));
+      const response = await fetch(`/api/dictionary/external?word=${encodeURIComponent(query.trim())}`);
       if (response.ok) {
         const result: DictionaryEntry = await response.json();
         if (result) {

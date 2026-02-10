@@ -32,9 +32,12 @@ echo -e "${YELLOW}📱 Updating build version...${NC}"
 node scripts/update-build-version.js
 echo -e "${GREEN}✅ Version updated${NC}"
 
-# Step 1: Build Next.js project
-echo -e "${YELLOW}🔨 Building Next.js project...${NC}"
-npm run build
+# Step 1: Prepare for Capacitor (WebView mode - no static build needed)
+echo -e "${YELLOW}🔨 Preparing for Capacitor sync...${NC}"
+# Create minimal out directory for Capacitor (required but not used in WebView mode)
+mkdir -p out
+echo '<!DOCTYPE html><html><body>Loading...</body></html>' > out/index.html
+echo -e "${GREEN}✅ Preparation completed (WebView mode)${NC}"
 
 # Step 2: Sync with Capacitor
 echo -e "${YELLOW}🔄 Syncing with Capacitor...${NC}"

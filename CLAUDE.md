@@ -15,7 +15,6 @@ npm run lint             # Run ESLint
 
 # Build
 npm run build            # Production build (runs prisma generate first)
-npm run build:static     # Static export for Capacitor mobile apps
 
 # Database
 npx prisma migrate dev   # Run migrations in development
@@ -26,7 +25,7 @@ npm run cap:sync         # Sync web assets to native projects
 npm run cap:open:ios     # Open iOS project in Xcode
 npm run cap:open:android # Open Android project in Android Studio
 npm run build:ios        # Build iOS app
-npm run build:ios:ipa    # Build iOS IPA for App Store
+npm run build:ios:appstore  # Build iOS IPA for App Store
 npm run build:android    # Build Android app
 
 # Icons
@@ -38,35 +37,52 @@ npm run icon:all         # Generate app icons for both platforms
 ### Web Application (Next.js 15 App Router)
 
 - **Single-page app with hash routing**: The main page (`src/app/page.tsx`) handles all views via URL hash (`#home`, `#vocabulary`, `#study`, `#statistics`, `#ipa`, `#more`)
-- **API routes**: All backend logic in `src/app/api/` - vocabulary CRUD, auth, groups, statistics, widget endpoints
-- **Middleware** (`src/middleware.ts`): Handles CORS for API routes, allowing requests from Chrome extension and Capacitor app
+- **API routes**: All backend logic in `src/app/api/` - vocabulary CRUD, auth, admin, dictionary, statistics, widget endpoints
+- **Admin dashboard**: `/admin` route with separate auth (uses `ADMIN_PASSWORD` env var)
+- **Middleware** (`src/middleware.ts`): Handles CORS, rate limiting, and security (honeypot paths, scanner blocking, prototype pollution protection)
 
 ### Data Layer
 
 - **Prisma ORM** with PostgreSQL
-- **Models**: User, Word, Definition, Example, Vocabulary (user's word list), StudySession, Group
-- **Vocabulary** links User to Word with additional metadata (level, review counts, notes, tags, group)
+- **Models**: User, Word, Definition, Example, Vocabulary (user's word list), StudySession, Feedback
+- **Vocabulary** links User to Word with additional metadata (level, review counts, notes, tags)
+
+### Internationalization
+
+- Uses `next-intl` with translation files in `messages/` (ko, en, ja, zh)
+- Config in `src/i18n/request.ts`
 
 ### Mobile App (Capacitor)
 
-- **Static export**: Mobile builds use `BUILD_MODE=static` to generate `out/` directory
-- **API routing**: Mobile app calls production API (`https://voca.ysw.kr`) via `src/config/api.ts`
+- **WebView mode**: Mobile app loads production web (`https://voca.ysw.kr`) via WebView, no static build needed
 - **Native projects**: `ios/` and `android/` contain Capacitor-generated native code
-- **Widgets**: iOS widget in `ios/App/VocaWidget/`, Android widget in `android/app/src/main/java/kr/ysw/voca/widget/`
+- **Widgets**: iOS widget in `ios/App/VocaWidget/` calls API directly for word data
+- **Token sync**: `src/lib/token-storage.ts` syncs auth token to iOS App Groups for widget access
+
+### Chrome Extension
+
+- A companion Chrome extension exists (ID: `ajflgkmapedegaokdcmpdepmchfbeo`)
+- Extension is allowed CORS access via middleware
 
 ### Authentication
 
-- JWT-based auth with tokens stored in localStorage
+- JWT-based auth with httpOnly cookies (web) and token storage (widgets)
 - `src/lib/auth.ts` - client-side auth helpers
 - `src/lib/jwt.ts` - JWT token generation/verification
+- `src/lib/token-storage.ts` - token storage for widget sync (iOS App Groups)
 - `src/hooks/useAuth.ts` - React hook for auth state
 
 ### Key Libraries
 
 - `ipa-hangul`: IPA to Korean phonetic conversion
+- `cmu-pronouncing-dictionary`: Fallback pronunciation for 134k+ words
 - `idb`: IndexedDB wrapper for offline storage
 - `framer-motion`: Animations
 - `lucide-react`: Icons
+
+## Pre-commit Hooks
+
+Husky + lint-staged runs ESLint fix and TypeScript check on staged `.ts/.tsx` files.
 
 ## Path Aliases
 
@@ -75,5 +91,6 @@ Use `@/*` to import from `src/*` (configured in tsconfig.json).
 ## Environment Variables
 
 - `DATABASE_URL`: PostgreSQL connection string (required)
-- `JWT_SECRET`: Secret for JWT signing
+- `JWT_SECRET`: Secret for JWT signing (required)
+- `ADMIN_PASSWORD`: Password for admin dashboard (required in production)
 - `NODE_ENV`: development/production

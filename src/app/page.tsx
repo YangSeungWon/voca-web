@@ -94,8 +94,7 @@ export default function Home() {
   const loadWordFromUrl = async (word: string) => {
     if (currentWordRef.current === word) return;
     try {
-      const { getApiEndpoint } = await import('@/config/api');
-      const response = await fetch(getApiEndpoint(`/api/dictionary/external?word=${encodeURIComponent(word)}`), {
+      const response = await fetch(`/api/dictionary/external?word=${encodeURIComponent(word)}`, {
         credentials: 'include',
       });
       if (response.ok) {

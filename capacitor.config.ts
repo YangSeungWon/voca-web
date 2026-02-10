@@ -5,6 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Voca Web',
   webDir: 'out',
   server: {
+    url: 'https://voca.ysw.kr',
     androidScheme: 'https',
     iosScheme: 'https',
     cleartext: false

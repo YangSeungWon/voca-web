@@ -1,47 +1,22 @@
-import { getApiEndpoint } from '@/config/api';
-import { getToken } from '@/lib/token-storage';
-
-interface CapacitorWindow extends Window {
-  Capacitor?: {
-    isNativePlatform?: () => boolean;
-  };
-}
-
-function isNativeApp(): boolean {
-  if (typeof window === 'undefined') return false;
-  return !!(window as CapacitorWindow).Capacitor?.isNativePlatform?.();
-}
+// Centralized API client
+// WebView mode: All requests use cookies for authentication (same origin)
 
 interface FetchOptions extends RequestInit {
   skipAuth?: boolean;
 }
 
 /**
- * Centralized API client that handles authentication automatically
- * - Web: Uses httpOnly cookies (credentials: include)
- * - Mobile (Capacitor): Uses Authorization header
+ * Centralized API client with cookie-based authentication
  */
 export async function apiClient(
   path: string,
   options: FetchOptions = {}
 ): Promise<Response> {
-  const { skipAuth = false, ...fetchOptions } = options;
-  const url = getApiEndpoint(path);
+  const { skipAuth: _skipAuth, ...fetchOptions } = options;
 
-  const headers = new Headers(fetchOptions.headers);
-
-  if (isNativeApp() && !skipAuth) {
-    // Mobile: Use Authorization header
-    const token = await getToken();
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`);
-    }
-  }
-
-  return fetch(url, {
+  return fetch(path, {
     ...fetchOptions,
-    headers,
-    credentials: isNativeApp() ? 'omit' : 'include', // Web uses cookies
+    credentials: 'include', // Always include cookies
   });
 }
 
