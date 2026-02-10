@@ -121,7 +121,14 @@
     "hasAccount": "Already have an account?",
     "loginSuccess": "Login successful",
     "logoutSuccess": "Logged out",
-    "invalidCredentials": "Invalid email or password"
+    "invalidCredentials": "Invalid email or password",
+    "signInRequired": "Sign In Required",
+    "signInButton": "Sign In",
+    "signInToContinue": "Please sign in to continue",
+    "signInForVocabulary": "Sign in to access your vocabulary list",
+    "signInForStudy": "Sign in to start studying your words",
+    "signInForStats": "Sign in to view your learning statistics",
+    "signInForSettings": "Sign in to access settings and manage your data"
   },
   "groups": {
     "title": "Groups",

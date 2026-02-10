@@ -4,6 +4,7 @@
  */
 
 import { ipaToHangul } from 'ipa-hangul';
+import { ipaToKatakana } from './ipa-to-katakana';
 
 /**
  * Check if user's browser language is Korean
@@ -14,12 +15,25 @@ export function isKoreanUser(): boolean {
 }
 
 /**
- * Format pronunciation for display
- * Returns both Korean Hangul (with styled stress markers) and original IPA
+ * Check if user's browser language is Japanese
  */
-export function formatPronunciation(ipa: string | undefined): { korean: string; ipa: string } {
+export function isJapaneseUser(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return navigator.language.startsWith('ja');
+}
+
+/**
+ * Format pronunciation for display
+ * Returns Korean Hangul, Japanese Katakana (with styled stress markers), and original IPA
+ */
+export function formatPronunciation(ipa: string | undefined): {
+  korean: string;
+  katakana: string;
+  ipa: string;
+} {
   const cleanIpa = ipa || '';
   const korean = ipaToHangul(cleanIpa, { markStress: 'html' });
+  const katakana = ipaToKatakana(cleanIpa);
 
   // Apply custom styling to stress markers with class names for dark mode support
   // <strong> for primary stress: blue-600/blue-400, extra bold, larger
@@ -30,6 +44,7 @@ export function formatPronunciation(ipa: string | undefined): { korean: string; 
 
   return {
     korean: styledKorean,
+    katakana,
     ipa: cleanIpa
   };
 }

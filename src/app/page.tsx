@@ -267,7 +267,7 @@ export default function Home() {
 
           {activeView === 'vocabulary' && (
             !isAuthenticated && !isLoading ? (
-              <LoginPrompt message="Sign in to access your vocabulary list" />
+              <LoginPrompt messageKey="signInForVocabulary" />
             ) : (
               <div className={isMobile ? 'h-full' : ''}>
                 <VocabularyTable
@@ -281,7 +281,7 @@ export default function Home() {
           {activeView === 'study' && (
             <div style={isMobile ? { paddingTop: 'env(safe-area-inset-top, 0px)' } : undefined}>
               {!isAuthenticated && !isLoading ? (
-                <LoginPrompt message="Sign in to start studying your words" />
+                <LoginPrompt messageKey="signInForStudy" />
               ) : (
                 <StudyMode />
               )}
@@ -291,7 +291,7 @@ export default function Home() {
           {activeView === 'statistics' && (
             <div className={isMobile ? 'px-4 pb-4' : ''} style={isMobile ? { paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' } : undefined}>
               {!isAuthenticated && !isLoading ? (
-                <LoginPrompt message="Sign in to view your learning statistics" />
+                <LoginPrompt messageKey="signInForStats" />
               ) : (
                 <Statistics />
               )}
@@ -307,7 +307,7 @@ export default function Home() {
           {activeView === 'more' && (
             <div className={isMobile ? 'px-4 pb-4' : ''} style={isMobile ? { paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' } : undefined}>
               {!isAuthenticated && !isLoading ? (
-                <LoginPrompt message="Sign in to access settings and manage your data" />
+                <LoginPrompt messageKey="signInForSettings" />
               ) : (
                 <MoreView />
               )}

@@ -121,7 +121,14 @@
     "hasAccount": "すでにアカウントをお持ちですか？",
     "loginSuccess": "ログイン成功",
     "logoutSuccess": "ログアウトしました",
-    "invalidCredentials": "メールまたはパスワードが正しくありません"
+    "invalidCredentials": "メールまたはパスワードが正しくありません",
+    "signInRequired": "ログインが必要です",
+    "signInButton": "ログイン",
+    "signInToContinue": "続行するにはログインしてください",
+    "signInForVocabulary": "単語帳にアクセスするにはログインしてください",
+    "signInForStudy": "学習を開始するにはログインしてください",
+    "signInForStats": "統計を見るにはログインしてください",
+    "signInForSettings": "設定にアクセスするにはログインしてください"
   },
   "groups": {
     "title": "グループ",

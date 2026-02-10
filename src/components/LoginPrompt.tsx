@@ -1,13 +1,17 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+
+type MessageKey = 'signInToContinue' | 'signInForVocabulary' | 'signInForStudy' | 'signInForStats' | 'signInForSettings';
 
 interface LoginPromptProps {
-  message?: string;
+  messageKey?: MessageKey;
 }
 
-export default function LoginPrompt({ message = 'Please sign in to continue' }: LoginPromptProps) {
+export default function LoginPrompt({ messageKey = 'signInToContinue' }: LoginPromptProps) {
   const router = useRouter();
+  const t = useTranslations('auth');
 
   const handleSignIn = () => {
     router.push('/auth');
@@ -32,18 +36,18 @@ export default function LoginPrompt({ message = 'Please sign in to continue' }: 
       </div>
 
       <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-        Sign In Required
+        {t('signInRequired')}
       </h2>
 
       <p className="text-base text-gray-600 dark:text-gray-400 mb-8 max-w-md">
-        {message}
+        {t(messageKey)}
       </p>
 
       <button
         onClick={handleSignIn}
         className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
       >
-        Sign In
+        {t('signInButton')}
       </button>
     </div>
   );

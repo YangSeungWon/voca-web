@@ -121,7 +121,14 @@
     "hasAccount": "已有账户？",
     "loginSuccess": "登录成功",
     "logoutSuccess": "已退出",
-    "invalidCredentials": "邮箱或密码错误"
+    "invalidCredentials": "邮箱或密码错误",
+    "signInRequired": "需要登录",
+    "signInButton": "登录",
+    "signInToContinue": "请登录以继续",
+    "signInForVocabulary": "登录以访问词汇表",
+    "signInForStudy": "登录以开始学习",
+    "signInForStats": "登录以查看学习统计",
+    "signInForSettings": "登录以访问设置和管理数据"
   },
   "groups": {
     "title": "分组",

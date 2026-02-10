@@ -121,7 +121,14 @@
     "hasAccount": "이미 계정이 있으신가요?",
     "loginSuccess": "로그인 성공",
     "logoutSuccess": "로그아웃 완료",
-    "invalidCredentials": "이메일 또는 비밀번호가 잘못되었습니다"
+    "invalidCredentials": "이메일 또는 비밀번호가 잘못되었습니다",
+    "signInRequired": "로그인이 필요합니다",
+    "signInButton": "로그인",
+    "signInToContinue": "계속하려면 로그인하세요",
+    "signInForVocabulary": "단어장을 사용하려면 로그인하세요",
+    "signInForStudy": "학습을 시작하려면 로그인하세요",
+    "signInForStats": "통계를 보려면 로그인하세요",
+    "signInForSettings": "설정에 접근하려면 로그인하세요"
   },
   "groups": {
     "title": "그룹",
