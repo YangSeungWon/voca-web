@@ -26,6 +26,7 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
   const [isSaved, setIsSaved] = useState(false);
 
   const alreadyInList = hasWord(word.word);
+  const isNotFound = word.definitions.some(def => def.partOfSpeech === 'not found');
 
   // Reset saved state when word changes
   useEffect(() => {
@@ -76,7 +77,11 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
         <div className="space-y-3">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white break-words">
+              <h2 className={`text-3xl sm:text-4xl font-bold break-words ${
+                isNotFound
+                  ? 'text-gray-400 dark:text-gray-500'
+                  : 'text-gray-900 dark:text-white'
+              }`}>
                 {word.word}
               </h2>
               {word.pronunciation && (() => {
@@ -94,13 +99,15 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
                 );
               })()}
             </div>
-            <button
-              onClick={() => speak(word.word)}
-              className="p-3 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-full transition-colors flex-shrink-0"
-              title="Pronounce"
-            >
-              <Volume2 size={24} />
-            </button>
+            {!isNotFound && (
+              <button
+                onClick={() => speak(word.word)}
+                className="p-3 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-full transition-colors flex-shrink-0"
+                title="Pronounce"
+              >
+                <Volume2 size={24} />
+              </button>
+            )}
           </div>
         </div>
 
@@ -108,8 +115,8 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
           {word.definitions.map((def, index) => (
             <div key={index} className="space-y-1.5">
               <div className="flex items-start gap-3">
-                {def.partOfSpeech && (
-                  <span className="inline-flex px-2.5 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full flex-shrink-0">
+                {def.partOfSpeech && def.partOfSpeech !== 'not found' && (
+                  <span className="inline-flex px-2.5 py-1 text-xs font-medium rounded-full flex-shrink-0 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
                     {def.partOfSpeech}
                   </span>
                 )}
@@ -131,33 +138,35 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
         </div>
       </div>
 
-      {/* Floating action button */}
-      <div className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-white dark:from-gray-800 via-white dark:via-gray-800 to-transparent p-4 pt-8">
-        <button
-          onClick={handleSave}
-          disabled={isSaving || isSaved || alreadyInList}
-          className={`
-            w-full px-6 py-3 rounded-xl font-medium text-base flex items-center justify-center gap-2 transition-all shadow-lg
-            ${isSaved || alreadyInList
-              ? 'bg-green-500 text-white'
-              : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
-            }
-            disabled:cursor-not-allowed
-          `}
-        >
-          {isSaved || alreadyInList ? (
-            <>
-              <Check size={20} />
-              <span>{alreadyInList ? t('alreadyInVocabulary') : t('wordAdded')}</span>
-            </>
-          ) : (
-            <>
-              <Save size={20} />
-              <span>{t('addToVocabulary')}</span>
-            </>
-          )}
-        </button>
-      </div>
+      {/* Floating action button - hidden when word not found */}
+      {!isNotFound && (
+        <div className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-white dark:from-gray-800 via-white dark:via-gray-800 to-transparent p-4 pt-8">
+          <button
+            onClick={handleSave}
+            disabled={isSaving || isSaved || alreadyInList}
+            className={`
+              w-full px-6 py-3 rounded-xl font-medium text-base flex items-center justify-center gap-2 transition-all shadow-lg
+              ${isSaved || alreadyInList
+                ? 'bg-green-500 text-white'
+                : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
+              }
+              disabled:cursor-not-allowed
+            `}
+          >
+            {isSaved || alreadyInList ? (
+              <>
+                <Check size={20} />
+                <span>{alreadyInList ? t('alreadyInVocabulary') : t('wordAdded')}</span>
+              </>
+            ) : (
+              <>
+                <Save size={20} />
+                <span>{t('addToVocabulary')}</span>
+              </>
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

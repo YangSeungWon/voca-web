@@ -26,8 +26,8 @@ export async function GET(req: NextRequest) {
     word: normalizedWord,
     definitions: [
       {
-        partOfSpeech: 'unknown',
-        meaning: `Unable to fetch definition for "${word}". Please check your spelling or try again later.`,
+        partOfSpeech: 'not found',
+        meaning: `No definition found for "${word}". Please check your spelling.`,
         examples: []
       }
     ]

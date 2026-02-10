@@ -5,13 +5,6 @@
 @layer base {
   body {
     @apply antialiased;
-    /* Prevent text selection for app-like feel */
-    -webkit-user-select: none;
-    user-select: none;
-    /* Remove tap highlight on mobile */
-    -webkit-tap-highlight-color: transparent;
-    /* Faster touch response */
-    touch-action: manipulation;
   }
 
   /* Allow text selection in inputs and text areas */
@@ -107,6 +100,16 @@
     overflow-x: hidden;
     /* Prevent pull-to-refresh and bounce effects */
     overscroll-behavior: none;
+  }
+
+  body {
+    /* Prevent text selection for app-like feel on mobile */
+    -webkit-user-select: none;
+    user-select: none;
+    /* Remove tap highlight on mobile */
+    -webkit-tap-highlight-color: transparent;
+    /* Faster touch response */
+    touch-action: manipulation;
   }
 
   /* Prevent iOS zoom on input focus (font-size must be >= 16px) */

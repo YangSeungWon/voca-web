@@ -150,7 +150,9 @@ export default function Home() {
           currentWordRef.current = null;
         }
       } else if (!hash) {
-        window.location.hash = viewToHash['vocabulary'];
+        // Native app defaults to vocabulary, web defaults to home (search)
+        const isNativeApp = !!(window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor?.isNativePlatform?.();
+        window.location.hash = viewToHash[isNativeApp ? 'vocabulary' : 'home'];
       }
     };
 
@@ -241,8 +243,19 @@ export default function Home() {
                 <>
                   <div className={isMobile ? 'mb-6' : 'mb-4'}>
                     <SearchBar onWordFound={handleWordFound} />
+                    {/* Show inline message when word is not found */}
+                    {currentWord?.definitions.some(def => def.partOfSpeech === 'not found') && (
+                      <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-xl text-center">
+                        <p className="text-lg text-gray-600 dark:text-gray-300">
+                          No definition found for &quot;<span className="font-medium">{currentWord.word}</span>&quot;
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                          Please check your spelling.
+                        </p>
+                      </div>
+                    )}
                   </div>
-                  {currentWord && (
+                  {currentWord && !currentWord.definitions.some(def => def.partOfSpeech === 'not found') && (
                     <WordDisplay
                       word={currentWord}
                       onSave={handleWordSaved}
