@@ -8,11 +8,16 @@ export default function ExtensionBanner() {
   const [browserType, setBrowserType] = useState<'chrome' | 'firefox' | null>(null);
 
   useEffect(() => {
+    // Don't show in Capacitor (mobile app)
+    if ((window as { Capacitor?: unknown }).Capacitor) {
+      return;
+    }
+
     // Check browser type
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isChromeBrowser = userAgent.includes('chrome') && !userAgent.includes('edge');
     const isFirefoxBrowser = userAgent.includes('firefox');
-    
+
     if (isChromeBrowser) {
       setBrowserType('chrome');
     } else if (isFirefoxBrowser) {
@@ -22,7 +27,7 @@ export default function ExtensionBanner() {
     // Check if already dismissed or extension installed
     const dismissed = localStorage.getItem('extensionBannerDismissed');
     const hasExtension = document.documentElement.getAttribute('data-voca-web-extension') === 'installed';
-    
+
     if ((isChromeBrowser || isFirefoxBrowser) && !dismissed && !hasExtension) {
       // Show banner after 3 seconds
       setTimeout(() => setShowBanner(true), 3000);
