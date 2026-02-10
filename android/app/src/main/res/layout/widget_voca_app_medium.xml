@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="@drawable/widget_background_blue">
+
+    <!-- Search Bar -->
+    <LinearLayout
+        android:id="@+id/widget_search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="12dp"
+        android:background="@drawable/widget_search_background">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔍"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search for a word..."
+            android:textColor="#99FFFFFF"
+            android:textSize="13sp"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp" />
+
+    <!-- Quick Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <!-- IPA Button -->
+        <LinearLayout
+            android:id="@+id/widget_btn_ipa"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/widget_button_background"
+            android:layout_marginEnd="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔤"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="IPA"
+                android:textColor="#CCFFFFFF"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <!-- Study Button -->
+        <LinearLayout
+            android:id="@+id/widget_btn_study"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/widget_button_background"
+            android:layout_marginEnd="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📖"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Study"
+                android:textColor="#CCFFFFFF"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <!-- Stats Button -->
+        <LinearLayout
+            android:id="@+id/widget_btn_stats"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/widget_button_background"
+            android:layout_marginEnd="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📊"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stats"
+                android:textColor="#CCFFFFFF"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <!-- Words Button -->
+        <LinearLayout
+            android:id="@+id/widget_btn_words"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/widget_button_background">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📁"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Words"
+                android:textColor="#CCFFFFFF"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

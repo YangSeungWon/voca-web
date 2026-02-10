@@ -5,4 +5,6 @@
     <string name="package_name">kr.ysw.voca</string>
     <string name="custom_url_scheme">kr.ysw.voca</string>
     <string name="widget_description">Show a new vocabulary word every day</string>
+    <string name="widget_voca_app_description">Quick access to your vocabulary app</string>
+    <string name="widget_quiz_description">Test your vocabulary - tap to reveal the meaning</string>
 </resources>

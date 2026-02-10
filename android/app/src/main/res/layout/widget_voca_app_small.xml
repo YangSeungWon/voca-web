@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="@drawable/widget_background_blue">
+
+    <!-- Header -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="📚 Voca"
+        android:textColor="#B3FFFFFF"
+        android:textSize="11sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- Total Words -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="bottom">
+
+        <TextView
+            android:id="@+id/widget_total_words"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp"
+            android:fontFamily="sans-serif-medium" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" words"
+            android:textColor="#B3FFFFFF"
+            android:textSize="12sp"
+            android:layout_marginBottom="6dp" />
+    </LinearLayout>
+
+    <!-- Today Words -->
+    <TextView
+        android:id="@+id/widget_today_words"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="+0 today"
+        android:textColor="#4ADE80"
+        android:textSize="11sp"
+        android:visibility="gone" />
+
+    <!-- Study Sessions -->
+    <TextView
+        android:id="@+id/widget_study_sessions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 study sessions"
+        android:textColor="#60A5FA"
+        android:textSize="11sp"
+        android:visibility="gone" />
+
+</LinearLayout>

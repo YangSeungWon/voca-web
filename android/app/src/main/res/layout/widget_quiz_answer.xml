@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="@drawable/widget_background_purple">
+
+    <!-- Word (smaller) -->
+    <TextView
+        android:id="@+id/widget_word"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="vocabulary"
+        android:textColor="#B3FFFFFF"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-medium"
+        android:maxLines="1" />
+
+    <!-- Meaning -->
+    <TextView
+        android:id="@+id/widget_meaning"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="단어, 어휘"
+        android:textColor="#FFFFFF"
+        android:textSize="13sp"
+        android:maxLines="4"
+        android:ellipsize="end"
+        android:layout_marginTop="4dp" />
+
+    <!-- Next Word Button -->
+    <LinearLayout
+        android:id="@+id/widget_btn_next"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:background="@drawable/widget_button_green"
+        android:layout_gravity="end">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔄"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Next"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium" />
+    </LinearLayout>
+
+</LinearLayout>

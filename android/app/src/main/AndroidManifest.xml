@@ -55,6 +55,32 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_today_word_info" />
         </receiver>
+
+        <!-- Voca App Widget -->
+        <receiver
+            android:name=".widget.VocaAppWidget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_voca_app_info" />
+        </receiver>
+
+        <!-- Quiz Widget -->
+        <receiver
+            android:name=".widget.QuizWidget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="kr.ysw.voca.widget.ACTION_SHOW_ANSWER" />
+                <action android:name="kr.ysw.voca.widget.ACTION_NEXT_WORD" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_quiz_info" />
+        </receiver>
     </application>
 
     <!-- Permissions -->
