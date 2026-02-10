@@ -137,5 +137,77 @@
     "color": "Color",
     "noGroups": "No groups yet",
     "deleteConfirm": "Delete this group?"
+  },
+  "import": {
+    "noValidWords": "No valid words found in the CSV file",
+    "loginRequired": "Please log in to import words",
+    "complete": "Import complete!",
+    "imported": "Imported",
+    "duplicates": "Duplicates",
+    "failed": "Failed",
+    "error": "Failed to import words",
+    "csvError": "Error reading CSV file. Please check the format.",
+    "manageData": "Manage your vocabulary data"
+  },
+  "export": {
+    "loginRequired": "Please log in to export words",
+    "error": "Failed to export words",
+    "exportError": "Error exporting vocabulary"
+  },
+  "examples": {
+    "title": "Example Sentences",
+    "loading": "Loading examples...",
+    "deleteConfirm": "Delete this example sentence?",
+    "placeholder": "Example sentence with \"{word}\"...",
+    "translationPlaceholder": "Translation (optional)...",
+    "add": "Add",
+    "empty": "No example sentences yet"
+  },
+  "stats": {
+    "loading": "Loading...",
+    "noData": "No data available",
+    "totalWords": "Total Words",
+    "thisWeek": "+{count} this week",
+    "mastered": "Mastered",
+    "dayStreak": "Day Streak",
+    "today": "Today",
+    "progressByLevel": "Progress by Level",
+    "last7Days": "Last 7 Days",
+    "added": "Added",
+    "reviewed": "Reviewed",
+    "levelNew": "New",
+    "levelLearning": "Learning",
+    "levelFamiliar": "Familiar",
+    "levelKnown": "Known",
+    "levelMastered": "Mastered",
+    "levelExpert": "Expert",
+    "encouragement": {
+      "master": "Amazing! You're a vocabulary master!",
+      "great": "Great progress! Keep it up!",
+      "onWay": "You're on your way! Keep learning!",
+      "started": "Just getting started. Every word counts!"
+    }
+  },
+  "sync": {
+    "title": "Sync Status",
+    "never": "Never",
+    "justNow": "Just now",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago",
+    "offline": "Offline",
+    "syncing": "Syncing...",
+    "pending": "{count} pending",
+    "synced": "Synced",
+    "connection": "Connection",
+    "online": "Online",
+    "idle": "Idle",
+    "pendingChanges": "Pending Changes",
+    "lastSync": "Last Sync",
+    "syncNow": "Sync Now",
+    "clearOfflineData": "Clear Offline Data",
+    "clearConfirm": "This will clear all offline data. Are you sure?",
+    "autoSyncOnline": "Your data is being synced automatically every 30 seconds.",
+    "autoSyncOffline": "Your changes will be synced when you reconnect to the internet."
   }
 }

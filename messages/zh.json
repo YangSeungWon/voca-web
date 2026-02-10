@@ -137,5 +137,77 @@
     "color": "颜色",
     "noGroups": "暂无分组",
     "deleteConfirm": "删除这个分组？"
+  },
+  "import": {
+    "noValidWords": "CSV文件中未找到有效单词",
+    "loginRequired": "请登录后导入单词",
+    "complete": "导入完成！",
+    "imported": "已导入",
+    "duplicates": "重复",
+    "failed": "失败",
+    "error": "导入单词失败",
+    "csvError": "读取CSV文件错误。请检查格式。",
+    "manageData": "管理词汇数据"
+  },
+  "export": {
+    "loginRequired": "请登录后导出单词",
+    "error": "导出单词失败",
+    "exportError": "导出词汇表错误"
+  },
+  "examples": {
+    "title": "例句",
+    "loading": "加载例句中...",
+    "deleteConfirm": "删除这个例句？",
+    "placeholder": "使用「{word}」的例句...",
+    "translationPlaceholder": "翻译（可选）...",
+    "add": "添加",
+    "empty": "暂无例句"
+  },
+  "stats": {
+    "loading": "加载中...",
+    "noData": "暂无数据",
+    "totalWords": "总单词数",
+    "thisWeek": "本周 +{count}",
+    "mastered": "已掌握",
+    "dayStreak": "连续天数",
+    "today": "今天",
+    "progressByLevel": "等级进度",
+    "last7Days": "最近7天",
+    "added": "添加",
+    "reviewed": "复习",
+    "levelNew": "新词",
+    "levelLearning": "学习中",
+    "levelFamiliar": "熟悉",
+    "levelKnown": "已知",
+    "levelMastered": "掌握",
+    "levelExpert": "精通",
+    "encouragement": {
+      "master": "太棒了！你是词汇大师！",
+      "great": "进步很大！继续加油！",
+      "onWay": "你正在进步！继续学习！",
+      "started": "刚刚开始。每个单词都很重要！"
+    }
+  },
+  "sync": {
+    "title": "同步状态",
+    "never": "从未",
+    "justNow": "刚刚",
+    "minutesAgo": "{count}分钟前",
+    "hoursAgo": "{count}小时前",
+    "daysAgo": "{count}天前",
+    "offline": "离线",
+    "syncing": "同步中...",
+    "pending": "{count}个待同步",
+    "synced": "已同步",
+    "connection": "连接",
+    "online": "在线",
+    "idle": "空闲",
+    "pendingChanges": "待同步更改",
+    "lastSync": "上次同步",
+    "syncNow": "立即同步",
+    "clearOfflineData": "清除离线数据",
+    "clearConfirm": "这将清除所有离线数据。确定吗？",
+    "autoSyncOnline": "每30秒自动同步一次。",
+    "autoSyncOffline": "连接互联网后将同步您的更改。"
   }
 }

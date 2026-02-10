@@ -16,6 +16,8 @@ import { apiFetch } from '@/lib/api-client';
 
 export default function MoreView() {
   const t = useTranslations('more');
+  const tImport = useTranslations('import');
+  const tExport = useTranslations('export');
   const [showPhonetics, setShowPhonetics] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showDeveloper, setShowDeveloper] = useState(false);
@@ -33,13 +35,13 @@ export default function MoreView() {
       const parsedWords = parseCSV(text);
 
       if (parsedWords.length === 0) {
-        alert('No valid words found in the CSV file');
+        alert(tImport('noValidWords'));
         return;
       }
 
       const token = getAuthToken();
       if (!token) {
-        alert('Please log in to import words');
+        alert(tImport('loginRequired'));
         return;
       }
 
@@ -54,13 +56,13 @@ export default function MoreView() {
 
       if (response.ok) {
         const result = await response.json();
-        alert(`Import complete!\n✅ Imported: ${result.imported}\n⚠️ Duplicates: ${result.duplicates}\n❌ Failed: ${result.failed}`);
+        alert(`${tImport('complete')}\n✅ ${tImport('imported')}: ${result.imported}\n⚠️ ${tImport('duplicates')}: ${result.duplicates}\n❌ ${tImport('failed')}: ${result.failed}`);
       } else {
-        alert('Failed to import words');
+        alert(tImport('error'));
       }
     } catch (error) {
       console.error('Import error:', error);
-      alert('Error reading CSV file. Please check the format.');
+      alert(tImport('csvError'));
     } finally {
       setIsImporting(false);
       if (fileInputRef.current) {
@@ -74,7 +76,7 @@ export default function MoreView() {
     try {
       const token = getAuthToken();
       if (!token) {
-        alert('Please log in to export words');
+        alert(tExport('loginRequired'));
         return;
       }
 
@@ -88,11 +90,11 @@ export default function MoreView() {
         const csvContent = generateCSV(words);
         downloadCSV(csvContent, `vocabulary_${new Date().toISOString().split('T')[0]}.csv`);
       } else {
-        alert('Failed to export words');
+        alert(tExport('error'));
       }
     } catch (error) {
       console.error('Export error:', error);
-      alert('Error exporting vocabulary');
+      alert(tExport('exportError'));
     } finally {
       setIsExporting(false);
     }
@@ -110,7 +112,7 @@ export default function MoreView() {
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
           <div className="mb-4">
             <h3 className="font-medium text-gray-900 dark:text-white mb-1">{t('importExport')}</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Manage your vocabulary data</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{tImport('manageData')}</p>
           </div>
           <input
             ref={fileInputRef}

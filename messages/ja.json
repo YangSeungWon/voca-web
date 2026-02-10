@@ -137,5 +137,77 @@
     "color": "色",
     "noGroups": "グループがありません",
     "deleteConfirm": "このグループを削除しますか？"
+  },
+  "import": {
+    "noValidWords": "CSVファイルに有効な単語が見つかりません",
+    "loginRequired": "単語をインポートするにはログインしてください",
+    "complete": "インポート完了！",
+    "imported": "インポート済み",
+    "duplicates": "重複",
+    "failed": "失敗",
+    "error": "単語のインポートに失敗しました",
+    "csvError": "CSVファイルの読み込みエラー。形式を確認してください。",
+    "manageData": "単語帳データを管理"
+  },
+  "export": {
+    "loginRequired": "単語をエクスポートするにはログインしてください",
+    "error": "単語のエクスポートに失敗しました",
+    "exportError": "単語帳のエクスポートエラー"
+  },
+  "examples": {
+    "title": "例文",
+    "loading": "例文を読み込み中...",
+    "deleteConfirm": "この例文を削除しますか？",
+    "placeholder": "「{word}」を使った例文...",
+    "translationPlaceholder": "翻訳（任意）...",
+    "add": "追加",
+    "empty": "例文がありません"
+  },
+  "stats": {
+    "loading": "読み込み中...",
+    "noData": "データがありません",
+    "totalWords": "総単語数",
+    "thisWeek": "今週 +{count}",
+    "mastered": "マスター済み",
+    "dayStreak": "連続学習日数",
+    "today": "今日",
+    "progressByLevel": "レベル別進捗",
+    "last7Days": "過去7日間",
+    "added": "追加",
+    "reviewed": "復習",
+    "levelNew": "新規",
+    "levelLearning": "学習中",
+    "levelFamiliar": "慣れてきた",
+    "levelKnown": "知っている",
+    "levelMastered": "習得",
+    "levelExpert": "エキスパート",
+    "encouragement": {
+      "master": "すごい！単語マスター！",
+      "great": "素晴らしい進歩！この調子！",
+      "onWay": "順調です！学習を続けましょう！",
+      "started": "始まったばかり。一つ一つの単語が大切！"
+    }
+  },
+  "sync": {
+    "title": "同期状態",
+    "never": "なし",
+    "justNow": "たった今",
+    "minutesAgo": "{count}分前",
+    "hoursAgo": "{count}時間前",
+    "daysAgo": "{count}日前",
+    "offline": "オフライン",
+    "syncing": "同期中...",
+    "pending": "{count}件待機中",
+    "synced": "同期済み",
+    "connection": "接続",
+    "online": "オンライン",
+    "idle": "待機中",
+    "pendingChanges": "保留中の変更",
+    "lastSync": "最終同期",
+    "syncNow": "今すぐ同期",
+    "clearOfflineData": "オフラインデータを削除",
+    "clearConfirm": "すべてのオフラインデータが削除されます。よろしいですか？",
+    "autoSyncOnline": "30秒ごとに自動同期されます。",
+    "autoSyncOffline": "インターネットに接続すると変更が同期されます。"
   }
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Plus, X, Check, BookOpen, Edit2 } from 'lucide-react';
 import { getAuthToken } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
+import { useTranslations } from 'next-intl';
 
 interface Example {
   id: string;
@@ -17,6 +18,8 @@ interface ExampleSentencesProps {
 }
 
 export default function ExampleSentences({ wordId, wordText }: ExampleSentencesProps) {
+  const t = useTranslations('examples');
+  const tCommon = useTranslations('common');
   const [examples, setExamples] = useState<Example[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -114,7 +117,7 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this example sentence?')) return;
+    if (!confirm(t('deleteConfirm'))) return;
 
     const token = getAuthToken();
     if (!token) return;
@@ -136,7 +139,7 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
   };
 
   if (loading) {
-    return <div className="text-xs text-gray-500">Loading examples...</div>;
+    return <div className="text-xs text-gray-500">{t('loading')}</div>;
   }
 
   return (
@@ -144,7 +147,7 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
       <div className="flex items-center justify-between">
         <h4 className="text-xs font-semibold text-gray-700 flex items-center gap-1">
           <BookOpen size={12} />
-          Example Sentences
+          {t('title')}
         </h4>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
@@ -160,14 +163,14 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
             type="text"
             value={newSentence}
             onChange={(e) => setNewSentence(e.target.value)}
-            placeholder={`Example sentence with "${wordText}"...`}
+            placeholder={t('placeholder', { word: wordText })}
             className="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
           />
           <input
             type="text"
             value={newTranslation}
             onChange={(e) => setNewTranslation(e.target.value)}
-            placeholder="Translation (optional)..."
+            placeholder={t('translationPlaceholder')}
             className="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
           />
           <div className="flex gap-2">
@@ -176,7 +179,7 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
               disabled={!newSentence.trim()}
               className="px-2 py-1 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
-              Add
+              {t('add')}
             </button>
             <button
               onClick={() => {
@@ -186,7 +189,7 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
               }}
               className="px-2 py-1 text-xs bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
             >
-              Cancel
+              {tCommon('cancel')}
             </button>
           </div>
         </div>
@@ -194,7 +197,7 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
 
       <div className="space-y-1">
         {examples.length === 0 ? (
-          <p className="text-xs text-gray-400 italic">No example sentences yet</p>
+          <p className="text-xs text-gray-400 italic">{t('empty')}</p>
         ) : (
           examples.map((example) => (
             <div key={example.id} className="p-2 bg-white border border-gray-200 rounded-lg">
@@ -210,7 +213,7 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
                     type="text"
                     value={editTranslation}
                     onChange={(e) => setEditTranslation(e.target.value)}
-                    placeholder="Translation (optional)..."
+                    placeholder={t('translationPlaceholder')}
                     className="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                   />
                   <div className="flex gap-1">

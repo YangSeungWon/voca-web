@@ -3,29 +3,31 @@
 import { useOfflineSync } from '@/hooks/useOfflineSync';
 import { Cloud, CloudOff, RefreshCw, Wifi, WifiOff } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 export default function SyncStatus() {
-  const { 
-    isOnline, 
-    isSyncing, 
-    pendingChanges, 
-    lastSyncTime, 
+  const t = useTranslations('sync');
+  const {
+    isOnline,
+    isSyncing,
+    pendingChanges,
+    lastSyncTime,
     forceSync,
-    clearOfflineData 
+    clearOfflineData
   } = useOfflineSync();
-  
+
   const [showDetails, setShowDetails] = useState(false);
 
   const formatLastSync = (time: number | null) => {
-    if (!time) return 'Never';
-    
+    if (!time) return t('never');
+
     const now = Date.now();
     const diff = now - time;
-    
-    if (diff < 60000) return 'Just now';
-    if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
-    if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
-    return `${Math.floor(diff / 86400000)}d ago`;
+
+    if (diff < 60000) return t('justNow');
+    if (diff < 3600000) return t('minutesAgo', { count: Math.floor(diff / 60000) });
+    if (diff < 86400000) return t('hoursAgo', { count: Math.floor(diff / 3600000) });
+    return t('daysAgo', { count: Math.floor(diff / 86400000) });
   };
 
   const getStatusColor = () => {
@@ -46,14 +48,14 @@ export default function SyncStatus() {
       <button
         onClick={() => setShowDetails(!showDetails)}
         className={`flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${getStatusColor()}`}
-        title="Sync Status"
+        title={t('title')}
       >
         {getStatusIcon()}
         <span className="text-sm">
-          {!isOnline ? 'Offline' : 
-           isSyncing ? 'Syncing...' : 
-           pendingChanges > 0 ? `${pendingChanges} pending` : 
-           'Synced'}
+          {!isOnline ? t('offline') :
+           isSyncing ? t('syncing') :
+           pendingChanges > 0 ? t('pending', { count: pendingChanges }) :
+           t('synced')}
         </span>
       </button>
 
@@ -65,19 +67,19 @@ export default function SyncStatus() {
           />
           <div className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50">
             <h3 className="font-semibold text-sm mb-3 text-gray-800 dark:text-gray-200">
-              Sync Status
+              {t('title')}
             </h3>
-            
+
             <div className="space-y-3">
               {/* Connection Status */}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Connection
+                  {t('connection')}
                 </span>
                 <div className={`flex items-center gap-1 ${isOnline ? 'text-green-500' : 'text-red-500'}`}>
                   {isOnline ? <Wifi size={14} /> : <WifiOff size={14} />}
                   <span className="text-sm font-medium">
-                    {isOnline ? 'Online' : 'Offline'}
+                    {isOnline ? t('online') : t('offline')}
                   </span>
                 </div>
               </div>
@@ -85,17 +87,17 @@ export default function SyncStatus() {
               {/* Sync Status */}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Sync Status
+                  {t('title')}
                 </span>
                 <span className={`text-sm font-medium ${isSyncing ? 'text-blue-500' : 'text-gray-700 dark:text-gray-300'}`}>
-                  {isSyncing ? 'Syncing...' : 'Idle'}
+                  {isSyncing ? t('syncing') : t('idle')}
                 </span>
               </div>
 
               {/* Pending Changes */}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Pending Changes
+                  {t('pendingChanges')}
                 </span>
                 <span className={`text-sm font-medium ${pendingChanges > 0 ? 'text-yellow-500' : 'text-gray-700 dark:text-gray-300'}`}>
                   {pendingChanges}
@@ -105,7 +107,7 @@ export default function SyncStatus() {
               {/* Last Sync */}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Last Sync
+                  {t('lastSync')}
                 </span>
                 <span className="text-sm text-gray-700 dark:text-gray-300">
                   {formatLastSync(lastSyncTime)}
@@ -122,28 +124,28 @@ export default function SyncStatus() {
                   disabled={!isOnline || isSyncing}
                   className="w-full px-3 py-1.5 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {isSyncing ? 'Syncing...' : 'Sync Now'}
+                  {isSyncing ? t('syncing') : t('syncNow')}
                 </button>
-                
+
                 <button
                   onClick={async () => {
-                    if (confirm('This will clear all offline data. Are you sure?')) {
+                    if (confirm(t('clearConfirm'))) {
                       await clearOfflineData();
                       setShowDetails(false);
                     }
                   }}
                   className="w-full px-3 py-1.5 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
                 >
-                  Clear Offline Data
+                  {t('clearOfflineData')}
                 </button>
               </div>
 
               {/* Info */}
               <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {isOnline 
-                    ? 'Your data is being synced automatically every 30 seconds.'
-                    : 'Your changes will be synced when you reconnect to the internet.'}
+                  {isOnline
+                    ? t('autoSyncOnline')
+                    : t('autoSyncOffline')}
                 </p>
               </div>
             </div>

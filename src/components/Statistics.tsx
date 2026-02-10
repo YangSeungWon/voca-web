@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { getAuthToken } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
+import { useTranslations } from 'next-intl';
 
 interface Statistics {
   overview: {
@@ -29,6 +30,7 @@ interface Statistics {
 }
 
 export default function Statistics() {
+  const t = useTranslations('stats');
   const [stats, setStats] = useState<Statistics | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -63,7 +65,7 @@ export default function Statistics() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-120px)]">
-        <div className="text-gray-400">Loading...</div>
+        <div className="text-gray-400">{t('loading')}</div>
       </div>
     );
   }
@@ -71,7 +73,7 @@ export default function Statistics() {
   if (!stats) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-120px)]">
-        <div className="text-gray-400">No data available</div>
+        <div className="text-gray-400">{t('noData')}</div>
       </div>
     );
   }
@@ -80,7 +82,7 @@ export default function Statistics() {
     ? Math.round((stats.overview.mastered / stats.overview.total) * 100)
     : 0;
 
-  const levelNames = ['New', 'Learning', 'Familiar', 'Known', 'Mastered', 'Expert'];
+  const levelNames = [t('levelNew'), t('levelLearning'), t('levelFamiliar'), t('levelKnown'), t('levelMastered'), t('levelExpert')];
   const levelEmojis = ['🆕', '📖', '💡', '✅', '⭐', '👑'];
   const levelColors = [
     'from-red-400 to-red-500',
@@ -97,11 +99,11 @@ export default function Statistics() {
       <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-blue-100 text-sm mb-1">Total Words</div>
+            <div className="text-blue-100 text-sm mb-1">{t('totalWords')}</div>
             <div className="text-5xl font-bold">{stats.overview.total}</div>
             {stats.overview.week > 0 && (
               <div className="text-blue-100 text-sm mt-2">
-                +{stats.overview.week} this week
+                {t('thisWeek', { count: stats.overview.week })}
               </div>
             )}
           </div>
@@ -131,7 +133,7 @@ export default function Statistics() {
                 <span className="text-lg font-bold">{progressPercent}%</span>
               </div>
             </div>
-            <div className="text-blue-100 text-xs mt-1">Mastered</div>
+            <div className="text-blue-100 text-xs mt-1">{t('mastered')}</div>
           </div>
         </div>
       </div>
@@ -141,23 +143,23 @@ export default function Statistics() {
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center shadow-sm border border-gray-100 dark:border-gray-700">
           <div className="text-2xl mb-1">🔥</div>
           <div className="text-2xl font-bold text-gray-800 dark:text-white">{stats.overview.streak}</div>
-          <div className="text-xs text-gray-500">Day Streak</div>
+          <div className="text-xs text-gray-500">{t('dayStreak')}</div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center shadow-sm border border-gray-100 dark:border-gray-700">
           <div className="text-2xl mb-1">📅</div>
           <div className="text-2xl font-bold text-gray-800 dark:text-white">{stats.overview.today}</div>
-          <div className="text-xs text-gray-500">Today</div>
+          <div className="text-xs text-gray-500">{t('today')}</div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center shadow-sm border border-gray-100 dark:border-gray-700">
           <div className="text-2xl mb-1">⭐</div>
           <div className="text-2xl font-bold text-gray-800 dark:text-white">{stats.overview.mastered}</div>
-          <div className="text-xs text-gray-500">Mastered</div>
+          <div className="text-xs text-gray-500">{t('mastered')}</div>
         </div>
       </div>
 
       {/* Level Distribution */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-        <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-4">Progress by Level</h3>
+        <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-4">{t('progressByLevel')}</h3>
         <div className="space-y-3">
           {[0, 1, 2, 3, 4, 5].map(level => {
             const count = stats.levelDistribution[level] || 0;
@@ -188,7 +190,7 @@ export default function Statistics() {
 
       {/* Weekly Activity */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
-        <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-4">Last 7 Days</h3>
+        <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-4">{t('last7Days')}</h3>
         <div className="flex items-end justify-between gap-2 h-24">
           {stats.dailyProgress.slice(-7).map((day, index) => {
             const maxVal = Math.max(...stats.dailyProgress.slice(-7).map(d => d.added + d.reviewed), 1);
@@ -216,8 +218,8 @@ export default function Statistics() {
           })}
         </div>
         <div className="flex justify-center gap-4 mt-4 text-xs text-gray-500">
-          <span>📝 Added: {stats.dailyProgress.slice(-7).reduce((a, b) => a + b.added, 0)}</span>
-          <span>📚 Reviewed: {stats.dailyProgress.slice(-7).reduce((a, b) => a + b.reviewed, 0)}</span>
+          <span>📝 {t('added')}: {stats.dailyProgress.slice(-7).reduce((a, b) => a + b.added, 0)}</span>
+          <span>📚 {t('reviewed')}: {stats.dailyProgress.slice(-7).reduce((a, b) => a + b.reviewed, 0)}</span>
         </div>
       </div>
 
@@ -229,12 +231,12 @@ export default function Statistics() {
           </div>
           <div className="text-gray-600 dark:text-gray-400 text-sm">
             {progressPercent >= 80
-              ? "Amazing! You're a vocabulary master!"
+              ? t('encouragement.master')
               : progressPercent >= 50
-              ? "Great progress! Keep it up!"
+              ? t('encouragement.great')
               : progressPercent >= 20
-              ? "You're on your way! Keep learning!"
-              : "Just getting started. Every word counts!"}
+              ? t('encouragement.onWay')
+              : t('encouragement.started')}
           </div>
         </div>
       )}
