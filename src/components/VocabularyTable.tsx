@@ -471,7 +471,7 @@ export default function VocabularyTable({ onAddWord }: VocabularyTableProps) {
                   onClick={() => setShowFilter(!showFilter)}
                   className={`p-2 rounded-lg transition-colors ${showFilter ? 'bg-blue-100 dark:bg-blue-900 text-blue-600' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
                 >
-                  {showFilter ? <X size={20} /> : <Search size={20} />}
+                  {showFilter ? <X size={20} /> : <Filter size={20} />}
                 </button>
               )}
             </div>
@@ -480,7 +480,7 @@ export default function VocabularyTable({ onAddWord }: VocabularyTableProps) {
               <div className="mt-3">
                 <input
                   type="text"
-                  placeholder="Search in my words..."
+                  placeholder="Filter words..."
                   value={filter}
                   onChange={(e) => setFilter(e.target.value)}
                   className="w-full px-4 py-2 text-base border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"

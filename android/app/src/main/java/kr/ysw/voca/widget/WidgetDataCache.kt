@@ -33,7 +33,7 @@ object WidgetDataCache {
     }
 
     /**
-     * Get a random word from cache
+     * Get a random word from cache (advances to next word)
      */
     fun getRandomWord(context: Context): CachedWord? {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -51,6 +51,34 @@ object WidgetDataCache {
             prefs.edit().putInt(KEY_LAST_INDEX, nextIndex).apply()
 
             val wordObj = jsonArray.getJSONObject(nextIndex)
+            CachedWord(
+                word = wordObj.optString("word", ""),
+                pronunciation = wordObj.optString("pronunciation", ""),
+                pronunciationHelper = wordObj.optString("pronunciationHelper", ""),
+                meaning = wordObj.optString("meaning", ""),
+                level = wordObj.optInt("level", 0)
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    /**
+     * Get current word from cache (does not advance index)
+     */
+    fun getCurrentWord(context: Context): CachedWord? {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val wordsJson = prefs.getString(KEY_WORDS, null) ?: return null
+
+        return try {
+            val jsonArray = JSONArray(wordsJson)
+            if (jsonArray.length() == 0) return null
+
+            val lastIndex = prefs.getInt(KEY_LAST_INDEX, 0)
+            val currentIndex = if (lastIndex >= 0 && lastIndex < jsonArray.length()) lastIndex else 0
+
+            val wordObj = jsonArray.getJSONObject(currentIndex)
             CachedWord(
                 word = wordObj.optString("word", ""),
                 pronunciation = wordObj.optString("pronunciation", ""),
