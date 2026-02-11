@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:text="/vəˈkæbjʊləri/"
             android:textColor="#60A5FA"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:maxLines="1" />
 
         <TextView
@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:text="버캐뷸러리"
             android:textColor="#4ADE80"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:layout_marginLeft="4dp"
             android:maxLines="1" />
     </LinearLayout>

@@ -74,6 +74,21 @@ object WidgetDataCache {
     }
 
     /**
+     * Get total word count from cache
+     */
+    fun getWordCount(context: Context): Int {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val wordsJson = prefs.getString(KEY_WORDS, null) ?: return 0
+
+        return try {
+            val jsonArray = JSONArray(wordsJson)
+            jsonArray.length()
+        } catch (e: Exception) {
+            0
+        }
+    }
+
+    /**
      * Get cache age in milliseconds
      */
     fun getCacheAge(context: Context): Long {

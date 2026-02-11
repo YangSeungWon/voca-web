@@ -6,6 +6,8 @@ import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
 import kr.ysw.voca.widget.WidgetDataCache
 import kr.ysw.voca.widget.TodayWordWidget
+import kr.ysw.voca.widget.QuizWidget
+import kr.ysw.voca.widget.VocaAppWidget
 
 @CapacitorPlugin(name = "WidgetPlugin")
 class WidgetPlugin : Plugin() {
@@ -23,14 +25,20 @@ class WidgetPlugin : Plugin() {
         WidgetDataCache.saveWords(context, wordsJson)
 
         // Update all widgets
-        TodayWordWidget.updateAllWidgets(context)
+        updateAllWidgetTypes()
 
         call.resolve()
     }
 
     @PluginMethod
     fun updateWidgets(call: PluginCall) {
-        TodayWordWidget.updateAllWidgets(context)
+        updateAllWidgetTypes()
         call.resolve()
+    }
+
+    private fun updateAllWidgetTypes() {
+        TodayWordWidget.updateAllWidgets(context)
+        QuizWidget.updateAllWidgets(context)
+        VocaAppWidget.updateAllWidgets(context)
     }
 }
