@@ -5,6 +5,10 @@ import { getAuthToken, getUserId } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
 import { syncWordsToWidget } from '@/lib/widget-sync';
 import { ipaToHangul } from 'ipa-hangul';
+import { ipaToKatakana } from '@/lib/ipa-to-katakana';
+import { arpabetToRespellingV2 } from '@/lib/arpabet-to-respelling';
+import { arpabetToKatakana } from '@/lib/arpabet-to-katakana';
+import { getPronunciationHelper } from '@/hooks/useSettings';
 
 interface VocabularyItem {
   id: string;
@@ -47,17 +51,59 @@ export function useOfflineVocabulary() {
           // Cache in IndexedDB for offline use
           await offlineDB.mergeServerData(data);
 
-          // Sync to Android widget
-          const widgetWords = data.map((item: VocabularyItem) => {
+          // Sync to Android widget with pronunciation based on user setting
+          const helperSetting = getPronunciationHelper();
+          const widgetWords = await Promise.all(data.map(async (item: VocabularyItem) => {
             const pronunciation = item.word.pronunciation || '';
+            let pronunciationHelper = '';
+
+            if (pronunciation && helperSetting !== 'off') {
+              // Determine effective helper (resolve 'auto' based on document language)
+              const effectiveHelper = helperSetting === 'auto'
+                ? (document.documentElement.lang || 'ko')
+                : helperSetting;
+
+              switch (effectiveHelper) {
+                case 'ko':
+                  pronunciationHelper = ipaToHangul(pronunciation);
+                  break;
+                case 'ja':
+                  // Try ARPABET-based conversion first
+                  try {
+                    const { dictionary } = await import('cmu-pronouncing-dictionary');
+                    const arpabet = dictionary[item.word.word.toLowerCase()];
+                    if (arpabet) {
+                      pronunciationHelper = arpabetToKatakana(arpabet);
+                    } else {
+                      pronunciationHelper = ipaToKatakana(pronunciation);
+                    }
+                  } catch {
+                    pronunciationHelper = ipaToKatakana(pronunciation);
+                  }
+                  break;
+                case 'en':
+                  // English respelling requires ARPABET
+                  try {
+                    const { dictionary } = await import('cmu-pronouncing-dictionary');
+                    const arpabet = dictionary[item.word.word.toLowerCase()];
+                    if (arpabet) {
+                      pronunciationHelper = arpabetToRespellingV2(arpabet);
+                    }
+                  } catch {
+                    // No fallback for English respelling
+                  }
+                  break;
+              }
+            }
+
             return {
               word: item.word.word,
               pronunciation: pronunciation,
-              pronunciationKr: pronunciation ? ipaToHangul(pronunciation) : '',
+              pronunciationHelper: pronunciationHelper,
               meaning: item.word.definitions?.[0]?.meaning || '',
               level: item.level
             };
-          });
+          }));
           syncWordsToWidget(widgetWords);
 
           setIsOnline(true);

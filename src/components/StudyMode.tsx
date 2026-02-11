@@ -7,7 +7,8 @@ import { Volume2, ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { apiFetch } from '@/lib/api-client';
-import { formatPronunciation } from '@/lib/ipa-to-korean';
+import { formatPronunciation, getHelperText, getEffectiveHelper } from '@/lib/ipa-to-korean';
+import { useLocale } from 'next-intl';
 
 interface StudyWord {
   id: string;
@@ -39,6 +40,7 @@ export default function StudyMode() {
   });
   const cardRef = useRef<HTMLDivElement>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const locale = useLocale();
 
   // Swipe gestures for mobile
   useSwipeGesture(cardRef, {
@@ -399,13 +401,15 @@ export default function StudyMode() {
               </button>
             </div>
             {currentWord.word.pronunciation && (() => {
-              const { korean, ipa } = formatPronunciation(currentWord.word.pronunciation);
+              const { korean, katakana, ipa } = formatPronunciation(currentWord.word.pronunciation);
+              const helper = getEffectiveHelper(locale);
+              const helperText = getHelperText(currentWord.word.pronunciation, locale, { korean, katakana });
               return (
                 <div className="flex items-center justify-center gap-2 mt-2 pt-2">
-                  {korean && (
+                  {helper !== 'off' && helperText && (
                     <span
                       className="text-xl font-medium text-gray-600 dark:text-gray-300"
-                      dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
+                      dangerouslySetInnerHTML={{ __html: `[${helperText}]` }}
                     />
                   )}
                   <span className="text-xl text-gray-500">{ipa}</span>

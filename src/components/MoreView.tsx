@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { ChevronRight, Sun, User, RefreshCw, BookOpen, Download, Upload, Code, MessageSquare, Globe } from 'lucide-react';
+import { ChevronRight, Sun, User, RefreshCw, BookOpen, Download, Upload, Code, MessageSquare, Globe, Volume2 } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import AuthStatus from './AuthStatus';
 import SyncStatus from './SyncStatus';
@@ -9,6 +9,7 @@ import PhoneticsReference from './PhoneticsReference';
 import DeveloperSettings from './DeveloperSettings';
 import FeedbackForm from './FeedbackForm';
 import LanguageSelector from './LanguageSelector';
+import PronunciationHelperSetting from './PronunciationHelperSetting';
 import { useTranslations } from 'next-intl';
 import { parseCSV, generateCSV, downloadCSV, getCSVTemplate } from '@/lib/csv';
 import { getAuthToken } from '@/lib/auth';
@@ -165,6 +166,26 @@ export default function MoreView() {
               </div>
             </div>
             <LanguageSelector />
+          </div>
+        </div>
+
+        {/* Pronunciation Helper */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                <Volume2 className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              </div>
+              <div className="text-left">
+                <div className="font-medium text-gray-900 dark:text-white">
+                  {t('pronunciationHelper')}
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  {t('pronunciationHelperDescription')}
+                </div>
+              </div>
+            </div>
+            <PronunciationHelperSetting />
           </div>
         </div>
 

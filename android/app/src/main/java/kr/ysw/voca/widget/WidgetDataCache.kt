@@ -16,7 +16,7 @@ object WidgetDataCache {
     data class CachedWord(
         val word: String,
         val pronunciation: String,
-        val pronunciationKr: String,
+        val pronunciationHelper: String,  // Formatted pronunciation based on user's language setting
         val meaning: String,
         val level: Int
     )
@@ -54,7 +54,7 @@ object WidgetDataCache {
             CachedWord(
                 word = wordObj.optString("word", ""),
                 pronunciation = wordObj.optString("pronunciation", ""),
-                pronunciationKr = wordObj.optString("pronunciationKr", ""),
+                pronunciationHelper = wordObj.optString("pronunciationHelper", ""),
                 meaning = wordObj.optString("meaning", ""),
                 level = wordObj.optInt("level", 0)
             )

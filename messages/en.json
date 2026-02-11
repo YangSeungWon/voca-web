@@ -84,6 +84,8 @@
     "developerDescription": "Debug and test features",
     "language": "Language",
     "languageDescription": "Change display language",
+    "pronunciationHelper": "Pronunciation Helper",
+    "pronunciationHelperDescription": "Set pronunciation display language",
     "version": "Voca Web v1.0.0",
     "madeWith": "Made with love for language learners"
   },
@@ -187,6 +189,13 @@
       "onWay": "You're on your way! Keep learning!",
       "started": "Just getting started. Every word counts!"
     }
+  },
+  "pronunciationHelper": {
+    "auto": "Follow App Language",
+    "korean": "Korean (Hangul)",
+    "japanese": "Japanese (Katakana)",
+    "english": "English (Respelling)",
+    "off": "Off"
   },
   "sync": {
     "title": "Sync Status",

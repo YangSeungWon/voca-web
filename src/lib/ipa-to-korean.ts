@@ -5,9 +5,11 @@
 
 import { ipaToHangul } from 'ipa-hangul';
 import { ipaToKatakana } from './ipa-to-katakana';
+import { getPronunciationHelper, type PronunciationHelper } from '@/hooks/useSettings';
 
 /**
  * Check if user's browser language is Korean
+ * @deprecated Use getEffectiveHelper from pronunciation-helper.ts instead
  */
 export function isKoreanUser(): boolean {
   if (typeof navigator === 'undefined') return false;
@@ -16,10 +18,30 @@ export function isKoreanUser(): boolean {
 
 /**
  * Check if user's browser language is Japanese
+ * @deprecated Use getEffectiveHelper from pronunciation-helper.ts instead
  */
 export function isJapaneseUser(): boolean {
   if (typeof navigator === 'undefined') return false;
   return navigator.language.startsWith('ja');
+}
+
+/**
+ * Get effective pronunciation helper based on settings and locale
+ */
+export function getEffectiveHelper(locale: string): PronunciationHelper {
+  const setting = getPronunciationHelper();
+
+  if (setting === 'auto') {
+    switch (locale) {
+      case 'ko': return 'ko';
+      case 'ja': return 'ja';
+      case 'en': return 'en';
+      case 'zh': return 'off';
+      default: return 'off';
+    }
+  }
+
+  return setting;
 }
 
 /**
@@ -47,6 +69,41 @@ export function formatPronunciation(ipa: string | undefined): {
     katakana,
     ipa: cleanIpa
   };
+}
+
+/**
+ * Get pronunciation helper text based on user settings
+ */
+export function getHelperText(
+  ipa: string | undefined,
+  locale: string,
+  precomputed?: { korean?: string; katakana?: string; respelling?: string }
+): string {
+  const helper = getEffectiveHelper(locale);
+  const cleanIpa = ipa || '';
+
+  if (helper === 'off' || !cleanIpa) {
+    return '';
+  }
+
+  switch (helper) {
+    case 'ko': {
+      if (precomputed?.korean) return precomputed.korean;
+      const korean = ipaToHangul(cleanIpa, { markStress: 'html' });
+      return korean
+        .replace(/<strong>(.*?)<\/strong>/g, '<strong class="stress-primary">$1</strong>')
+        .replace(/<em>(.*?)<\/em>/g, '<em class="stress-secondary">$1</em>');
+    }
+
+    case 'ja':
+      return precomputed?.katakana || ipaToKatakana(cleanIpa);
+
+    case 'en':
+      return precomputed?.respelling || '';
+
+    default:
+      return '';
+  }
 }
 
 /**

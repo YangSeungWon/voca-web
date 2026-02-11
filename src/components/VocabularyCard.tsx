@@ -5,7 +5,8 @@ import { Trash2, Volume2, ChevronRight } from 'lucide-react';
 import { speak } from '@/lib/speech';
 import ExampleSentences from './ExampleSentences';
 import ConfirmModal from './ConfirmModal';
-import { formatPronunciation, isKoreanUser } from '@/lib/ipa-to-korean';
+import { formatPronunciation, getHelperText, getEffectiveHelper } from '@/lib/ipa-to-korean';
+import { useLocale } from 'next-intl';
 
 interface VocabularyWord {
   id: string;
@@ -30,10 +31,14 @@ interface VocabularyCardProps {
 export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const locale = useLocale();
 
-  const { korean, ipa } = item.word.pronunciation
+  const { korean, katakana, ipa } = item.word.pronunciation
     ? formatPronunciation(item.word.pronunciation)
-    : { korean: '', ipa: '' };
+    : { korean: '', katakana: '', ipa: '' };
+
+  const helper = getEffectiveHelper(locale);
+  const helperText = getHelperText(item.word.pronunciation, locale, { korean, katakana });
 
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl mb-2">
@@ -49,11 +54,11 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
               </h3>
               {ipa && (
                 <span className="text-sm text-gray-500 dark:text-gray-400 shrink-0 pt-1">
-                  {isKoreanUser() && korean ? (
+                  {helper !== 'off' && helperText ? (
                     <>
                       <span
                         className="font-medium"
-                        dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
+                        dangerouslySetInnerHTML={{ __html: `[${helperText}]` }}
                       />
                       <span className="ml-1">{ipa}</span>
                     </>

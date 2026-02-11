@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { getAuthToken } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
-import { formatPronunciation } from '@/lib/ipa-to-korean';
+import { formatPronunciation, getHelperText, getEffectiveHelper } from '@/lib/ipa-to-korean';
+import { useLocale } from 'next-intl';
 
 interface VocabularyWord {
   id: string;
@@ -25,6 +26,7 @@ export default function VocabularyList() {
   const [words, setWords] = useState<VocabularyWord[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedWords, setExpandedWords] = useState<Set<string>>(new Set());
+  const locale = useLocale();
 
   useEffect(() => {
     fetchVocabulary();
@@ -112,13 +114,15 @@ export default function VocabularyList() {
               <div className="flex items-center gap-3">
                 <h3 className="font-medium text-2xl">{item.word.word}</h3>
                 {item.word.pronunciation && (() => {
-                  const { korean, ipa } = formatPronunciation(item.word.pronunciation);
+                  const { korean, katakana, ipa } = formatPronunciation(item.word.pronunciation);
+                  const helper = getEffectiveHelper(locale);
+                  const helperText = getHelperText(item.word.pronunciation, locale, { korean, katakana });
                   return (
                     <div className="flex items-center gap-3 pt-2">
-                      {korean && (
+                      {helper !== 'off' && helperText && (
                         <span
                           className="text-2xl font-medium text-gray-600 dark:text-gray-300"
-                          dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
+                          dangerouslySetInnerHTML={{ __html: `[${helperText}]` }}
                         />
                       )}
                       <span className="text-2xl text-gray-500">{ipa}</span>

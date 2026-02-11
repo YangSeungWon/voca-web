@@ -8,7 +8,8 @@ import ExampleSentences from './ExampleSentences';
 import VocabularyCard from './VocabularyCard';
 import PullToRefresh from './PullToRefresh';
 import { apiFetch } from '@/lib/api-client';
-import { formatPronunciation } from '@/lib/ipa-to-korean';
+import { formatPronunciation, getHelperText, getEffectiveHelper } from '@/lib/ipa-to-korean';
+import { useLocale } from 'next-intl';
 
 interface VocabularyWord {
   id: string;
@@ -41,6 +42,7 @@ export default function VocabularyTable({ onAddWord }: VocabularyTableProps) {
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [filter, setFilter] = useState('');
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const locale = useLocale();
 
   useEffect(() => {
     fetchVocabulary();
@@ -293,13 +295,15 @@ export default function VocabularyTable({ onAddWord }: VocabularyTableProps) {
                     </td>
                     <td className="p-2 text-gray-500 dark:text-gray-400">
                       {item.word.pronunciation ? (() => {
-                        const { korean, ipa } = formatPronunciation(item.word.pronunciation);
+                        const { korean, katakana, ipa } = formatPronunciation(item.word.pronunciation);
+                        const helper = getEffectiveHelper(locale);
+                        const helperText = getHelperText(item.word.pronunciation, locale, { korean, katakana });
                         return (
                           <div className="flex flex-col gap-1 pt-2">
-                            {korean && (
+                            {helper !== 'off' && helperText && (
                               <span
                                 className="font-medium text-gray-600 dark:text-gray-300 text-lg"
-                                dangerouslySetInnerHTML={{ __html: `[${korean}]` }}
+                                dangerouslySetInnerHTML={{ __html: `[${helperText}]` }}
                               />
                             )}
                             <span className="text-lg text-gray-400">{ipa}</span>

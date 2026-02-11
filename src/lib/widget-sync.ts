@@ -10,7 +10,7 @@ const WidgetPlugin = registerPlugin<WidgetPluginInterface>('WidgetPlugin');
 interface WordData {
   word: string;
   pronunciation: string;
-  pronunciationKr: string;
+  pronunciationHelper: string; // Formatted pronunciation based on user's language setting
   meaning: string;
   level: number;
 }

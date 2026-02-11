@@ -84,6 +84,8 @@
     "developerDescription": "调试和测试功能",
     "language": "语言",
     "languageDescription": "更改显示语言",
+    "pronunciationHelper": "发音助手",
+    "pronunciationHelperDescription": "设置发音显示语言",
     "version": "Voca Web v1.0.0",
     "madeWith": "为语言学习者而制作"
   },
@@ -187,6 +189,13 @@
       "onWay": "你正在进步！继续学习！",
       "started": "刚刚开始。每个单词都很重要！"
     }
+  },
+  "pronunciationHelper": {
+    "auto": "跟随应用语言",
+    "korean": "韩语（韩文）",
+    "japanese": "日语（片假名）",
+    "english": "英语（拼读）",
+    "off": "关闭"
   },
   "sync": {
     "title": "同步状态",

@@ -84,6 +84,8 @@
     "developerDescription": "디버그 및 테스트 기능",
     "language": "언어",
     "languageDescription": "표시 언어 변경",
+    "pronunciationHelper": "발음 도우미",
+    "pronunciationHelperDescription": "발음 표기 언어 설정",
     "version": "Voca Web v1.0.0",
     "madeWith": "언어 학습자를 위해 만들었습니다"
   },
@@ -187,6 +189,13 @@
       "onWay": "좋은 진전이에요! 계속 학습하세요!",
       "started": "이제 시작이에요. 모든 단어가 중요해요!"
     }
+  },
+  "pronunciationHelper": {
+    "auto": "앱 언어와 동일",
+    "korean": "한국어 (한글)",
+    "japanese": "日本語 (カタカナ)",
+    "english": "English (Respelling)",
+    "off": "끄기"
   },
   "sync": {
     "title": "동기화 상태",

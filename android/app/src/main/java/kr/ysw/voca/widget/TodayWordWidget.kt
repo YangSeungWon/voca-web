@@ -43,7 +43,7 @@ class TodayWordWidget : AppWidgetProvider() {
                 Log.d(TAG, "Showing cached word: ${cachedWord.word}")
                 views.setTextViewText(R.id.widget_word, cachedWord.word)
                 views.setTextViewText(R.id.widget_pronunciation, cachedWord.pronunciation)
-                views.setTextViewText(R.id.widget_pronunciation_kr, cachedWord.pronunciationKr)
+                views.setTextViewText(R.id.widget_pronunciation_kr, cachedWord.pronunciationHelper)
                 views.setTextViewText(R.id.widget_meaning, cachedWord.meaning)
             } else if (!WidgetDataCache.hasData(context)) {
                 Log.d(TAG, "No cached data, prompting to open app")

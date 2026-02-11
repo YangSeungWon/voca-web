@@ -84,6 +84,8 @@
     "developerDescription": "デバッグとテスト機能",
     "language": "言語",
     "languageDescription": "表示言語を変更",
+    "pronunciationHelper": "発音ヘルパー",
+    "pronunciationHelperDescription": "発音表記の言語を設定",
     "version": "Voca Web v1.0.0",
     "madeWith": "言語学習者のために作りました"
   },
@@ -187,6 +189,13 @@
       "onWay": "順調です！学習を続けましょう！",
       "started": "始まったばかり。一つ一つの単語が大切！"
     }
+  },
+  "pronunciationHelper": {
+    "auto": "アプリ言語と同じ",
+    "korean": "韓国語（ハングル）",
+    "japanese": "日本語（カタカナ）",
+    "english": "英語（リスペリング）",
+    "off": "オフ"
   },
   "sync": {
     "title": "同期状態",
