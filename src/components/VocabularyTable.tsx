@@ -373,7 +373,7 @@ export default function VocabularyTable({ onAddWord }: VocabularyTableProps) {
           </div>
 
           {words.length === 0 ? (
-            <div className="flex flex-col items-center justify-center px-6 h-[calc(100vh-160px)] pb-24">
+            <div className="flex flex-col items-center justify-center px-6 pb-24" style={{ height: 'calc(100vh - 160px - env(safe-area-inset-bottom, 0px))' }}>
               <div className="text-center">
                 <div className="text-gray-400 dark:text-gray-500 text-lg font-medium mb-2">
                   No words yet
@@ -398,7 +398,7 @@ export default function VocabularyTable({ onAddWord }: VocabularyTableProps) {
               </div>
             </div>
           ) : (
-            <div className="p-4 pb-24">
+            <div className="p-4" style={{ paddingBottom: 'calc(96px + env(safe-area-inset-bottom, 0px))' }}>
               {filteredWords.map((item) => (
                 <VocabularyCard
                   key={item.id}
@@ -414,7 +414,8 @@ export default function VocabularyTable({ onAddWord }: VocabularyTableProps) {
         {onAddWord && (
           <button
             onClick={onAddWord}
-            className="fixed bottom-20 right-4 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-colors z-20"
+            className="fixed right-4 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-colors z-20"
+            style={{ bottom: 'calc(80px + env(safe-area-inset-bottom, 0px))' }}
           >
             <Plus size={24} />
           </button>
