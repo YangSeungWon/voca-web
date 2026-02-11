@@ -2,6 +2,7 @@
 
 import { Search, FolderOpen, BookOpen, BarChart3, MoreHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useKeyboardVisible } from '@/hooks/useKeyboardVisible';
 
 interface MobileNavProps {
   activeView: 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics' | 'more';
@@ -9,6 +10,7 @@ interface MobileNavProps {
 }
 
 export default function MobileNav({ activeView, onViewChange }: MobileNavProps) {
+  const { isVisible: isKeyboardVisible } = useKeyboardVisible();
   const t = useTranslations('nav');
 
   const tabs = [
@@ -18,6 +20,11 @@ export default function MobileNav({ activeView, onViewChange }: MobileNavProps) 
     { id: 'statistics' as const, label: t('statistics'), icon: BarChart3 },
     { id: 'more' as const, label: t('more'), icon: MoreHorizontal },
   ];
+
+  // Hide when keyboard is visible
+  if (isKeyboardVisible) {
+    return null;
+  }
 
   return (
     <nav className="mobile-bottom-nav fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 md:hidden z-50" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
