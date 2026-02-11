@@ -415,7 +415,7 @@ export default function VocabularyTable({ onAddWord }: VocabularyTableProps) {
           <button
             onClick={onAddWord}
             className="fixed right-4 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-colors z-20"
-            style={{ bottom: 'calc(80px + env(safe-area-inset-bottom, 0px))' }}
+            style={{ bottom: 'calc(88px + env(safe-area-inset-bottom, 0px))' }}
           >
             <Plus size={24} />
           </button>
