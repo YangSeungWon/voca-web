@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="10dp"
     android:background="@drawable/widget_background_purple">
 
@@ -12,19 +11,20 @@
         android:id="@+id/widget_word"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:text="vocabulary"
         android:textColor="#FFFFFF"
-        android:textSize="20sp"
+        android:textSize="24sp"
         android:fontFamily="sans-serif-medium"
         android:maxLines="1"
-        android:autoSizeTextType="uniform"
-        android:autoSizeMinTextSize="14sp"
-        android:autoSizeMaxTextSize="20sp" />
+        android:ellipsize="end" />
 
     <!-- Pronunciation -->
     <LinearLayout
+        android:id="@+id/pronunciation_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/widget_word"
         android:orientation="horizontal"
         android:layout_marginTop="2dp">
 
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:text="/vəˈkæbjʊləri/"
             android:textColor="#60A5FA"
-            android:textSize="11sp"
+            android:textSize="13sp"
             android:maxLines="1" />
 
         <TextView
@@ -43,40 +43,25 @@
             android:layout_height="wrap_content"
             android:text="버캐뷸러리"
             android:textColor="#4ADE80"
-            android:textSize="11sp"
+            android:textSize="13sp"
             android:layout_marginStart="6dp"
             android:maxLines="1" />
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
     <!-- Show Answer Button -->
-    <LinearLayout
+    <TextView
         android:id="@+id/widget_btn_show"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:orientation="horizontal"
+        android:layout_height="44dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
         android:gravity="center"
-        android:paddingHorizontal="16dp"
+        android:paddingLeft="18dp"
+        android:paddingRight="18dp"
         android:background="@drawable/widget_button_blue"
-        android:layout_gravity="end">
+        android:text="Show"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif-medium" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="👁"
-            android:textSize="14sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" Show"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:fontFamily="sans-serif-medium" />
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
