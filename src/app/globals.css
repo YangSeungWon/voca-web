@@ -123,8 +123,5 @@
   body {
     /* Prevent overscroll bounce in standalone mode */
     overscroll-behavior: none;
-    position: fixed;
-    width: 100%;
-    height: 100%;
   }
 }
