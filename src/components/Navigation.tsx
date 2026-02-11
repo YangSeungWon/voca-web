@@ -15,6 +15,7 @@ export default function Navigation({ activeView, onViewChange }: NavigationProps
     { id: 'vocabulary' as const, label: t('vocabulary') },
     { id: 'study' as const, label: t('study') },
     { id: 'statistics' as const, label: t('statistics') },
+    { id: 'more' as const, label: t('settings') },
   ];
 
   return (
