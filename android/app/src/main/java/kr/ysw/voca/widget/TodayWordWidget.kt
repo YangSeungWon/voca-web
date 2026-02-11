@@ -68,52 +68,68 @@ class TodayWordWidget : AppWidgetProvider() {
             // Fetch data from API
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    val wordData = fetchTodayWord(token)
+                    val result = fetchTodayWord(token)
                     withContext(Dispatchers.Main) {
-                        updateWidget(context, appWidgetManager, appWidgetId, wordData)
+                        when (result) {
+                            is FetchResult.Success -> updateWidget(context, appWidgetManager, appWidgetId, result.data)
+                            is FetchResult.NeedsLogin -> updateWidget(context, appWidgetManager, appWidgetId, null, needsLogin = true)
+                            is FetchResult.NoData -> updateWidget(context, appWidgetManager, appWidgetId, null)
+                        }
                     }
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
-                        updateWidget(context, appWidgetManager, appWidgetId, null)
+                        updateWidget(context, appWidgetManager, appWidgetId, null, needsLogin = token == null)
                     }
                 }
             }
         }
 
-        private fun fetchTodayWord(token: String?): WordData? {
+        // Result class to distinguish between no data and auth error
+        sealed class FetchResult {
+            data class Success(val data: WordData) : FetchResult()
+            object NeedsLogin : FetchResult()
+            object NoData : FetchResult()
+        }
+
+        private fun fetchTodayWord(token: String?): FetchResult {
             return try {
                 val url = URL(API_URL)
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
 
-                // Use token if available, otherwise fallback to default-user
                 if (token != null) {
                     connection.setRequestProperty("Authorization", "Bearer $token")
-                } else {
-                    connection.setRequestProperty("x-user-id", "default-user")
                 }
 
                 connection.connectTimeout = 5000
                 connection.readTimeout = 5000
 
-                if (connection.responseCode == 200) {
-                    val response = connection.inputStream.bufferedReader().readText()
-                    val json = JSONObject(response)
-                    val word = json.getJSONObject("word")
+                val responseCode = connection.responseCode
 
-                    WordData(
-                        word = word.getString("text"),
-                        pronunciation = word.optString("pronunciation", ""),
-                        pronunciationKr = word.optString("pronunciationKr", ""),
-                        meaning = word.getString("meaning"),
-                        level = word.getInt("level")
-                    )
-                } else {
-                    null
+                when {
+                    responseCode == 401 || token == null -> FetchResult.NeedsLogin
+                    responseCode == 200 -> {
+                        val response = connection.inputStream.bufferedReader().readText()
+                        val json = JSONObject(response)
+
+                        if (json.isNull("word") || !json.has("word")) {
+                            FetchResult.NoData
+                        } else {
+                            val word = json.getJSONObject("word")
+                            FetchResult.Success(WordData(
+                                word = word.getString("text"),
+                                pronunciation = word.optString("pronunciation", ""),
+                                pronunciationKr = word.optString("pronunciationKr", ""),
+                                meaning = word.getString("meaning"),
+                                level = word.getInt("level")
+                            ))
+                        }
+                    }
+                    else -> FetchResult.NoData
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                null
+                if (token == null) FetchResult.NeedsLogin else FetchResult.NoData
             }
         }
 
@@ -121,7 +137,8 @@ class TodayWordWidget : AppWidgetProvider() {
             context: Context,
             appWidgetManager: AppWidgetManager,
             appWidgetId: Int,
-            wordData: WordData?
+            wordData: WordData?,
+            needsLogin: Boolean = false
         ) {
             val views = RemoteViews(context.packageName, R.layout.widget_today_word)
 
@@ -131,12 +148,18 @@ class TodayWordWidget : AppWidgetProvider() {
                 views.setTextViewText(R.id.widget_pronunciation, wordData.pronunciation)
                 views.setTextViewText(R.id.widget_pronunciation_kr, wordData.pronunciationKr)
                 views.setTextViewText(R.id.widget_meaning, wordData.meaning)
+            } else if (needsLogin) {
+                // User needs to log in
+                views.setTextViewText(R.id.widget_word, "로그인 필요")
+                views.setTextViewText(R.id.widget_pronunciation, "")
+                views.setTextViewText(R.id.widget_pronunciation_kr, "")
+                views.setTextViewText(R.id.widget_meaning, "앱에서 로그인해주세요")
             } else {
-                // Placeholder data
+                // Loading or no words
                 views.setTextViewText(R.id.widget_word, "Loading...")
                 views.setTextViewText(R.id.widget_pronunciation, "")
                 views.setTextViewText(R.id.widget_pronunciation_kr, "")
-                views.setTextViewText(R.id.widget_meaning, "Add words to see them here")
+                views.setTextViewText(R.id.widget_meaning, "단어를 추가해주세요")
             }
 
             // Create intent to open app when widget is clicked
