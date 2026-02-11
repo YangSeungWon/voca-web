@@ -35,19 +35,19 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
   const { helperText, helper } = usePronunciationHelper(item.word.word, item.word.pronunciation);
 
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl mb-2">
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg mb-1.5">
       <div
-        className="px-4 py-3 cursor-pointer"
+        className="px-3 py-2 cursor-pointer"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
-            <div className="flex items-start gap-2 mb-0.5">
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 break-all">
+            <div className="flex items-start gap-2">
+              <h3 className="text-base font-semibold text-gray-800 dark:text-gray-100 break-all">
                 {item.word.word}
               </h3>
               {ipa && (
-                <span className="text-sm text-gray-500 dark:text-gray-400 shrink-0 pt-1">
+                <span className="text-xs text-gray-500 dark:text-gray-400 shrink-0 pt-0.5">
                   {helper !== 'off' && helperText ? (
                     <>
                       <span
@@ -63,7 +63,7 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
               )}
             </div>
 
-            <p className={`text-sm text-gray-600 dark:text-gray-300 ${isExpanded ? '' : 'line-clamp-1'}`}>
+            <p className={`text-xs text-gray-600 dark:text-gray-300 ${isExpanded ? '' : 'line-clamp-1'}`}>
               {item.word.definitions[0]?.meaning || '-'}
             </p>
 
@@ -84,7 +84,7 @@ export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) 
       </div>
       
       {isExpanded && (
-        <div className="border-t border-gray-200 dark:border-gray-700 px-4 py-3">
+        <div className="border-t border-gray-200 dark:border-gray-700 px-3 py-2">
           {/* Actions */}
           <div className="flex items-center justify-between mb-3">
             <div className="text-xs text-gray-400">Level {item.level}</div>

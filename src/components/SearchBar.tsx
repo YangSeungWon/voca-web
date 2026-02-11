@@ -72,7 +72,7 @@ const SearchBar = forwardRef<SearchBarRef, SearchBarProps>(({ onWordFound, autoF
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t('searchPlaceholder')}
-          className="w-full pl-12 pr-4 py-4 text-lg md:text-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors shadow-sm"
+          className="w-full pl-12 pr-4 py-4 text-lg md:text-xl border-2 border-blue-300 dark:border-blue-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-xl focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900 transition-colors shadow-md"
           disabled={isSearching}
           lang="en"
           autoCapitalize="none"
