@@ -3,6 +3,8 @@ import syncService from '@/lib/sync-service';
 import offlineDB from '@/lib/offline-db';
 import { getAuthToken, getUserId } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
+import { syncWordsToWidget } from '@/lib/widget-sync';
+import { ipaToHangul } from 'ipa-hangul';
 
 interface VocabularyItem {
   id: string;
@@ -44,6 +46,20 @@ export function useOfflineVocabulary() {
 
           // Cache in IndexedDB for offline use
           await offlineDB.mergeServerData(data);
+
+          // Sync to Android widget
+          const widgetWords = data.map((item: VocabularyItem) => {
+            const pronunciation = item.word.pronunciation || '';
+            return {
+              word: item.word.word,
+              pronunciation: pronunciation,
+              pronunciationKr: pronunciation ? ipaToHangul(pronunciation) : '',
+              meaning: item.word.definitions?.[0]?.meaning || '',
+              level: item.level
+            };
+          });
+          syncWordsToWidget(widgetWords);
+
           setIsOnline(true);
           setLoading(false);
           return;

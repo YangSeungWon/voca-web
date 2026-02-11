@@ -5,20 +5,14 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.widget.RemoteViews
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONObject
-import java.net.HttpURLConnection
-import java.net.URL
 import kr.ysw.voca.R
 import kr.ysw.voca.MainActivity
 
 /**
  * Today's Word Widget
- * Shows a random vocabulary word each day
+ * Shows a random vocabulary word from cached data
  */
 class TodayWordWidget : AppWidgetProvider() {
 
@@ -27,164 +21,68 @@ class TodayWordWidget : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-        // Update all widgets
         for (appWidgetId in appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId)
         }
     }
 
-    override fun onEnabled(context: Context) {
-        // Called when the first widget is created
-    }
-
-    override fun onDisabled(context: Context) {
-        // Called when the last widget is removed
-    }
-
     companion object {
-        private const val API_URL = "https://voca.ysw.kr/api/widget/today-word"
-        private const val CAPACITOR_STORAGE = "CapacitorStorage"
-        private const val TOKEN_KEY = "token"
-
-        /**
-         * Get auth token from Capacitor SharedPreferences
-         */
-        private fun getToken(context: Context): String? {
-            return try {
-                val prefs = context.getSharedPreferences(CAPACITOR_STORAGE, Context.MODE_PRIVATE)
-                prefs.getString(TOKEN_KEY, null)
-            } catch (e: Exception) {
-                null
-            }
-        }
+        private const val TAG = "TodayWordWidget"
 
         fun updateAppWidget(
             context: Context,
             appWidgetManager: AppWidgetManager,
             appWidgetId: Int
         ) {
-            val token = getToken(context)
-
-            // Fetch data from API
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val result = fetchTodayWord(token)
-                    withContext(Dispatchers.Main) {
-                        when (result) {
-                            is FetchResult.Success -> updateWidget(context, appWidgetManager, appWidgetId, result.data)
-                            is FetchResult.NeedsLogin -> updateWidget(context, appWidgetManager, appWidgetId, null, needsLogin = true)
-                            is FetchResult.NoData -> updateWidget(context, appWidgetManager, appWidgetId, null)
-                        }
-                    }
-                } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        updateWidget(context, appWidgetManager, appWidgetId, null, needsLogin = token == null)
-                    }
-                }
-            }
-        }
-
-        // Result class to distinguish between no data and auth error
-        sealed class FetchResult {
-            data class Success(val data: WordData) : FetchResult()
-            object NeedsLogin : FetchResult()
-            object NoData : FetchResult()
-        }
-
-        private fun fetchTodayWord(token: String?): FetchResult {
-            return try {
-                val url = URL(API_URL)
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "GET"
-
-                if (token != null) {
-                    connection.setRequestProperty("Authorization", "Bearer $token")
-                }
-
-                connection.connectTimeout = 5000
-                connection.readTimeout = 5000
-
-                val responseCode = connection.responseCode
-
-                when {
-                    responseCode == 401 || token == null -> FetchResult.NeedsLogin
-                    responseCode == 200 -> {
-                        val response = connection.inputStream.bufferedReader().readText()
-                        val json = JSONObject(response)
-
-                        if (json.isNull("word") || !json.has("word")) {
-                            FetchResult.NoData
-                        } else {
-                            val word = json.getJSONObject("word")
-                            FetchResult.Success(WordData(
-                                word = word.getString("text"),
-                                pronunciation = word.optString("pronunciation", ""),
-                                pronunciationKr = word.optString("pronunciationKr", ""),
-                                meaning = word.getString("meaning"),
-                                level = word.getInt("level")
-                            ))
-                        }
-                    }
-                    else -> FetchResult.NoData
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                if (token == null) FetchResult.NeedsLogin else FetchResult.NoData
-            }
-        }
-
-        private fun updateWidget(
-            context: Context,
-            appWidgetManager: AppWidgetManager,
-            appWidgetId: Int,
-            wordData: WordData?,
-            needsLogin: Boolean = false
-        ) {
             val views = RemoteViews(context.packageName, R.layout.widget_today_word)
 
-            if (wordData != null) {
-                // Update widget with actual data
-                views.setTextViewText(R.id.widget_word, wordData.word)
-                views.setTextViewText(R.id.widget_pronunciation, wordData.pronunciation)
-                views.setTextViewText(R.id.widget_pronunciation_kr, wordData.pronunciationKr)
-                views.setTextViewText(R.id.widget_meaning, wordData.meaning)
-            } else if (needsLogin) {
-                // User needs to log in
-                views.setTextViewText(R.id.widget_word, "로그인 필요")
+            // Try to get word from cache
+            val cachedWord = WidgetDataCache.getRandomWord(context)
+
+            if (cachedWord != null) {
+                Log.d(TAG, "Showing cached word: ${cachedWord.word}")
+                views.setTextViewText(R.id.widget_word, cachedWord.word)
+                views.setTextViewText(R.id.widget_pronunciation, cachedWord.pronunciation)
+                views.setTextViewText(R.id.widget_pronunciation_kr, cachedWord.pronunciationKr)
+                views.setTextViewText(R.id.widget_meaning, cachedWord.meaning)
+            } else if (!WidgetDataCache.hasData(context)) {
+                Log.d(TAG, "No cached data, prompting to open app")
+                views.setTextViewText(R.id.widget_word, "앱을 열어주세요")
                 views.setTextViewText(R.id.widget_pronunciation, "")
                 views.setTextViewText(R.id.widget_pronunciation_kr, "")
-                views.setTextViewText(R.id.widget_meaning, "앱에서 로그인해주세요")
+                views.setTextViewText(R.id.widget_meaning, "단어를 동기화합니다")
             } else {
-                // Loading or no words
-                views.setTextViewText(R.id.widget_word, "Loading...")
+                views.setTextViewText(R.id.widget_word, "단어 없음")
                 views.setTextViewText(R.id.widget_pronunciation, "")
                 views.setTextViewText(R.id.widget_pronunciation_kr, "")
                 views.setTextViewText(R.id.widget_meaning, "단어를 추가해주세요")
             }
 
-            // Create intent to open app when widget is clicked
+            // Click to open app
             val intent = Intent(context, MainActivity::class.java).apply {
                 action = Intent.ACTION_VIEW
                 data = android.net.Uri.parse("vocaweb://vocabulary")
             }
             val pendingIntent = PendingIntent.getActivity(
-                context,
-                0,
-                intent,
+                context, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
             views.setOnClickPendingIntent(R.id.widget_container, pendingIntent)
 
-            // Update the widget
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
-    }
 
-    data class WordData(
-        val word: String,
-        val pronunciation: String,
-        val pronunciationKr: String,
-        val meaning: String,
-        val level: Int
-    )
+        /**
+         * Update all widgets (called after cache is updated)
+         */
+        fun updateAllWidgets(context: Context) {
+            val appWidgetManager = AppWidgetManager.getInstance(context)
+            val componentName = android.content.ComponentName(context, TodayWordWidget::class.java)
+            val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
+
+            for (appWidgetId in appWidgetIds) {
+                updateAppWidget(context, appWidgetManager, appWidgetId)
+            }
+        }
+    }
 }
