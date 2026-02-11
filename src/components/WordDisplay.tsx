@@ -8,8 +8,7 @@ import { DictionaryEntry } from '@/lib/dictionary';
 import { getAuthToken } from '@/lib/auth';
 import { speak } from '@/lib/speech';
 import { apiFetch } from '@/lib/api-client';
-import { formatPronunciation, getHelperText, getEffectiveHelper } from '@/lib/ipa-to-korean';
-import { useLocale } from 'next-intl';
+import PronunciationDisplay from './PronunciationDisplay';
 import { useAuth } from '@/hooks/useAuth';
 import { useVocabularyCache } from '@/hooks/useVocabularyCache';
 
@@ -21,7 +20,6 @@ interface WordDisplayProps {
 export default function WordDisplay({ word, onSave }: WordDisplayProps) {
   const t = useTranslations('home');
   const router = useRouter();
-  const locale = useLocale();
   const { isAuthenticated } = useAuth();
   const { hasWord, addWord } = useVocabularyCache();
   const [isSaving, setIsSaving] = useState(false);
@@ -86,22 +84,15 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
               }`}>
                 {word.word}
               </h2>
-              {word.pronunciation && (() => {
-                const { korean, katakana, ipa } = formatPronunciation(word.pronunciation);
-                const helper = getEffectiveHelper(locale);
-                const helperText = getHelperText(word.pronunciation, locale, { korean, katakana });
-                return (
-                  <div className="mt-2 flex flex-col gap-1 pt-2">
-                    {helper !== 'off' && helperText && (
-                      <span
-                        className="text-xl sm:text-2xl font-medium text-gray-600 dark:text-gray-300"
-                        dangerouslySetInnerHTML={{ __html: `[${helperText}]` }}
-                      />
-                    )}
-                    <span className="text-lg sm:text-xl text-gray-500 dark:text-gray-400">{ipa}</span>
-                  </div>
-                );
-              })()}
+              {word.pronunciation && (
+                <PronunciationDisplay
+                  word={word.word}
+                  pronunciation={word.pronunciation}
+                  className="mt-2 flex flex-col gap-1 pt-2"
+                  helperClassName="text-xl sm:text-2xl font-medium text-gray-600 dark:text-gray-300"
+                  ipaClassName="text-lg sm:text-xl text-gray-500 dark:text-gray-400"
+                />
+              )}
             </div>
             {!isNotFound && (
               <button

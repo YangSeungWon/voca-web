@@ -7,8 +7,7 @@ import { Volume2, ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { apiFetch } from '@/lib/api-client';
-import { formatPronunciation, getHelperText, getEffectiveHelper } from '@/lib/ipa-to-korean';
-import { useLocale } from 'next-intl';
+import PronunciationDisplay from './PronunciationDisplay';
 
 interface StudyWord {
   id: string;
@@ -40,7 +39,6 @@ export default function StudyMode() {
   });
   const cardRef = useRef<HTMLDivElement>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
-  const locale = useLocale();
 
   // Swipe gestures for mobile
   useSwipeGesture(cardRef, {
@@ -400,22 +398,15 @@ export default function StudyMode() {
                 <Volume2 size={20} />
               </button>
             </div>
-            {currentWord.word.pronunciation && (() => {
-              const { korean, katakana, ipa } = formatPronunciation(currentWord.word.pronunciation);
-              const helper = getEffectiveHelper(locale);
-              const helperText = getHelperText(currentWord.word.pronunciation, locale, { korean, katakana });
-              return (
-                <div className="flex items-center justify-center gap-2 mt-2 pt-2">
-                  {helper !== 'off' && helperText && (
-                    <span
-                      className="text-xl font-medium text-gray-600 dark:text-gray-300"
-                      dangerouslySetInnerHTML={{ __html: `[${helperText}]` }}
-                    />
-                  )}
-                  <span className="text-xl text-gray-500">{ipa}</span>
-                </div>
-              );
-            })()}
+            {currentWord.word.pronunciation && (
+              <PronunciationDisplay
+                word={currentWord.word.word}
+                pronunciation={currentWord.word.pronunciation}
+                className="flex items-center justify-center gap-2 mt-2 pt-2"
+                helperClassName="text-xl font-medium text-gray-600 dark:text-gray-300"
+                ipaClassName="text-xl text-gray-500"
+              />
+            )}
           </div>
 
           {/* Answer Side - Scrollable */}

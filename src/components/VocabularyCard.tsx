@@ -5,8 +5,7 @@ import { Trash2, Volume2, ChevronRight } from 'lucide-react';
 import { speak } from '@/lib/speech';
 import ExampleSentences from './ExampleSentences';
 import ConfirmModal from './ConfirmModal';
-import { formatPronunciation, getHelperText, getEffectiveHelper } from '@/lib/ipa-to-korean';
-import { useLocale } from 'next-intl';
+import { usePronunciationHelper } from '@/hooks/usePronunciationHelper';
 
 interface VocabularyWord {
   id: string;
@@ -31,14 +30,9 @@ interface VocabularyCardProps {
 export default function VocabularyCard({ item, onDelete }: VocabularyCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const locale = useLocale();
 
-  const { korean, katakana, ipa } = item.word.pronunciation
-    ? formatPronunciation(item.word.pronunciation)
-    : { korean: '', katakana: '', ipa: '' };
-
-  const helper = getEffectiveHelper(locale);
-  const helperText = getHelperText(item.word.pronunciation, locale, { korean, katakana });
+  const ipa = item.word.pronunciation || '';
+  const { helperText, helper } = usePronunciationHelper(item.word.word, item.word.pronunciation);
 
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl mb-2">

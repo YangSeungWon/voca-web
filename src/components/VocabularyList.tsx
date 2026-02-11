@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react';
 import { Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { getAuthToken } from '@/lib/auth';
 import { apiFetch } from '@/lib/api-client';
-import { formatPronunciation, getHelperText, getEffectiveHelper } from '@/lib/ipa-to-korean';
-import { useLocale } from 'next-intl';
+import PronunciationDisplay from './PronunciationDisplay';
 
 interface VocabularyWord {
   id: string;
@@ -26,7 +25,6 @@ export default function VocabularyList() {
   const [words, setWords] = useState<VocabularyWord[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedWords, setExpandedWords] = useState<Set<string>>(new Set());
-  const locale = useLocale();
 
   useEffect(() => {
     fetchVocabulary();
@@ -113,22 +111,15 @@ export default function VocabularyList() {
             <div className="flex-1">
               <div className="flex items-center gap-3">
                 <h3 className="font-medium text-2xl">{item.word.word}</h3>
-                {item.word.pronunciation && (() => {
-                  const { korean, katakana, ipa } = formatPronunciation(item.word.pronunciation);
-                  const helper = getEffectiveHelper(locale);
-                  const helperText = getHelperText(item.word.pronunciation, locale, { korean, katakana });
-                  return (
-                    <div className="flex items-center gap-3 pt-2">
-                      {helper !== 'off' && helperText && (
-                        <span
-                          className="text-2xl font-medium text-gray-600 dark:text-gray-300"
-                          dangerouslySetInnerHTML={{ __html: `[${helperText}]` }}
-                        />
-                      )}
-                      <span className="text-2xl text-gray-500">{ipa}</span>
-                    </div>
-                  );
-                })()}
+                {item.word.pronunciation && (
+                  <PronunciationDisplay
+                    word={item.word.word}
+                    pronunciation={item.word.pronunciation}
+                    className="flex items-center gap-3 pt-2"
+                    helperClassName="text-2xl font-medium text-gray-600 dark:text-gray-300"
+                    ipaClassName="text-2xl text-gray-500"
+                  />
+                )}
                 <button
                   onClick={() => toggleExpand(item.id)}
                   className="p-1 hover:bg-gray-100 rounded transition-colors"
