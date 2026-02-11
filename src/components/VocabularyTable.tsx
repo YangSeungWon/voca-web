@@ -9,6 +9,9 @@ import VocabularyCard from './VocabularyCard';
 import PullToRefresh from './PullToRefresh';
 import { apiFetch } from '@/lib/api-client';
 import PronunciationDisplay from './PronunciationDisplay';
+import WordDisplay from './WordDisplay';
+import { DictionaryEntry } from '@/lib/dictionary';
+import { useTranslations } from 'next-intl';
 
 interface VocabularyWord {
   id: string;
@@ -33,6 +36,7 @@ interface VocabularyTableProps {
 }
 
 export default function VocabularyTable({ onAddWord }: VocabularyTableProps) {
+  const t = useTranslations('home');
   const [words, setWords] = useState<VocabularyWord[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFilter, setShowFilter] = useState(false);
@@ -41,6 +45,40 @@ export default function VocabularyTable({ onAddWord }: VocabularyTableProps) {
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [filter, setFilter] = useState('');
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+
+  // Search modal state (desktop only)
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchedWord, setSearchedWord] = useState<DictionaryEntry | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSearchModal, setShowSearchModal] = useState(false);
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+
+    setIsSearching(true);
+    try {
+      const response = await fetch(`/api/dictionary/external?word=${encodeURIComponent(searchQuery.trim())}`);
+      if (response.ok) {
+        const result: DictionaryEntry = await response.json();
+        if (result) {
+          setSearchedWord(result);
+          setShowSearchModal(true);
+        }
+      }
+    } catch (error) {
+      console.error('Search failed:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleWordSaved = () => {
+    fetchVocabulary();
+    setShowSearchModal(false);
+    setSearchQuery('');
+    setSearchedWord(null);
+  };
 
   useEffect(() => {
     fetchVocabulary();
@@ -169,24 +207,46 @@ export default function VocabularyTable({ onAddWord }: VocabularyTableProps) {
 
   return (
     <div className="h-full">
-      {/* Desktop Header */}
-      <div className="hidden md:flex border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 items-center justify-between">
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            placeholder="Filter..."
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
-          />
-          <button className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg">
-            <Filter size={14} />
-          </button>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">
-            {filteredWords.length} words
-          </span>
+      {/* Desktop Header with Search */}
+      <div className="hidden md:block border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-3">
+        {/* Search Bar */}
+        <form onSubmit={handleSearch} className="mb-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t('searchPlaceholder')}
+              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+              disabled={isSearching}
+            />
+            {isSearching && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
+          </div>
+        </form>
+        {/* Filter and Count */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="Filter..."
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:border-blue-500 dark:focus:border-blue-400"
+            />
+            <button className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg">
+              <Filter size={14} />
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500">
+              {filteredWords.length} words
+            </span>
+          </div>
         </div>
       </div>
 
@@ -421,6 +481,31 @@ export default function VocabularyTable({ onAddWord }: VocabularyTableProps) {
           </button>
         )}
       </div>
+
+      {/* Search Result Modal (Desktop) */}
+      {showSearchModal && searchedWord && (
+        <div className="hidden md:flex fixed inset-0 bg-black/50 items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full mx-4 max-h-[80vh] overflow-auto">
+            <div className="sticky top-0 bg-white dark:bg-gray-800 px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {searchedWord.word}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowSearchModal(false);
+                  setSearchedWord(null);
+                }}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+              >
+                <X size={20} className="text-gray-500" />
+              </button>
+            </div>
+            <div className="p-4">
+              <WordDisplay word={searchedWord} onSave={handleWordSaved} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

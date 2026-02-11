@@ -157,9 +157,8 @@ export default function Home() {
           currentWordRef.current = null;
         }
       } else if (!hash) {
-        // Native app defaults to vocabulary, web defaults to home (search)
-        const isNativeApp = !!(window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor?.isNativePlatform?.();
-        window.location.hash = viewToHash[isNativeApp ? 'vocabulary' : 'home'];
+        // All platforms default to vocabulary (search is integrated on desktop)
+        window.location.hash = viewToHash['vocabulary'];
       }
     };
 
