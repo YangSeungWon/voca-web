@@ -18,8 +18,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WKScriptMessageHandler {
             self.syncTokenToAppGroups()
         }
 
+        #if targetEnvironment(macCatalyst)
+        // Configure Mac Catalyst title bar after window is ready
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.configureMacTitleBar()
+        }
+        #endif
+
         return true
     }
+
+    #if targetEnvironment(macCatalyst)
+    private func configureMacTitleBar() {
+        guard let windowScene = window?.windowScene else { return }
+        if let titlebar = windowScene.titlebar {
+            titlebar.titleVisibility = .hidden
+            titlebar.toolbar = nil
+        }
+    }
+    #endif
 
     // MARK: - Token Synchronization
 

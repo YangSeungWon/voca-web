@@ -49,9 +49,17 @@ export default function Home() {
   const [activeView, setActiveView] = useState<ViewType>('vocabulary');
   const [refreshVocab, setRefreshVocab] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [isMacCatalyst, setIsMacCatalyst] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
   const { refresh: refreshVocabCache } = useVocabularyCache();
   const { isVisible: isKeyboardVisible, viewportHeight } = useKeyboardVisible();
+
+  // Detect Mac Catalyst (Capacitor on Mac)
+  useEffect(() => {
+    const isNative = !!(window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor?.isNativePlatform?.();
+    const isMac = navigator.platform?.toLowerCase().includes('mac') || navigator.userAgent?.toLowerCase().includes('macintosh');
+    setIsMacCatalyst(isNative && isMac);
+  }, []);
 
   // Handle Android back button
   useBackButton({
@@ -191,7 +199,10 @@ export default function Home() {
     <div className={`bg-gray-50 dark:bg-gray-900 transition-colors ${hideOverflow ? 'h-screen overflow-hidden' : 'min-h-screen'}`}>
       {/* Desktop-only header */}
       {!isMobile && (
-        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <header
+          className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+          style={isMacCatalyst ? { paddingTop: '28px' } : undefined}
+        >
           <div className="max-w-7xl mx-auto px-4 py-4">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
