@@ -11,6 +11,10 @@ export default {
     // IPA stress markers - used in dangerouslySetInnerHTML
     'stress-primary',
     'stress-secondary',
+    'stress-single',
+    'stress-multi',
+    'stress-dot',
+    'stress-line',
   ],
   theme: {
     extend: {

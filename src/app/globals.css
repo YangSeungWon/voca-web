@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --header-height: 57px;
+  }
+
   body {
     @apply antialiased;
   }
@@ -32,7 +36,58 @@
     @apply w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 transition-colors;
   }
 
-  /* IPA stress markers - bold with dot above for emphasis */
+  /* IPA stress markers - bold with dot/line above for emphasis */
+
+  /* 1글자 음절 - 점 하나 중앙 */
+  .stress-single {
+    @apply font-black relative inline-block;
+  }
+
+  .stress-single::before {
+    content: '•';
+    position: absolute;
+    top: -0.3em;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.5em;
+    line-height: 1;
+    @apply text-gray-800 dark:text-gray-200;
+  }
+
+  /* 2글자 이상 음절 - 양 끝 점 + 선 */
+  .stress-multi {
+    @apply font-black relative inline-block;
+  }
+
+  /* 점이 붙는 글자 (첫 글자, 마지막 글자) */
+  .stress-dot {
+    position: relative;
+    display: inline-block;
+  }
+
+  .stress-dot::before {
+    content: '•';
+    position: absolute;
+    top: -0.4em;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.5em;
+    line-height: 1;
+    @apply text-gray-800 dark:text-gray-200;
+  }
+
+  /* 점 사이 선 (첫 글자 중앙 ~ 마지막 글자 중앙) */
+  .stress-line {
+    position: absolute;
+    top: -0.4em; /* 점과 같은 top */
+    transform: translateY(0.45em); /* 점 중앙으로 조정 */
+    left: 0.5em;
+    right: 0.5em;
+    height: 1px;
+    @apply bg-gray-800 dark:bg-gray-200;
+  }
+
+  /* 기존 호환용 (fallback) */
   .stress-primary {
     @apply font-black relative inline-block;
   }

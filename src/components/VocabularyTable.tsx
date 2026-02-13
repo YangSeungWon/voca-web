@@ -40,9 +40,10 @@ type SortOrder = 'asc' | 'desc';
 interface VocabularyTableProps {
   onAddWord?: () => void;
   onWordSearched?: (word: DictionaryEntry | null) => void;
+  initialSearchedWord?: DictionaryEntry | null;
 }
 
-export default function VocabularyTable({ onAddWord, onWordSearched }: VocabularyTableProps) {
+export default function VocabularyTable({ onAddWord, onWordSearched, initialSearchedWord }: VocabularyTableProps) {
   const t = useTranslations('home');
   const [words, setWords] = useState<VocabularyWord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,8 +56,16 @@ export default function VocabularyTable({ onAddWord, onWordSearched }: Vocabular
 
   // Search state (desktop only)
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchedWord, setSearchedWord] = useState<DictionaryEntry | null>(null);
+  const [searchedWord, setSearchedWord] = useState<DictionaryEntry | null>(initialSearchedWord || null);
   const [isSearching, setIsSearching] = useState(false);
+
+  // Sync initialSearchedWord when it changes (e.g., mobile to desktop transition)
+  useEffect(() => {
+    if (initialSearchedWord) {
+      setSearchedWord(initialSearchedWord);
+      setSearchQuery(initialSearchedWord.word);
+    }
+  }, [initialSearchedWord]);
 
   // Notify parent when searched word changes (for mobile transition)
   useEffect(() => {
@@ -320,7 +329,7 @@ export default function VocabularyTable({ onAddWord, onWordSearched }: Vocabular
       {/* Desktop Table View */}
       <div className="hidden md:block">
         <table className="w-full text-xs">
-          <thead className="bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 sticky top-0">
+          <thead className="bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 sticky top-[var(--header-height)] z-10">
             <tr>
               <th className="w-8 p-2 text-left">
                 <input

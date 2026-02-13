@@ -58,10 +58,21 @@ export function formatPronunciation(ipa: string | undefined): {
   const katakana = ipaToKatakana(cleanIpa);
 
   // Apply custom styling to stress markers with class names for dark mode support
-  // <strong> for primary stress: blue-600/blue-400, extra bold, larger
-  // <em> for secondary stress: blue-600/blue-400, normal bold, normal size
+  // Single char: dot above center
+  // Multi char: dots above first and last char with line connecting
   const styledKorean = korean
-    .replace(/<strong>(.*?)<\/strong>/g, '<strong class="stress-primary">$1</strong>')
+    .replace(/<strong>(.*?)<\/strong>/g, (_match, content) => {
+      const text = content.replace(/<[^>]+>/g, '');
+      const chars = [...text];
+      if (chars.length === 1) {
+        return `<span class="stress-single">${content}</span>`;
+      } else {
+        const first = chars[0];
+        const middle = chars.slice(1, -1).join('');
+        const last = chars[chars.length - 1];
+        return `<span class="stress-multi"><span class="stress-dot">${first}</span>${middle}<span class="stress-dot">${last}</span><span class="stress-line"></span></span>`;
+      }
+    })
     .replace(/<em>(.*?)<\/em>/g, '<em class="stress-secondary">$1</em>');
 
   return {
@@ -91,7 +102,18 @@ export function getHelperText(
       if (precomputed?.korean) return precomputed.korean;
       const korean = ipaToHangul(cleanIpa, { markStress: 'html' });
       return korean
-        .replace(/<strong>(.*?)<\/strong>/g, '<strong class="stress-primary">$1</strong>')
+        .replace(/<strong>(.*?)<\/strong>/g, (_match, content) => {
+          const text = content.replace(/<[^>]+>/g, '');
+          const chars = [...text];
+          if (chars.length === 1) {
+            return `<span class="stress-single">${content}</span>`;
+          } else {
+            const first = chars[0];
+            const middle = chars.slice(1, -1).join('');
+            const last = chars[chars.length - 1];
+            return `<span class="stress-multi"><span class="stress-dot">${first}</span>${middle}<span class="stress-dot">${last}</span><span class="stress-line"></span></span>`;
+          }
+        })
         .replace(/<em>(.*?)<\/em>/g, '<em class="stress-secondary">$1</em>');
     }
 

@@ -49,7 +49,18 @@ export function usePronunciationHelper(word: string, ipa: string | undefined) {
         case 'ko': {
           const korean = ipaToHangul(ipaStr, { markStress: 'html' });
           result = korean
-            .replace(/<strong>(.*?)<\/strong>/g, '<strong class="stress-primary">$1</strong>')
+            .replace(/<strong>(.*?)<\/strong>/g, (_match, content) => {
+              const text = content.replace(/<[^>]+>/g, '');
+              const chars = [...text];
+              if (chars.length === 1) {
+                return `<span class="stress-single">${content}</span>`;
+              } else {
+                const first = chars[0];
+                const middle = chars.slice(1, -1).join('');
+                const last = chars[chars.length - 1];
+                return `<span class="stress-multi"><span class="stress-dot">${first}</span>${middle}<span class="stress-dot">${last}</span><span class="stress-line"></span></span>`;
+              }
+            })
             .replace(/<em>(.*?)<\/em>/g, '<em class="stress-secondary">$1</em>');
           break;
         }

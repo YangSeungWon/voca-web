@@ -92,13 +92,21 @@ export default function Home() {
         currentWordRef.current = desktopSearchedWord.word;
         window.location.hash = `home?word=${encodeURIComponent(desktopSearchedWord.word)}`;
       }
+
+      // When transitioning to desktop with a mobile searched word, switch to vocabulary view
+      if (!isMobileSize && wasMobile && currentWord && activeView === 'home') {
+        setDesktopSearchedWord(currentWord);
+        setCurrentWord(null);
+        currentWordRef.current = null;
+        window.location.hash = `vocabulary?word=${encodeURIComponent(currentWord.word)}`;
+      }
     };
 
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [desktopSearchedWord]);
+  }, [desktopSearchedWord, currentWord, activeView]);
 
   // Refresh vocabulary cache when authenticated
   useEffect(() => {
@@ -107,10 +115,21 @@ export default function Home() {
     }
   }, [isAuthenticated, refreshVocabCache]);
 
+  // Update URL when desktop searched word changes
+  useEffect(() => {
+    if (!isMobile && activeView === 'vocabulary') {
+      if (desktopSearchedWord) {
+        window.location.hash = `vocabulary?word=${encodeURIComponent(desktopSearchedWord.word)}`;
+      } else {
+        window.location.hash = 'vocabulary';
+      }
+    }
+  }, [desktopSearchedWord, isMobile, activeView]);
+
   // Track current word in ref for use in hash change handler
   const currentWordRef = useRef<string | null>(null);
 
-  // Load word from URL parameter
+  // Load word from URL parameter (mobile home view)
   const loadWordFromUrl = async (word: string) => {
     if (currentWordRef.current === word) return;
     try {
@@ -134,6 +153,31 @@ export default function Home() {
       }
     } catch (error) {
       console.error('Failed to load word from URL:', error);
+    }
+  };
+
+  // Load word from URL parameter (desktop vocabulary view)
+  const loadWordForDesktop = async (word: string) => {
+    if (desktopSearchedWord?.word === word) return;
+    try {
+      const response = await fetch(`/api/dictionary/external?word=${encodeURIComponent(word)}`, {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const result: DictionaryEntry = await response.json();
+        if (result) {
+          setDesktopSearchedWord(result);
+          return;
+        }
+      }
+      // Fallback
+      const { searchWord } = await import('@/lib/dictionary');
+      const fallback = await searchWord(word);
+      if (fallback) {
+        setDesktopSearchedWord(fallback);
+      }
+    } catch (error) {
+      console.error('Failed to load word for desktop:', error);
     }
   };
 
@@ -167,6 +211,17 @@ export default function Home() {
         } else if (view === 'home' && !queryPart) {
           setCurrentWord(null);
           currentWordRef.current = null;
+        }
+
+        // Handle word parameter for vocabulary view (desktop)
+        if (view === 'vocabulary' && queryPart) {
+          const params = new URLSearchParams(queryPart);
+          const word = params.get('word');
+          if (word) {
+            loadWordForDesktop(word);
+          }
+        } else if (view === 'vocabulary' && !queryPart) {
+          setDesktopSearchedWord(null);
         }
       } else if (!hash) {
         // All platforms default to vocabulary (search is integrated on desktop)
@@ -211,7 +266,7 @@ export default function Home() {
       {/* Desktop-only header */}
       {!isMobile && (
         <header
-          className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
+          className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20"
           style={isMacCatalyst ? { paddingTop: '28px' } : undefined}
         >
           <div className="max-w-7xl mx-auto px-4 py-4">
@@ -299,6 +354,7 @@ export default function Home() {
                   key={refreshVocab}
                   onAddWord={() => handleViewChange('home')}
                   onWordSearched={setDesktopSearchedWord}
+                  initialSearchedWord={desktopSearchedWord}
                 />
               </div>
             )
