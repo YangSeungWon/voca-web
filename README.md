@@ -1,18 +1,20 @@
 # Voca Web
 
-A vocabulary learning application with flashcard study mode and cross-platform support.
+A vocabulary learning application with study mode and cross-platform support.
+
+**Live**: https://voca.ysw.kr
 
 ## Features
 
 - 📚 Word dictionary with definitions from Free Dictionary API
 - 🗣️ IPA pronunciation with CMU Dictionary fallback (134,000+ words)
-- 📊 Excel-style table view for vocabulary management
-- 🎴 Flashcard study mode with spaced repetition
+- 🔤 Pronunciation helper (IPA → Korean hangul / Japanese katakana / English respelling)
+- 📊 Vocabulary management with search and filter
+- 🎴 Study mode with flashcards
 - 📈 Learning statistics and progress tracking
-- 📁 Word grouping and organization
-- 🌐 Multi-language UI (Korean, English, Japanese, Chinese)
-- 💾 CSV import/export
+- 🌐 Multi-language UI (Korean, English, Japanese, Chinese, Traditional Chinese)
 - 📱 iOS & Android apps via Capacitor
+- 📱 Home screen widgets (iOS & Android)
 - 🔐 JWT authentication with secure API
 - 🌙 Dark mode support
 
@@ -99,6 +101,7 @@ npm run cap:open:android
 - **Word Definitions**: [Free Dictionary API](https://dictionaryapi.dev/)
 - **Pronunciations**: [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict) (134,000+ words)
 - **IPA Conversion**: Custom ARPAbet to IPA converter
+- **Korean Phonetics**: [ipa-hangul](https://www.npmjs.com/package/ipa-hangul) library
 
 ## Project Structure
 

@@ -75,18 +75,30 @@ export default function Home() {
     }
   });
 
+  // Track desktop searched word for mobile transition
+  const [desktopSearchedWord, setDesktopSearchedWord] = useState<DictionaryEntry | null>(null);
+
   // Detect mobile environment based on screen width
   useEffect(() => {
     const checkMobile = () => {
       const isMobileSize = window.innerWidth < 768;
+      const wasMobile = isMobile;
       console.log('Mobile detection:', { windowWidth: window.innerWidth, isMobile: isMobileSize });
       setIsMobile(isMobileSize);
+
+      // When transitioning to mobile with a desktop searched word, switch to home view
+      if (isMobileSize && !wasMobile && desktopSearchedWord) {
+        setCurrentWord(desktopSearchedWord);
+        currentWordRef.current = desktopSearchedWord.word;
+        window.location.hash = `home?word=${encodeURIComponent(desktopSearchedWord.word)}`;
+      }
     };
 
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [desktopSearchedWord]);
 
   // Refresh vocabulary cache when authenticated
   useEffect(() => {
@@ -286,6 +298,7 @@ export default function Home() {
                 <VocabularyTable
                   key={refreshVocab}
                   onAddWord={() => handleViewChange('home')}
+                  onWordSearched={setDesktopSearchedWord}
                 />
               </div>
             )
