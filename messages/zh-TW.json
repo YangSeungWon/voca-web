@@ -79,6 +79,8 @@
     "syncDescription": "跨裝置同步",
     "account": "帳戶",
     "accountDescription": "登入和帳戶設定",
+    "deleteAccount": "刪除帳戶",
+    "deleteAccountDescription": "永久刪除您的帳戶和資料",
     "feedback": "傳送意見",
     "feedbackDescription": "回報錯誤或提出建議",
     "developer": "開發者設定",

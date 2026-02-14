@@ -79,6 +79,8 @@
     "syncDescription": "기기 간 동기화",
     "account": "계정",
     "accountDescription": "로그인 및 계정 설정",
+    "deleteAccount": "계정 삭제",
+    "deleteAccountDescription": "계정 및 데이터 영구 삭제",
     "feedback": "피드백 보내기",
     "feedbackDescription": "버그 신고 또는 기능 제안",
     "developer": "개발자 설정",

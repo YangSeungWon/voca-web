@@ -79,6 +79,8 @@
     "syncDescription": "Cross-device synchronization",
     "account": "Account",
     "accountDescription": "Login and account settings",
+    "deleteAccount": "Delete Account",
+    "deleteAccountDescription": "Permanently delete your account and data",
     "feedback": "Send Feedback",
     "feedbackDescription": "Report bugs or suggest features",
     "developer": "Developer Settings",

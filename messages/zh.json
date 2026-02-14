@@ -79,6 +79,8 @@
     "syncDescription": "跨设备同步",
     "account": "账户",
     "accountDescription": "登录和账户设置",
+    "deleteAccount": "删除账户",
+    "deleteAccountDescription": "永久删除您的账户和数据",
     "feedback": "发送反馈",
     "feedbackDescription": "报告错误或提出建议",
     "developer": "开发者设置",

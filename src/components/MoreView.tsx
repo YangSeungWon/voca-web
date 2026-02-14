@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { ChevronRight, Sun, User, RefreshCw, BookOpen, Download, Upload, Code, MessageSquare, Globe, Volume2 } from 'lucide-react';
+import { ChevronRight, Sun, User, RefreshCw, BookOpen, Download, Upload, Code, MessageSquare, Globe, Volume2, Trash2 } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import AuthStatus from './AuthStatus';
 import SyncStatus from './SyncStatus';
@@ -275,6 +275,27 @@ export default function MoreView() {
             <AuthStatus />
           </div>
         </div>
+
+        {/* Delete Account */}
+        <a
+          href="/delete-account"
+          className="w-full bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+              <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />
+            </div>
+            <div className="text-left">
+              <div className="font-medium text-gray-900 dark:text-white">
+                {t('deleteAccount')}
+              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                {t('deleteAccountDescription')}
+              </div>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5 text-gray-400" />
+        </a>
 
         {/* Feedback */}
         <button

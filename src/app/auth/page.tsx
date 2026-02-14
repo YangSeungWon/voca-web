@@ -138,6 +138,15 @@ export default function AuthPage() {
             {isLogin ? 'Sign Up' : 'Login'}
           </button>
         </div>
+
+        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 text-center">
+          <a
+            href="/delete-account"
+            className="text-xs text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400"
+          >
+            Delete Account
+          </a>
+        </div>
       </div>
     </div>
   );

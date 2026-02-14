@@ -79,6 +79,8 @@
     "syncDescription": "デバイス間同期",
     "account": "アカウント",
     "accountDescription": "ログインとアカウント設定",
+    "deleteAccount": "アカウント削除",
+    "deleteAccountDescription": "アカウントとデータを完全に削除",
     "feedback": "フィードバック",
     "feedbackDescription": "バグ報告や機能提案",
     "developer": "開発者設定",
