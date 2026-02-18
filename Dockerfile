@@ -53,6 +53,13 @@ COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modul
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
 
+# Copy geoip-lite and its dependencies for IP-based locale detection
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/geoip-lite ./node_modules/geoip-lite
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/async ./node_modules/async
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/ip-address ./node_modules/ip-address
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/jsbn ./node_modules/jsbn
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/sprintf-js ./node_modules/sprintf-js
+
 # Copy start script
 COPY --chown=nextjs:nodejs start.sh ./start.sh
 
@@ -64,6 +71,7 @@ EXPOSE 3000
 
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+ENV GEODATADIR="/app/node_modules/geoip-lite/data"
 
 # Start the application with migration
 CMD ["sh", "start.sh"]
