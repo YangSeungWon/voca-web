@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 
 export default function DeleteAccountPage() {
@@ -50,6 +51,13 @@ export default function DeleteAccountPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 mb-4 transition-colors"
+        >
+          <ArrowLeft size={20} />
+          <span>Back</span>
+        </button>
         <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
           <h1 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-6">
             Delete Account - Voca Web
