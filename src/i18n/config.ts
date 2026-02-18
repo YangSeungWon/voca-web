@@ -1,7 +1,7 @@
-export const locales = ['ko', 'en', 'ja', 'zh', 'zh-TW'] as const;
+export const locales = ['en', 'ko', 'ja', 'zh', 'zh-TW'] as const;
 export type Locale = (typeof locales)[number];
 
-export const defaultLocale: Locale = 'ko';
+export const defaultLocale: Locale = 'en';
 
 export const localeNames: Record<Locale, string> = {
   ko: '한국어',
