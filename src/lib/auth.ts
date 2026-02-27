@@ -30,12 +30,9 @@ export async function getAuthToken(): Promise<string | null> {
 }
 
 export async function isAuthenticated(): Promise<boolean> {
-  // Check token storage (also synced to localStorage)
+  // Only consider authenticated if there's a valid token
   const token = await getToken();
-  if (token) return true;
-  // Fallback: check userId
-  if (typeof window === 'undefined') return false;
-  return !!localStorage.getItem('userId');
+  return !!token;
 }
 
 export async function logout() {
