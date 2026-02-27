@@ -18,7 +18,6 @@ import { DictionaryEntry } from '@/lib/dictionary';
 import { useAuth } from '@/hooks/useAuth';
 import { useBackButton } from '@/hooks/useBackButton';
 import { useVocabularyCache } from '@/hooks/useVocabularyCache';
-import { useKeyboardVisible } from '@/hooks/useKeyboardVisible';
 
 type ViewType = 'home' | 'vocabulary' | 'study' | 'statistics' | 'phonetics' | 'more';
 
@@ -51,7 +50,6 @@ export default function Home() {
   const [isMacCatalyst, setIsMacCatalyst] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
   const { refresh: refreshVocabCache } = useVocabularyCache();
-  const { isVisible: isKeyboardVisible, viewportHeight } = useKeyboardVisible();
 
   // Detect Mac Catalyst (Capacitor on Mac)
   useEffect(() => {
@@ -294,28 +292,22 @@ export default function Home() {
         >
           {activeView === 'home' && (
             <div
-              className={isMobile ? (currentWord ? 'px-4 pb-4' : 'flex flex-col items-center justify-center px-4 cursor-text') : 'p-1'}
-              style={isMobile && !currentWord ? {
-                height: `${viewportHeight - (isKeyboardVisible ? 0 : 64)}px`, // 64px for bottom nav when visible
-                paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)',
-                paddingBottom: isKeyboardVisible ? '16px' : '80px'
-              } : (isMobile && currentWord ? { paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' } : undefined)}
+              className={isMobile ? (currentWord ? 'px-4 pb-4' : 'px-4 pb-20 cursor-text') : 'p-1'}
+              style={isMobile ? { paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' } : undefined}
               onClick={() => !currentWord && isMobile && searchBarRef.current?.focus()}
             >
               {!currentWord && isMobile ? (
-                <div className="w-full max-w-md">
+                <div className="w-full max-w-md mx-auto">
                   <SearchBar ref={searchBarRef} onWordFound={handleWordFound} autoFocus />
-                  {!isKeyboardVisible && (
-                    <div className="flex flex-col items-center text-center mt-8">
-                      <div className="text-gray-400 dark:text-gray-600 mb-4">
-                        <svg className="w-20 h-20 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                      </div>
-                      <p className="text-2xl text-gray-600 dark:text-gray-400 font-semibold mb-2">Search for a word</p>
-                      <p className="text-base text-gray-500 dark:text-gray-500">Type and press enter to look up</p>
+                  <div className="flex flex-col items-center text-center mt-8">
+                    <div className="text-gray-400 dark:text-gray-600 mb-4">
+                      <svg className="w-20 h-20 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
                     </div>
-                  )}
+                    <p className="text-2xl text-gray-600 dark:text-gray-400 font-semibold mb-2">Search for a word</p>
+                    <p className="text-base text-gray-500 dark:text-gray-500">Type and press enter to look up</p>
+                  </div>
                 </div>
               ) : (
                 <>
