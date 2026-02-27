@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { getAuthToken } from '@/lib/auth';
-import { apiFetch } from '@/lib/api-client';
+import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
+import { useOfflineVocabulary } from '@/hooks/useOfflineVocabulary';
 
 interface Statistics {
   overview: {
@@ -31,36 +30,94 @@ interface Statistics {
 
 export default function Statistics() {
   const t = useTranslations('stats');
-  const [stats, setStats] = useState<Statistics | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { vocabulary, loading } = useOfflineVocabulary();
 
-  useEffect(() => {
-    fetchStatistics();
-  }, []);
+  // Compute statistics from vocabulary
+  const stats = useMemo<Statistics | null>(() => {
+    if (vocabulary.length === 0) return null;
 
-  const fetchStatistics = async () => {
-    try {
-      const token = getAuthToken();
-      if (!token) {
-        setLoading(false);
-        return;
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    // Count words by time period
+    let todayCount = 0;
+    let weekCount = 0;
+    let monthCount = 0;
+    let masteredCount = 0;
+    let learningCount = 0;
+    let newCount = 0;
+
+    const levelDistribution: Record<number, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    const dailyMap: Record<string, { added: number; reviewed: number }> = {};
+
+    vocabulary.forEach(word => {
+      const createdAt = new Date(word.createdAt);
+
+      // Time period counts
+      if (createdAt >= today) todayCount++;
+      if (createdAt >= weekAgo) weekCount++;
+      if (createdAt >= monthAgo) monthCount++;
+
+      // Level counts
+      if (word.level >= 4) masteredCount++;
+      else if (word.level >= 1) learningCount++;
+      else newCount++;
+
+      // Level distribution
+      levelDistribution[word.level] = (levelDistribution[word.level] || 0) + 1;
+
+      // Daily progress (last 7 days)
+      const dateKey = createdAt.toISOString().split('T')[0];
+      if (!dailyMap[dateKey]) {
+        dailyMap[dateKey] = { added: 0, reviewed: 0 };
       }
+      dailyMap[dateKey].added++;
+      if (word.reviewCount > 0) {
+        dailyMap[dateKey].reviewed += word.reviewCount;
+      }
+    });
 
-      const response = await apiFetch('/api/statistics', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+    // Generate last 7 days of progress
+    const dailyProgress: Array<{ date: string; added: number; reviewed: number }> = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
+      const dateKey = date.toISOString().split('T')[0];
+      dailyProgress.push({
+        date: dateKey,
+        added: dailyMap[dateKey]?.added || 0,
+        reviewed: dailyMap[dateKey]?.reviewed || 0
       });
-      if (response.ok) {
-        const data = await response.json();
-        setStats(data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch statistics:', error);
-    } finally {
-      setLoading(false);
     }
-  };
+
+    // Calculate streak (consecutive days with activity)
+    let streak = 0;
+    for (let i = dailyProgress.length - 1; i >= 0; i--) {
+      if (dailyProgress[i].added > 0 || dailyProgress[i].reviewed > 0) {
+        streak++;
+      } else if (i < dailyProgress.length - 1) {
+        // Allow today to be empty, break on past empty days
+        break;
+      }
+    }
+
+    return {
+      overview: {
+        total: vocabulary.length,
+        today: todayCount,
+        week: weekCount,
+        month: monthCount,
+        mastered: masteredCount,
+        learning: learningCount,
+        new: newCount,
+        streak
+      },
+      levelDistribution,
+      dailyProgress,
+      difficultWords: []
+    };
+  }, [vocabulary]);
 
   if (loading) {
     return (

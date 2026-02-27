@@ -1,12 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { getAuthToken } from '@/lib/auth';
 import { speak } from '@/lib/speech';
 import { Volume2, ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
-import { apiFetch } from '@/lib/api-client';
+import { useOfflineVocabulary } from '@/hooks/useOfflineVocabulary';
 import PronunciationDisplay from './PronunciationDisplay';
 
 interface StudyWord {
@@ -27,11 +26,11 @@ interface StudyWord {
 type StudyState = 'ready' | 'question' | 'answer' | 'complete';
 
 export default function StudyMode() {
+  const { vocabulary, loading: vocabLoading, updateWord } = useOfflineVocabulary();
   const [words, setWords] = useState<StudyWord[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [studyState, setStudyState] = useState<StudyState>('ready');
   const [showAnswer, setShowAnswer] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [sessionStats, setSessionStats] = useState({
     total: 0,
     correct: 0,
@@ -117,40 +116,20 @@ export default function StudyMode() {
     }
   ]);
 
+  // Load study words from vocabulary when it changes
   useEffect(() => {
-    loadStudyWords();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const loadStudyWords = async () => {
-    try {
-      const token = getAuthToken();
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      const response = await apiFetch('/api/vocabulary', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const data = await response.json();
-      
+    if (!vocabLoading && vocabulary.length > 0) {
       // Prioritize words with lower levels and less recent reviews
-      const sortedWords = data.sort((a: StudyWord, b: StudyWord) => {
+      const sortedWords = [...vocabulary].sort((a, b) => {
         if (a.level !== b.level) return a.level - b.level;
         return a.reviewCount - b.reviewCount;
       });
-      
-      setWords(sortedWords.slice(0, 10)); // Study 10 words per session
-      setSessionStats({ ...sessionStats, total: Math.min(sortedWords.length, 10) });
-    } catch (error) {
-      console.error('Failed to load study words:', error);
-    } finally {
-      setLoading(false);
+
+      const studyWords = sortedWords.slice(0, 10); // Study 10 words per session
+      setWords(studyWords);
+      setSessionStats(prev => ({ ...prev, total: studyWords.length }));
     }
-  };
+  }, [vocabulary, vocabLoading]);
 
   const handleStart = () => {
     if (words.length > 0) {
@@ -166,7 +145,7 @@ export default function StudyMode() {
 
   const handleAnswer = async (correct: boolean) => {
     const currentWord = words[currentIndex];
-    
+
     // Update statistics
     setSessionStats(prev => ({
       ...prev,
@@ -174,22 +153,12 @@ export default function StudyMode() {
       incorrect: !correct ? prev.incorrect + 1 : prev.incorrect
     }));
 
-    // Update word level in database
+    // Update word level (works both online and offline)
     try {
-      const token = getAuthToken();
-      if (!token) return;
-
-      await apiFetch(`/api/vocabulary/${currentWord.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          level: correct ? Math.min(currentWord.level + 1, 5) : Math.max(currentWord.level - 1, 0),
-          reviewCount: currentWord.reviewCount + 1,
-          correctCount: correct ? currentWord.correctCount + 1 : currentWord.correctCount
-        })
+      await updateWord(currentWord.id, {
+        level: correct ? Math.min(currentWord.level + 1, 5) : Math.max(currentWord.level - 1, 0),
+        reviewCount: currentWord.reviewCount + 1,
+        correctCount: correct ? currentWord.correctCount + 1 : currentWord.correctCount
       });
     } catch (error) {
       console.error('Failed to update word progress:', error);
@@ -215,7 +184,7 @@ export default function StudyMode() {
     return levels[level] || 'Unknown';
   };
 
-  if (loading) {
+  if (vocabLoading) {
     return (
       <div className="p-8 text-center">
         <div className="text-gray-500">Loading study materials...</div>

@@ -2,22 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { Trash2, Filter, ChevronUp, ChevronDown, Volume2, ChevronRight, Search, Plus, X } from 'lucide-react';
-import { getAuthToken } from '@/lib/auth';
 import { speak } from '@/lib/speech';
 import ExampleSentences from './ExampleSentences';
 import VocabularyCard from './VocabularyCard';
 import PullToRefresh from './PullToRefresh';
-import { apiFetch } from '@/lib/api-client';
 import PronunciationDisplay from './PronunciationDisplay';
 import WordDisplay from './WordDisplay';
 import { DictionaryEntry } from '@/lib/dictionary';
 import { useTranslations } from 'next-intl';
-import { syncWordsToWidget } from '@/lib/widget-sync';
-import { ipaToHangul } from 'ipa-hangul';
-import { ipaToKatakana } from '@/lib/ipa-to-katakana';
-import { arpabetToRespellingV2 } from '@/lib/arpabet-to-respelling';
-import { arpabetToKatakana } from '@/lib/arpabet-to-katakana';
-import { getPronunciationHelper } from '@/hooks/useSettings';
+import { useOfflineVocabulary } from '@/hooks/useOfflineVocabulary';
 
 interface VocabularyWord {
   id: string;
@@ -45,8 +38,7 @@ interface VocabularyTableProps {
 
 export default function VocabularyTable({ onAddWord, onWordSearched, initialSearchedWord }: VocabularyTableProps) {
   const t = useTranslations('home');
-  const [words, setWords] = useState<VocabularyWord[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { vocabulary, loading, deleteWord: deleteVocabWord, refresh: refreshVocabulary } = useOfflineVocabulary();
   const [showFilter, setShowFilter] = useState(false);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<SortField>('createdAt');
@@ -58,6 +50,15 @@ export default function VocabularyTable({ onAddWord, onWordSearched, initialSear
   const [searchQuery, setSearchQuery] = useState('');
   const [searchedWord, setSearchedWord] = useState<DictionaryEntry | null>(initialSearchedWord || null);
   const [isSearching, setIsSearching] = useState(false);
+
+  // Map vocabulary to words format
+  const words: VocabularyWord[] = vocabulary.map(v => ({
+    id: v.id,
+    word: v.word,
+    level: v.level,
+    createdAt: v.createdAt,
+    notes: v.notes
+  }));
 
   // Sync initialSearchedWord when it changes (e.g., mobile to desktop transition)
   useEffect(() => {
@@ -93,107 +94,16 @@ export default function VocabularyTable({ onAddWord, onWordSearched, initialSear
   };
 
   const handleWordSaved = () => {
-    fetchVocabulary();
+    refreshVocabulary();
     setSearchQuery('');
     setSearchedWord(null);
   };
 
-  useEffect(() => {
-    fetchVocabulary();
-  }, []);
-
-  const fetchVocabulary = async () => {
-    try {
-      const token = getAuthToken();
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      const response = await apiFetch('/api/vocabulary', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setWords(data);
-
-        // Sync to Android widget
-        const helperSetting = getPronunciationHelper();
-        const widgetWords = await Promise.all(data.map(async (item: VocabularyWord) => {
-          const pronunciation = item.word.pronunciation || '';
-          let pronunciationHelper = '';
-
-          if (pronunciation && helperSetting !== 'off') {
-            const effectiveHelper = helperSetting === 'auto'
-              ? (document.documentElement.lang || 'ko')
-              : helperSetting;
-
-            switch (effectiveHelper) {
-              case 'ko':
-                pronunciationHelper = ipaToHangul(pronunciation);
-                break;
-              case 'ja':
-                try {
-                  const { dictionary } = await import('cmu-pronouncing-dictionary');
-                  const arpabet = dictionary[item.word.word.toLowerCase()];
-                  if (arpabet) {
-                    pronunciationHelper = arpabetToKatakana(arpabet);
-                  } else {
-                    pronunciationHelper = ipaToKatakana(pronunciation);
-                  }
-                } catch {
-                  pronunciationHelper = ipaToKatakana(pronunciation);
-                }
-                break;
-              case 'en':
-                try {
-                  const { dictionary } = await import('cmu-pronouncing-dictionary');
-                  const arpabet = dictionary[item.word.word.toLowerCase()];
-                  if (arpabet) {
-                    pronunciationHelper = arpabetToRespellingV2(arpabet);
-                  }
-                } catch {
-                  // No fallback for English respelling
-                }
-                break;
-            }
-          }
-
-          return {
-            word: item.word.word,
-            pronunciation: pronunciation,
-            pronunciationHelper: pronunciationHelper,
-            meaning: item.word.definitions?.[0]?.meaning || '',
-            level: item.level
-          };
-        }));
-        syncWordsToWidget(widgetWords);
-      }
-    } catch (error) {
-      console.error('Failed to fetch vocabulary:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDelete = async (id: string) => {
     try {
-      const token = getAuthToken();
-      if (!token) return;
-
-      const response = await apiFetch(`/api/vocabulary/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (response.ok) {
-        setWords(words.filter(w => w.id !== id));
-        selectedRows.delete(id);
-        setSelectedRows(new Set(selectedRows));
-      }
+      await deleteVocabWord(id);
+      selectedRows.delete(id);
+      setSelectedRows(new Set(selectedRows));
     } catch (error) {
       console.error('Failed to delete word:', error);
     }
@@ -474,7 +384,7 @@ export default function VocabularyTable({ onAddWord, onWordSearched, initialSear
 
       {/* Mobile Card View */}
       <div className="md:hidden h-full relative">
-        <PullToRefresh onRefresh={fetchVocabulary}>
+        <PullToRefresh onRefresh={refreshVocabulary}>
           {/* Header with safe area for iOS notch */}
           <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 pb-3 z-10" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 12px)' }}>
             <div className="flex items-center justify-between">

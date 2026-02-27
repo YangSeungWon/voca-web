@@ -14,7 +14,6 @@ import MobileNav from '@/components/MobileNav';
 import SyncStatus from '@/components/SyncStatus';
 import ExtensionBanner from '@/components/ExtensionBanner';
 import MoreView from '@/components/MoreView';
-import LoginPrompt from '@/components/LoginPrompt';
 import { DictionaryEntry } from '@/lib/dictionary';
 import { useAuth } from '@/hooks/useAuth';
 import { useBackButton } from '@/hooks/useBackButton';
@@ -346,37 +345,25 @@ export default function Home() {
           )}
 
           {activeView === 'vocabulary' && (
-            !isAuthenticated && !isLoading ? (
-              <LoginPrompt messageKey="signInForVocabulary" />
-            ) : (
-              <div className={isMobile ? 'h-full' : ''}>
-                <VocabularyTable
-                  key={refreshVocab}
-                  onAddWord={() => handleViewChange('home')}
-                  onWordSearched={setDesktopSearchedWord}
-                  initialSearchedWord={desktopSearchedWord}
-                />
-              </div>
-            )
+            <div className={isMobile ? 'h-full' : ''}>
+              <VocabularyTable
+                key={refreshVocab}
+                onAddWord={() => handleViewChange('home')}
+                onWordSearched={setDesktopSearchedWord}
+                initialSearchedWord={desktopSearchedWord}
+              />
+            </div>
           )}
 
           {activeView === 'study' && (
             <div style={isMobile ? { paddingTop: 'env(safe-area-inset-top, 0px)' } : undefined}>
-              {!isAuthenticated && !isLoading ? (
-                <LoginPrompt messageKey="signInForStudy" />
-              ) : (
-                <StudyMode />
-              )}
+              <StudyMode />
             </div>
           )}
 
           {activeView === 'statistics' && (
             <div className={isMobile ? 'px-4 pb-4' : ''} style={isMobile ? { paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' } : undefined}>
-              {!isAuthenticated && !isLoading ? (
-                <LoginPrompt messageKey="signInForStats" />
-              ) : (
-                <Statistics />
-              )}
+              <Statistics />
             </div>
           )}
 
@@ -388,11 +375,7 @@ export default function Home() {
 
           {activeView === 'more' && (
             <div className={isMobile ? 'px-4 pb-4' : ''} style={isMobile ? { paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' } : undefined}>
-              {!isAuthenticated && !isLoading ? (
-                <LoginPrompt messageKey="signInForSettings" />
-              ) : (
-                <MoreView />
-              )}
+              <MoreView />
             </div>
           )}
         </main>
