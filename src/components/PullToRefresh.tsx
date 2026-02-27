@@ -70,7 +70,14 @@ export default function PullToRefresh({ onRefresh, children }: PullToRefreshProp
   const rotation = (pullDistance / threshold) * 360;
 
   return (
-    <div ref={containerRef} className="relative h-full overflow-auto">
+    <div
+      ref={containerRef}
+      className="relative overflow-y-auto"
+      style={{
+        height: 'calc(100vh - env(safe-area-inset-bottom, 0px))',
+        WebkitOverflowScrolling: 'touch'
+      }}
+    >
       {/* Pull indicator */}
       {(pullDistance > 0 || isRefreshing) && (
         <div 
