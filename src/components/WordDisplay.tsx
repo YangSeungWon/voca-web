@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { Check, Save, Volume2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { DictionaryEntry } from '@/lib/dictionary';
@@ -9,8 +8,8 @@ import { getAuthToken } from '@/lib/auth';
 import { speak } from '@/lib/speech';
 import { apiFetch } from '@/lib/api-client';
 import PronunciationDisplay from './PronunciationDisplay';
-import { useAuth } from '@/hooks/useAuth';
 import { useVocabularyCache } from '@/hooks/useVocabularyCache';
+import offlineDB from '@/lib/offline-db';
 
 interface WordDisplayProps {
   word: DictionaryEntry;
@@ -19,8 +18,6 @@ interface WordDisplayProps {
 
 export default function WordDisplay({ word, onSave }: WordDisplayProps) {
   const t = useTranslations('home');
-  const router = useRouter();
-  const { isAuthenticated } = useAuth();
   const { hasWord, addWord } = useVocabularyCache();
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -34,34 +31,48 @@ export default function WordDisplay({ word, onSave }: WordDisplayProps) {
   }, [word.word]);
 
   const handleSave = async () => {
-    // Check if user is authenticated
-    if (!isAuthenticated) {
-      router.push('/auth');
-      return;
-    }
-
     setIsSaving(true);
     try {
-      const token = getAuthToken();
-      if (!token) {
-        router.push('/auth');
-        return;
-      }
+      const token = await getAuthToken();
 
-      const response = await apiFetch('/api/vocabulary', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          word: word.word
-        }),
-      });
+      if (token) {
+        // Authenticated: save to server
+        const response = await apiFetch('/api/vocabulary', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            word: word.word
+          }),
+        });
 
-      if (response.ok) {
+        if (response.ok) {
+          setIsSaved(true);
+          addWord(word.word);
+          onSave?.();
+        }
+      } else {
+        // Guest: save to local IndexedDB
+        const id = `local-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        await offlineDB.addVocabularyWord({
+          id,
+          word: {
+            word: word.word,
+            pronunciation: word.pronunciation,
+            definitions: word.definitions.map(d => ({
+              partOfSpeech: d.partOfSpeech,
+              meaning: d.meaning
+            }))
+          },
+          level: 0,
+          reviewCount: 0,
+          correctCount: 0,
+          createdAt: new Date().toISOString()
+        });
         setIsSaved(true);
-        addWord(word.word); // Add to local cache
+        addWord(word.word);
         onSave?.();
       }
     } catch (error) {
