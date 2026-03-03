@@ -300,27 +300,24 @@ export default function VocabularyTable({ onAddWord, onWordSearched, initialSear
                 <>
                   <tr
                     key={item.id}
+                    onClick={() => toggleExpandRow(item.id)}
                     className={`
-                      border-b border-gray-100 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-700
+                      border-b border-gray-100 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-700 cursor-pointer
                       ${selectedRows.has(item.id) ? 'bg-blue-100 dark:bg-blue-900' : ''}
                       ${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-800/50'}
                     `}
                   >
                     <td className="p-2">
                       <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => toggleExpandRow(item.id)}
-                          className="p-0.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
-                        >
-                          <ChevronRight
-                            size={12}
-                            className={`transition-transform ${expandedRows.has(item.id) ? 'rotate-90' : ''}`}
-                          />
-                        </button>
+                        <ChevronRight
+                          size={12}
+                          className={`transition-transform ${expandedRows.has(item.id) ? 'rotate-90' : ''}`}
+                        />
                         <input
                           type="checkbox"
                           checked={selectedRows.has(item.id)}
                           onChange={() => handleSelectRow(item.id)}
+                          onClick={(e) => e.stopPropagation()}
                           className="cursor-pointer"
                         />
                       </div>
@@ -329,7 +326,7 @@ export default function VocabularyTable({ onAddWord, onWordSearched, initialSear
                       <div className="flex items-center gap-2">
                         {item.word.word}
                         <button
-                          onClick={() => speak(item.word.word)}
+                          onClick={(e) => { e.stopPropagation(); speak(item.word.word); }}
                           className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
                           title="Pronounce"
                         >
@@ -358,7 +355,7 @@ export default function VocabularyTable({ onAddWord, onWordSearched, initialSear
                     </td>
                     <td className="p-2 text-center">
                       <button
-                        onClick={() => handleDelete(item.id)}
+                        onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }}
                         className="text-red-500 hover:text-red-700"
                       >
                         <Trash2 size={12} />
@@ -366,8 +363,27 @@ export default function VocabularyTable({ onAddWord, onWordSearched, initialSear
                     </td>
                   </tr>
                   {expandedRows.has(item.id) && (
-                    <tr key={`${item.id}-examples`}>
+                    <tr key={`${item.id}-expanded`}>
                       <td colSpan={8} className="p-3 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                        {item.word.definitions.length > 1 && (
+                          <div className="mb-4">
+                            <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
+                              All Definitions
+                            </h4>
+                            <div className="space-y-1">
+                              {item.word.definitions.map((def, idx) => (
+                                <div key={idx} className="text-sm text-gray-700 dark:text-gray-300">
+                                  {def.partOfSpeech && (
+                                    <span className="inline-block px-1.5 py-0.5 mr-2 text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded">
+                                      {def.partOfSpeech}
+                                    </span>
+                                  )}
+                                  {def.meaning}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                         <ExampleSentences
                           wordId={item.id}
                           wordText={item.word.word}
