@@ -387,11 +387,11 @@ export default function StudyMode() {
                 {currentWord.word.definitions.map((def, index) => (
                   <div key={index} className="text-left">
                     {def.partOfSpeech && (
-                      <span className="inline-block px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full mr-2">
+                      <span className="inline-block px-2 py-0.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full mr-2">
                         {def.partOfSpeech}
                       </span>
                     )}
-                    <span className="text-gray-700 dark:text-gray-300 text-sm">{def.meaning}</span>
+                    <span className="text-gray-700 dark:text-gray-300 text-base">{def.meaning}</span>
                   </div>
                 ))}
               </div>

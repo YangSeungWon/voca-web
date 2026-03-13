@@ -145,8 +145,8 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <h4 className="text-xs font-semibold text-gray-700 flex items-center gap-1">
-          <BookOpen size={12} />
+        <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-400 flex items-center gap-1">
+          <BookOpen size={14} />
           {t('title')}
         </h4>
         <button
@@ -234,9 +234,9 @@ export default function ExampleSentences({ wordId, wordText }: ExampleSentencesP
               ) : (
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <p className="text-xs text-gray-700">{example.sentence}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">{example.sentence}</p>
                     {example.translation && (
-                      <p className="text-xs text-gray-500 italic mt-1">{example.translation}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 italic mt-1">{example.translation}</p>
                     )}
                   </div>
                   <div className="flex gap-1 ml-2">

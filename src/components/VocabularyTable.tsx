@@ -367,14 +367,14 @@ export default function VocabularyTable({ onAddWord, onWordSearched, initialSear
                       <td colSpan={8} className="p-3 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                         {item.word.definitions.length > 1 && (
                           <div className="mb-4">
-                            <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
+                            <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">
                               All Definitions
                             </h4>
-                            <div className="space-y-1">
+                            <div className="space-y-1.5">
                               {item.word.definitions.map((def, idx) => (
-                                <div key={idx} className="text-sm text-gray-700 dark:text-gray-300">
+                                <div key={idx} className="text-base text-gray-700 dark:text-gray-300">
                                   {def.partOfSpeech && (
-                                    <span className="inline-block px-1.5 py-0.5 mr-2 text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded">
+                                    <span className="inline-block px-1.5 py-0.5 mr-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded">
                                       {def.partOfSpeech}
                                     </span>
                                   )}
