@@ -120,9 +120,11 @@ export default function StudyMode() {
   useEffect(() => {
     if (!vocabLoading && vocabulary.length > 0) {
       // Prioritize words with lower levels and less recent reviews
+      // Randomize among words with same level and reviewCount
       const sortedWords = [...vocabulary].sort((a, b) => {
         if (a.level !== b.level) return a.level - b.level;
-        return a.reviewCount - b.reviewCount;
+        if (a.reviewCount !== b.reviewCount) return a.reviewCount - b.reviewCount;
+        return Math.random() - 0.5;
       });
 
       const studyWords = sortedWords.slice(0, 10); // Study 10 words per session

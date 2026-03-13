@@ -112,8 +112,13 @@ export default function Home() {
     }
   }, [isAuthenticated, refreshVocabCache]);
 
-  // Update URL when desktop searched word changes
+  // Update URL when desktop searched word changes (skip initial mount to avoid overwriting URL params)
+  const hasMounted = useRef(false);
   useEffect(() => {
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      return;
+    }
     if (!isMobile && activeView === 'vocabulary') {
       if (desktopSearchedWord) {
         window.location.hash = `vocabulary?word=${encodeURIComponent(desktopSearchedWord.word)}`;
@@ -210,11 +215,16 @@ export default function Home() {
           currentWordRef.current = null;
         }
 
-        // Handle word parameter for vocabulary view (desktop)
+        // Handle word parameter for vocabulary view
         if (view === 'vocabulary' && queryPart) {
           const params = new URLSearchParams(queryPart);
           const word = params.get('word');
           if (word) {
+            // On mobile, redirect to home view with the word
+            if (window.innerWidth < 768) {
+              window.location.hash = `home?word=${encodeURIComponent(word)}`;
+              return;
+            }
             loadWordForDesktop(word);
           }
         } else if (view === 'vocabulary' && !queryPart) {
